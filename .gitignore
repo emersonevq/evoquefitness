@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+*.egg
+
+# Environments
+.venv/
+venv/
+env/
+.python-version
+
+# OS/Editors
+.DS_Store
+.idea/
+.vscode/
+
+# Flask/Instance data
+instance/
+*.sqlite3
+
+dev_database.db
+
+# Logs and runtime
+logs/
+*.log
+
+# User data
+uploads/
+backups/
+
+# Env files
+.env
+.env.*

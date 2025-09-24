@@ -1,0 +1,3348 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel do Agente - Evoque Fitness</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/painel.css') }}">
+
+  <style>
+    /* Estilos para os controles de visualização */
+    .view-mode {
+      transition: all 0.3s ease;
+    }
+
+    .btn-group .btn-outline-primary.active {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: white;
+    }
+
+    /* Estilos para cards de usuários */
+    .card-body .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Melhorar aparência dos badges */
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.35em 0.65em;
+    }
+
+    /* Estilos para paginação */
+    .pagination .page-link {
+      background-color: #343a40;
+      border-color: #495057;
+      color: #fff;
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+
+    .pagination .page-link:hover {
+      background-color: #495057;
+      border-color: #6c757d;
+      color: #fff;
+    }
+
+    /* Informações de resultados */
+    #infoResultados {
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Estilos para modo grade */
+    #visualizacaoGrade .card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #visualizacaoGrade .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Estilos para modo cards */
+    #visualizacaoCards .card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #visualizacaoCards .card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- Botão para alternar sidebar em mobile -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Alternar menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Menu lateral do agente">
+    <div class="logo" tabindex="0" aria-label="Logo Evoque Fitness">
+      <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" alt="Evoque Fitness Logo" />
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#dashboard-agente" class="active" tabindex="0" aria-current="page"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+
+        <li class="has-submenu" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <a href="#" class="submenu-toggle" aria-controls="submenu-gerenciar-chamados-agente" aria-expanded="false" tabindex="0">
+            <i class="fas fa-ticket-alt"></i><span>Gerenciar Chamados</span>
+          </a>
+          <ul class="submenu" id="submenu-gerenciar-chamados-agente" aria-label="submenu gerenciar chamados" role="menu">
+            <li role="none">
+              <a href="#chamados-disponiveis" role="menuitem" tabindex="-1">
+                <i class="fas fa-inbox"></i><span>Disponíveis</span>
+              </a>
+            </li>
+            <li role="none">
+              <a href="#meus-chamados-ativos" role="menuitem" tabindex="-1">
+                <i class="fas fa-tasks"></i><span>Meus Ativos</span>
+              </a>
+            </li>
+            <li role="none">
+              <a href="#meus-chamados-aguardando" role="menuitem" tabindex="-1">
+                <i class="fas fa-pause"></i><span>Aguardando</span>
+              </a>
+            </li>
+            <li role="none">
+              <a href="#meus-chamados-concluidos" role="menuitem" tabindex="-1">
+                <i class="fas fa-check-circle"></i><span>Concluídos</span>
+              </a>
+            </li>
+            <li role="none">
+              <a href="#meus-chamados-cancelados" role="menuitem" tabindex="-1">
+                <i class="fas fa-times-circle"></i><span>Cancelados</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li><a href="#historico-agente" tabindex="0"><i class="fas fa-history"></i><span>Meu Histórico</span></a></li>
+        <li><a href="#estatisticas-agente" tabindex="0"><i class="fas fa-chart-bar"></i><span>Minhas Estatísticas</span></a></li>
+        <li><a href="#notificacoes-agente" tabindex="0" class="notification-icon"><i class="fas fa-bell"></i><span>Notificações</span></a></li>
+        <li><a href="#gerenciar-usuarios" tabindex="0"><i class="fas fa-users-cog"></i><span>Gerenciar Usuários</span></a></li>
+        <li><a href="#perfil-agente" tabindex="0"><i class="fas fa-user-cog"></i><span>Meu Perfil</span></a></li>
+
+        {% if current_user.nivel_acesso == 'Administrador' %}
+        <li><hr class="sidebar-divider"></li>
+        <li><a href="{{ url_for('ti.painel') }}" tabindex="0"><i class="fas fa-tools"></i><span>Painel Admin</span></a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-panel">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-link text-white me-3 d-lg-none" id="mobileSidebarToggle" aria-label="Alternar menu lateral">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span class="navbar-brand mb-0 h1 d-none d-lg-block">Painel do Agente de Suporte</span>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbarPanel">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link-panel" href="#" id="btnNotificacoes">
+              <i class="fas fa-bell me-1"></i>
+              Notificações
+              <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link-panel dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>
+              {% if current_user.is_authenticated %}
+                {{ current_user.nome }} {{ current_user.sobrenome }} (Agente)
+              {% else %}
+                Agente
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#perfil-agente"><i class="fas fa-user me-2"></i> Meu Perfil</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Preferências</a></li>
+              {% if current_user.nivel_acesso == 'Administrador' %}
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="{{ url_for('ti.painel') }}"><i class="fas fa-tools me-2"></i> Painel Admin</a></li>
+              {% endif %}
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" id="mainContent" tabindex="0">
+    
+    <!-- Dashboard do Agente -->
+    <div class="section-content" id="dashboard-agente">
+      <div class="container-fluid py-4">
+        
+        <!-- Cabeçalho com Estatísticas -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-tachometer-alt me-2"></i>Meu Dashboard
+            </h2>
+          </div>
+        </div>
+
+        <!-- Cards de Estatísticas -->
+        <div class="row mb-4">
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Chamados Atribuídos</h6>
+                    <h3 id="chamadosAtribuidos">0</h3>
+                    <small>Ativos para mim</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-tasks fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Concluídos Hoje</h6>
+                    <h3 id="concluidosHoje">0</h3>
+                    <small>Resolvidos</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Chamados Disponíveis</h6>
+                    <h3 id="chamadosDisponiveis">0</h3>
+                    <small>Sem agente</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-folder-open fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Tempo Médio</h6>
+                    <h3 id="tempoMedio">0h</h3>
+                    <small>De resolução</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-clock fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chamados Disponíveis para Atribuição -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-inbox me-2"></i>Chamados Disponíveis
+                  <span class="badge bg-secondary ms-2" id="countDisponiveis">0</span>
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Prioridade</th>
+                        <th>Data Abertura</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaChamadosDisponiveis">
+                      <!-- Dados serão carregados dinamicamente -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meus Chamados -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="card-title mb-0">
+                    <i class="fas fa-user-cog me-2"></i>Meus Chamados
+                    <span class="badge bg-warning ms-2" id="countMeusChamados">0</span>
+                  </h5>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-light active" data-filter="ativos">
+                      <i class="fas fa-play me-1"></i>Ativos
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-light" data-filter="aguardando">
+                      <i class="fas fa-pause me-1"></i>Aguardando
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-light" data-filter="concluidos">
+                      <i class="fas fa-check me-1"></i>Conclu��dos
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Atribuído em</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaMeusChamados">
+                      <!-- Dados serão carregados dinamicamente -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Seção: Chamados Disponíveis -->
+    <div class="section-content" id="chamados-disponiveis" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-inbox me-2"></i>Chamados Disponíveis
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-inbox me-2"></i>Chamados Aguardando Atribuição
+                  <span class="badge bg-info ms-2" id="countDisponiveisPage">0</span>
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Protocolo</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Prioridade</th>
+                        <th>Data Abertura</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaChamadosDisponiveisPage">
+                      <tr><td colspan="8" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Meus Chamados Ativos -->
+    <div class="section-content" id="meus-chamados-ativos" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-tasks me-2"></i>Meus Chamados Ativos
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-user-cog me-2"></i>Chamados em Atendimento
+                  <span class="badge bg-warning ms-2" id="countAtivosPage">0</span>
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Protocolo</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Atribu��do em</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaMeusChamadosAtivosPage">
+                      <tr><td colspan="8" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Aguardando Resposta -->
+    <div class="section-content" id="meus-chamados-aguardando" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-pause me-2"></i>Chamados Aguardando Resposta
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-clock me-2"></i>Aguardando Retorno do Cliente
+                  <span class="badge bg-secondary ms-2" id="countAguardandoPage">0</span>
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Protocolo</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Atribuído em</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaMeusChamadosAguardandoPage">
+                      <tr><td colspan="8" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Chamados Concluídos -->
+    <div class="section-content" id="meus-chamados-concluidos" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-check-circle me-2"></i>Chamados Concluídos
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-check-double me-2"></i>Meus Chamados Finalizados
+                  <span class="badge bg-success ms-2" id="countConcluidosPage">0</span>
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Protocolo</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Concluído em</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaMeusChamadosConcluidosPage">
+                      <tr><td colspan="8" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seç��o: Chamados Cancelados -->
+    <div class="section-content" id="meus-chamados-cancelados" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-times-circle me-2"></i>Chamados Cancelados
+            </h2>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-ban me-2"></i>Meus Chamados Cancelados
+                  <span class="badge bg-danger ms-2" id="countCanceladosPage">0</span>
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Protocolo</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Cancelado em</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaMeusChamadosCanceladosPage">
+                      <tr><td colspan="8" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Histórico -->
+    <div class="section-content" id="historico-agente" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-history me-2"></i>Meu Histórico
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-list me-2"></i>Histórico de Atendimentos
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                    <label for="filtroDataInicio" class="form-label">Data Início</label>
+                    <input type="date" class="form-control" id="filtroDataInicio">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="filtroDataFim" class="form-label">Data Fim</label>
+                    <input type="date" class="form-control" id="filtroDataFim">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="filtroStatus" class="form-label">Status</label>
+                    <select class="form-control" id="filtroStatus">
+                      <option value="">Todos</option>
+                      <option value="Concluido">Concluído</option>
+                      <option value="Cancelado">Cancelado</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <button class="btn btn-primary" onclick="painelAgente.filtrarHistorico()">
+                      <i class="fas fa-search"></i> Buscar
+                    </button>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Solicitante</th>
+                        <th>Problema</th>
+                        <th>Status</th>
+                        <th>Data Atribuição</th>
+                        <th>Data Conclusão</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelaHistoricoAgente">
+                      <tr><td colspan="7" class="text-center">Use os filtros para buscar o histórico</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Estatísticas -->
+    <div class="section-content" id="estatisticas-agente" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-chart-bar me-2"></i>Minhas Estatísticas
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row mb-4">
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Total Atendidos</h6>
+                    <h3 id="estatTotalAtendidos">0</h3>
+                    <small>Este mês</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Tempo Médio</h6>
+                    <h3 id="estatTempoMedio">0h</h3>
+                    <small>De resolução</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-clock fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Atendimentos Hoje</h6>
+                    <h3 id="estatAtendimentosHoje">0</h3>
+                    <small>Concluídos</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-calendar-day fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-title">Avaliação Média</h6>
+                    <h3 id="estatAvaliacaoMedia">5.0</h3>
+                    <small>De 5 estrelas</small>
+                  </div>
+                  <div class="align-self-center">
+                    <i class="fas fa-star fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">Chamados por Status (30 dias)</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="graficoStatusChamados" width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">Performance Mensal</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="graficoPerformanceMensal" width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Notificações -->
+    <div class="section-content" id="notificacoes-agente" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-bell me-2"></i>Notificações
+            </h2>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-list me-2"></i>Minhas Notificações
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="painelAgente.marcarTodasNotificacoesLidas()">
+                  <i class="fas fa-check-double me-1"></i>Marcar Todas como Lidas
+                </button>
+              </div>
+              <div class="card-body">
+                <div id="listaNotificacoes">
+                  <div class="text-center py-4">
+                    <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Nenhuma notificação encontrada</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Gerenciar Usuários -->
+    <div class="section-content" id="gerenciar-usuarios" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-users-cog me-2"></i>Gerenciar Usuários
+            </h2>
+          </div>
+        </div>
+
+        <!-- Filtros, Busca e Controles de Visualização -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <div class="input-group">
+              <input type="text" class="form-control" id="buscaUsuario" placeholder="Buscar por nome, e-mail ou usuário..." onkeyup="painelAgente.buscarUsuariosComDelay()" oninput="painelAgente.resetarPaginacao()">
+              <button class="btn btn-primary" type="button" onclick="painelAgente.buscarUsuarios()">
+                <i class="fas fa-search"></i> Buscar
+              </button>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <!-- Controles de Visualização -->
+            <div class="btn-group" role="group" aria-label="Modo de visualização">
+              <button type="button" class="btn btn-outline-primary active" id="viewList" onclick="painelAgente.alterarVisualizacao('lista')">
+                <i class="fas fa-list"></i> Lista
+              </button>
+              <button type="button" class="btn btn-outline-primary" id="viewGrid" onclick="painelAgente.alterarVisualizacao('grade')">
+                <i class="fas fa-th"></i> Grade
+              </button>
+              <button type="button" class="btn btn-outline-primary" id="viewCards" onclick="painelAgente.alterarVisualizacao('cards')">
+                <i class="fas fa-id-card"></i> Cards
+              </button>
+            </div>
+            <!-- Seletor de itens por página -->
+            <select class="form-select d-inline-block w-auto ms-2" id="itensPorPagina" onchange="painelAgente.alterarItensPorPagina()">
+              <option value="5" selected>5 por página</option>
+              <option value="10">10 por página</option>
+              <option value="20">20 por página</option>
+              <option value="50">50 por página</option>
+            </select>
+          </div>
+          <div class="col-md-4 text-end">
+            <button class="btn btn-success" onclick="painelAgente.abrirModalNovoUsuario()">
+              <i class="fas fa-user-plus me-1"></i>Novo Usuário
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-users me-2"></i>Lista de Usuários
+                  <span class="badge bg-info ms-2" id="totalUsuarios">0</span>
+                </h5>
+                <small class="text-muted" id="infoResultados"></small>
+              </div>
+              <div class="card-body">
+
+                <!-- Visualização em Lista (Tabela) -->
+                <div id="visualizacaoLista" class="view-mode">
+                  <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th>Nome</th>
+                          <th>E-mail</th>
+                          <th>Usuário</th>
+                          <th>Nível de Acesso</th>
+                          <th>Status</th>
+                          <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tabelaUsuarios">
+                        <tr><td colspan="6" class="text-center">Use a busca para listar usuários</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Visualização em Grade -->
+                <div id="visualizacaoGrade" class="view-mode" style="display: none;">
+                  <div class="row" id="gradeUsuarios">
+                    <div class="col-12 text-center text-muted">Use a busca para listar usuários</div>
+                  </div>
+                </div>
+
+                <!-- Visualização em Cards -->
+                <div id="visualizacaoCards" class="view-mode" style="display: none;">
+                  <div class="row" id="cardsUsuarios">
+                    <div class="col-12 text-center text-muted">Use a busca para listar usuários</div>
+                  </div>
+                </div>
+
+                <!-- Paginação -->
+                <nav aria-label="Paginação de usuários" id="paginacaoUsuarios" style="display: none;">
+                  <ul class="pagination justify-content-center" id="paginacaoLista">
+                    <!-- Paginação será inserida via JavaScript -->
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção: Meu Perfil -->
+    <div class="section-content" id="perfil-agente" style="display: none;">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="mb-3">
+              <i class="fas fa-user-cog me-2"></i>Meu Perfil
+            </h2>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">Informações Pessoais</h5>
+              </div>
+              <div class="card-body">
+                <form id="formPerfilAgente">
+                  <div class="mb-3">
+                    <label for="perfilNome" class="form-label">Nome Completo</label>
+                    <input type="text" class="form-control" id="perfilNome" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label for="perfilEmail" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="perfilEmail" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label for="perfilTelefone" class="form-label">Telefone</label>
+                    <input type="text" class="form-control" id="perfilTelefone">
+                  </div>
+                  <div class="mb-3">
+                    <label for="perfilEspecialidades" class="form-label">Especialidades</label>
+                    <textarea class="form-control" id="perfilEspecialidades" rows="3" placeholder="Hardware, Software, Redes..."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">Configurações de Trabalho</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label for="perfilNivelExperiencia" class="form-label">Nível de Experiência</label>
+                  <select class="form-control" id="perfilNivelExperiencia">
+                    <option value="junior">Junior</option>
+                    <option value="pleno">Pleno</option>
+                    <option value="senior">Senior</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="perfilMaxChamados" class="form-label">Máximo de Chamados Simultâneos</label>
+                  <input type="number" class="form-control" id="perfilMaxChamados" min="1" max="50">
+                </div>
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="perfilNotificacoes">
+                    <label class="form-check-label" for="perfilNotificacoes">
+                      Receber notificações de novos chamados
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="perfilAutoAtribuicao">
+                    <label class="form-check-label" for="perfilAutoAtribuicao">
+                      Permitir auto-atribuição de chamados
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal Gerenciar Usuário -->
+  <div class="modal fade" id="modalGerenciarUsuario" tabindex="-1" aria-labelledby="modalGerenciarUsuarioTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalGerenciarUsuarioTitle">Gerenciar Usuário</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formGerenciarUsuario">
+            <input type="hidden" id="usuarioId">
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioNome" class="form-label">Nome *</label>
+                  <input type="text" class="form-control" id="usuarioNome" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioSobrenome" class="form-label">Sobrenome *</label>
+                  <input type="text" class="form-control" id="usuarioSobrenome" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioEmail" class="form-label">E-mail *</label>
+                  <input type="email" class="form-control" id="usuarioEmail" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioUsuario" class="form-label">Usuário *</label>
+                  <input type="text" class="form-control" id="usuarioUsuario" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioNivelAcesso" class="form-label">Nível de Acesso *</label>
+                  <select class="form-control" id="usuarioNivelAcesso" required>
+                    <option value="">Selecione...</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Gerente">Gerente</option>
+                    <option value="Gerente Regional">Gerente Regional</option>
+                    <option value="Gestor">Gestor</option>
+                    <option value="Agente de suporte">Agente de Suporte</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioSetores" class="form-label">Setores</label>
+                  <select class="form-control" id="usuarioSetores">
+                    <option value="TI">TI</option>
+                    <option value="Comercial">Comercial</option>
+                    <option value="Financeiro">Financeiro</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="Produtos">Produtos</option>
+                    <option value="Compras">Compras</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" id="novaSenhaSection" style="display: none;">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="usuarioSenha" class="form-label">Nova Senha</label>
+                  <input type="password" class="form-control" id="usuarioSenha">
+                  <small class="form-text text-muted">Deixe em branco para não alterar a senha</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Gerar Senha Automática</label>
+                  <div>
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="painelAgente.gerarSenhaAleatoria()">
+                      <i class="fas fa-key me-1"></i>Gerar Senha
+                    </button>
+                    <span id="senhaGerada" class="ms-2 text-info"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="usuarioBloqueado">
+                  <label class="form-check-label" for="usuarioBloqueado">
+                    Usuário bloqueado
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex justify-content-between w-100">
+            <div>
+              <button type="button" class="btn btn-warning" id="btnResetarSenha" onclick="painelAgente.resetarSenhaUsuario()" style="display: none;">
+                <i class="fas fa-key"></i> Resetar Senha
+              </button>
+            </div>
+            <div>
+              <button type="button" class="btn btn-success" onclick="painelAgente.salvarUsuario()">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Enviar Ticket por E-mail -->
+  <div class="modal fade" id="modalEnviarEmail" tabindex="-1" aria-labelledby="modalEnviarEmailTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEnviarEmailTitle">Enviar Ticket por E-mail</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formEnviarEmail">
+            <input type="hidden" id="emailChamadoId">
+
+            <div class="mb-3">
+              <label for="emailDestino" class="form-label">E-mail de Destino *</label>
+              <input type="email" class="form-control" id="emailDestino" required>
+              <small class="form-text text-muted">Por padrão será enviado para o e-mail do solicitante</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="emailAssunto" class="form-label">Assunto *</label>
+              <input type="text" class="form-control" id="emailAssunto" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="emailMensagem" class="form-label">Mensagem *</label>
+              <textarea class="form-control" id="emailMensagem" rows="8" required placeholder="Digite sua mensagem personalizada aqui..."></textarea>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="incluirDetalhesTicket" checked>
+              <label class="form-check-label" for="incluirDetalhesTicket">
+                Incluir detalhes completos do ticket no e-mail
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="painelAgente.enviarEmailTicket()">
+            <i class="fas fa-paper-plane"></i> Enviar E-mail
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Notificações -->
+  <div id="notificationContainer" class="notification-container"></div>
+
+  <!-- Modal Detalhes do Chamado -->
+  <div class="modal fade" id="modalChamado" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Detalhes do Chamado</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label"><strong>C��digo:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalCodigo">-</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>Protocolo:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalProtocolo">-</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>Solicitante:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalSolicitante">-</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>E-mail:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalEmail">-</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>Telefone:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalTelefone">-</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label"><strong>Unidade:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalUnidade">-</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>Problema:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalProblema">-</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>Prioridade:</strong></label>
+                <span class="badge" id="modalPrioridade">-</span>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>Data de Abertura:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalDataAbertura">-</div>
+              </div>
+              <div class="mb-3" id="modalAgenteInfo" style="display: none;">
+                <label class="form-label"><strong>Agente Atribuído:</strong></label>
+                <div class="form-control-plaintext text-white" id="modalAgente">-</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label"><strong>Descrição:</strong></label>
+                <div class="form-control-plaintext text-white border p-3 rounded" id="modalDescricao" style="background-color: #2c3e50; min-height: 80px;">-</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row" id="modalActionsSection">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="modalStatus" class="form-label"><strong>Alterar Status:</strong></label>
+                <select class="form-control" id="modalStatus">
+                  <option value="Aberto">Aberto</option>
+                  <option value="Aguardando">Aguardando</option>
+                  <option value="Concluido">Concluído</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6" id="modalTransferSection" style="display: none;">
+              <div class="mb-3">
+                <label for="modalTransferirPara" class="form-label"><strong>Transferir para:</strong></label>
+                <select class="form-control" id="modalTransferirPara">
+                  <option value="">Selecione um agente...</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="modalObservacoes" class="form-label"><strong>Observações da Atualização:</strong></label>
+                <textarea class="form-control" id="modalObservacoes" rows="3" placeholder="Adicione observações sobre as ações realizadas..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex justify-content-between w-100">
+            <div>
+              <button type="button" class="btn btn-success" id="modalAtribuir" style="display: none;">
+                <i class="fas fa-user-plus"></i> Atribuir a Mim
+              </button>
+              <button type="button" class="btn btn-outline-info" id="modalEnviarEmail" onclick="painelAgente.abrirModalEnviarEmailFromModal()">
+                <i class="fas fa-envelope"></i> Enviar E-mail
+              </button>
+            </div>
+            <div>
+              <button type="button" class="btn btn-info" id="modalTransferir" style="display: none;">
+                <i class="fas fa-exchange-alt"></i> Transferir
+              </button>
+              <button type="button" class="btn btn-primary" id="modalAtualizar">
+                <i class="fas fa-save"></i> Atualizar
+              </button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times"></i> Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Senha Gerada -->
+  <div class="modal fade" id="modalSenhaGerada" tabindex="-1" aria-labelledby="modalSenhaGeradaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="modalSenhaGeradaLabel">
+            <i class="fas fa-key me-2"></i>Senha Gerada com Sucesso
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            Copie a senha abaixo antes de fechar esta janela. Por segurança, ela não será exibida novamente.
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Nova Senha:</label>
+            <div class="input-group">
+              <input type="text" class="form-control form-control-lg text-center fw-bold"
+                     id="senhaGeradaModal"
+                     readonly
+                     style="font-family: monospace; letter-spacing: 2px; font-size: 1.25rem;">
+              <button class="btn btn-outline-primary" type="button" id="btnCopiarSenha" title="Copiar senha">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="text-muted small">
+            <i class="fas fa-shield-alt me-1"></i>
+            Esta senha foi gerada automaticamente e é segura para uso.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnCopiarFechar">
+            <i class="fas fa-copy me-1"></i>Copiar e Fechar
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Socket.IO -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <!-- Scripts customizados -->
+  <script>
+    // NOVO SISTEMA DE NAVEGAÇÃO ULTRA ROBUSTO
+    function initializeAgentNavigation() {
+      console.log('=== INICIALIZANDO NAVEGAÇÃO ROBUSTA DO AGENTE ===');
+
+      // Aguardar um momento para garantir que o DOM está totalmente carregado
+      setTimeout(() => {
+        setupNavigation();
+      }, 100);
+    }
+
+    function setupNavigation() {
+      console.log('Configurando navegação...');
+
+      // 1. NAVEGAÇÃO PRINCIPAL - usando delegação de eventos
+      document.addEventListener('click', function(e) {
+        // Verificar se o clique foi em um link de navegação
+        const link = e.target.closest('a[href^="#"]');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        if (!href || href === '#') return;
+
+        console.log('=== CLICK INTERCEPTADO ===');
+        console.log('Link:', link.textContent.trim());
+        console.log('Href:', href);
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const sectionId = href.substring(1);
+        console.log('Navegando para:', sectionId);
+
+        // Navegar para a seção
+        navigateToSection(sectionId);
+      });
+
+      // 2. SUBMENU TOGGLES - usando delegação de eventos
+      document.addEventListener('click', function(e) {
+        const toggle = e.target.closest('.submenu-toggle');
+        if (!toggle) return;
+
+        console.log('=== SUBMENU TOGGLE ===');
+        e.preventDefault();
+        e.stopPropagation();
+
+        const parentLi = toggle.closest('li.has-submenu');
+        if (!parentLi) return;
+
+        const isOpen = parentLi.classList.contains('open');
+
+        // Fechar todos os outros submenus
+        document.querySelectorAll('.sidebar li.has-submenu.open').forEach(li => {
+          if (li !== parentLi) {
+            li.classList.remove('open');
+          }
+        });
+
+        // Toggle submenu atual
+        if (isOpen) {
+          parentLi.classList.remove('open');
+        } else {
+          parentLi.classList.add('open');
+        }
+      });
+
+      console.log('Navegação configurada com delegação de eventos');
+
+      // Mostrar seção inicial
+      navigateToSection('dashboard-agente');
+    }
+
+    // Função robusta de navegação
+    function navigateToSection(sectionId) {
+      console.log(`Navegando para seção: ${sectionId}`);
+
+      // Esconder todas as seções
+      const allSections = document.querySelectorAll('.section-content');
+      allSections.forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('active');
+      });
+
+      // Mostrar seção específica
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.style.display = 'block';
+        targetSection.classList.add('active');
+        console.log(`Seção ${sectionId} ativada`);
+      } else {
+        console.error(`Seção ${sectionId} não encontrada`);
+        // Fallback para dashboard
+        const dashboard = document.getElementById('dashboard-agente');
+        if (dashboard) {
+          dashboard.style.display = 'block';
+          dashboard.classList.add('active');
+        }
+      }
+
+      // Atualizar links ativos
+      updateActiveLinks(sectionId);
+
+      // Carregar dados específicos da seção
+      loadSectionData(sectionId);
+    }
+
+    // Atualizar links ativos
+    function updateActiveLinks(sectionId) {
+      // Remover classe active de todos os links
+      document.querySelectorAll('.sidebar a').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Adicionar classe active ao link correspondente
+      const targetLink = document.querySelector(`a[href="#${sectionId}"]`);
+      if (targetLink) {
+        targetLink.classList.add('active');
+
+        // Se o link está em um submenu, abrir o submenu
+        const parentSubmenu = targetLink.closest('.submenu');
+        if (parentSubmenu) {
+          const parentLi = parentSubmenu.closest('li.has-submenu');
+          if (parentLi) {
+            parentLi.classList.add('open');
+          }
+        }
+      }
+    }
+
+    // Carregar dados específicos da seção
+    function loadSectionData(sectionId) {
+      if (window.painelAgente && typeof window.painelAgente.carregarDadosSecao === 'function') {
+        window.painelAgente.carregarDadosSecao(sectionId);
+      }
+    }
+
+    // Função showSection mantida para compatibilidade (chama a nova função)
+    function showSection(sectionId) {
+      navigateToSection(sectionId);
+    }
+
+    // Inicializar quando DOM estiver pronto
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM carregado - inicializando navegação do agente...');
+      initializeAgentNavigation();
+
+      // Configurar botão de notificações na navbar
+      const btnNotificacoes = document.getElementById('btnNotificacoes');
+      if (btnNotificacoes) {
+        btnNotificacoes.addEventListener('click', function(e) {
+          e.preventDefault();
+          showSection('notificacoes-agente');
+        });
+      }
+
+      // Configurar event listeners para botões do modal
+      const modalAtribuir = document.getElementById('modalAtribuir');
+      const modalAtualizar = document.getElementById('modalAtualizar');
+      const modalTransferir = document.getElementById('modalTransferir');
+
+      if (modalAtribuir) {
+        modalAtribuir.addEventListener('click', function() {
+          if (window.painelAgente && window.painelAgente.chamadoAtual) {
+            window.painelAgente.atribuirChamado(window.painelAgente.chamadoAtual.id);
+          }
+        });
+      }
+
+      if (modalAtualizar) {
+        modalAtualizar.addEventListener('click', function() {
+          if (window.painelAgente) {
+            window.painelAgente.atualizarChamado();
+          }
+        });
+      }
+
+      if (modalTransferir) {
+        modalTransferir.addEventListener('click', function() {
+          if (window.painelAgente) {
+            window.painelAgente.transferirChamado();
+          }
+        });
+      }
+
+      // Inicializar PainelAgente
+      setTimeout(async () => {
+        const autenticado = await testarAutenticacao();
+        if (autenticado) {
+          window.painelAgente = new PainelAgente();
+        }
+      }, 500);
+
+      console.log('Sistema de navegação do agente inicializado com sucesso');
+    });
+
+    // Função global para debug de navegação
+    window.debugNavigationAgent = function() {
+      console.log('=== DEBUG NAVEGAÇÃO AGENTE ===');
+      console.log('Links de navegação:', document.querySelectorAll('.sidebar a[href^="#"]').length);
+      console.log('Seções:', document.querySelectorAll('.section-content').length);
+      console.log('Seção ativa:', document.querySelector('.section-content[style*="block"]')?.id || 'nenhuma');
+
+      // Testar navegação para todas as seções
+      const secoes = ['dashboard-agente', 'historico-agente', 'notificacoes-agente', 'gerenciar-usuarios', 'perfil-agente'];
+      console.log('Testando navegação para:', secoes);
+
+      secoes.forEach((secao, index) => {
+        setTimeout(() => {
+          console.log(`Testando navegação para: ${secao}`);
+          navigateToSection(secao);
+        }, index * 1000);
+      });
+    };
+
+    // Função para testar navegação específica
+    window.testNavigation = function(sectionId) {
+      console.log(`Testando navegação para: ${sectionId}`);
+      navigateToSection(sectionId);
+    };
+
+    // Função para testar sistema de e-mail
+    window.testarSistemaEmail = async function() {
+      console.log('=== TESTANDO SISTEMA DE E-MAIL ===');
+
+      try {
+        const response = await fetch('/ti/test-email');
+        const result = await response.json();
+
+        console.log('Resultado do teste:', result);
+
+        if (result.success) {
+          console.log('✅ Sistema de e-mail funcionando!');
+          if (window.painelAgente) {
+            window.painelAgente.showNotification(result.message, 'success', 8000);
+          }
+        } else {
+          console.error('❌ Problema no sistema de e-mail:', result.message);
+          if (window.painelAgente) {
+            window.painelAgente.showNotification('Erro no sistema de e-mail: ' + result.message, 'error', 10000);
+          }
+        }
+
+        return result;
+      } catch (error) {
+        console.error('❌ Erro ao testar sistema de e-mail:', error);
+        if (window.painelAgente) {
+          window.painelAgente.showNotification('Erro ao testar sistema de e-mail', 'error');
+        }
+        return { success: false, error: error.message };
+      }
+    };
+
+    // ========== FUNÇÕES DO MODAL DE SENHA ==========
+
+    // Função para mostrar modal com senha gerada
+    function mostrarModalSenha(senha) {
+      document.getElementById('senhaGeradaModal').value = senha;
+      const modal = new bootstrap.Modal(document.getElementById('modalSenhaGerada'));
+      modal.show();
+    }
+
+    // Função para copiar senha para área de transferência
+    async function copiarSenha() {
+      const senhaInput = document.getElementById('senhaGeradaModal');
+      const senha = senhaInput.value;
+
+      try {
+        await navigator.clipboard.writeText(senha);
+
+        // Feedback visual
+        const btnCopiar = document.getElementById('btnCopiarSenha');
+        const iconOriginal = btnCopiar.innerHTML;
+        btnCopiar.innerHTML = '<i class="fas fa-check text-success"></i>';
+        btnCopiar.classList.add('btn-success');
+        btnCopiar.classList.remove('btn-outline-primary');
+
+        // Voltar ao estado original após 2 segundos
+        setTimeout(() => {
+          btnCopiar.innerHTML = iconOriginal;
+          btnCopiar.classList.remove('btn-success');
+          btnCopiar.classList.add('btn-outline-primary');
+        }, 2000);
+
+        // Mostrar notificação de sucesso
+        if (window.painelAgente) {
+          window.painelAgente.showNotification('Senha copiada para a área de transferência!', 'success');
+        }
+
+      } catch (err) {
+        console.error('Erro ao copiar senha:', err);
+
+        // Fallback: selecionar texto
+        senhaInput.select();
+        senhaInput.setSelectionRange(0, 99999); // Para dispositivos móveis
+
+        try {
+          document.execCommand('copy');
+          if (window.painelAgente) {
+            window.painelAgente.showNotification('Senha selecionada. Use Ctrl+C para copiar.', 'info');
+          }
+        } catch (fallbackErr) {
+          if (window.painelAgente) {
+            window.painelAgente.showNotification('Não foi possível copiar automaticamente. Selecione e copie manualmente.', 'warning');
+          }
+        }
+      }
+    }
+
+    // Event listeners para o modal
+    document.addEventListener('DOMContentLoaded', function() {
+      // Botão copiar senha
+      document.getElementById('btnCopiarSenha')?.addEventListener('click', copiarSenha);
+
+      // Botão copiar e fechar
+      document.getElementById('btnCopiarFechar')?.addEventListener('click', function() {
+        copiarSenha().then(() => {
+          // Fechar modal após copiar
+          setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalSenhaGerada'));
+            if (modal) {
+              modal.hide();
+            }
+          }, 1000);
+        });
+      });
+
+      // Copiar ao dar duplo clique no campo
+      document.getElementById('senhaGeradaModal')?.addEventListener('dblclick', function() {
+        copiarSenha();
+      });
+    });
+
+    // Exportar função para uso global
+    window.mostrarModalSenha = mostrarModalSenha;
+
+    // Painel do Agente de Suporte
+    class PainelAgente {
+      constructor() {
+        this.chamadoAtual = null;
+        this.notificacoesNaoLidas = 0;
+        // Propriedades para gerenciamento de usuários
+        this.currentPage = 1;
+        this.perPage = 5;
+        this.viewMode = 'lista';
+        this.totalPages = 1;
+        this.currentData = null;
+        this.searchTimeout = null;
+        // Removido áudio problemático com CSP
+        this.init();
+      }
+
+      async init() {
+        await this.carregarEstatisticas();
+        await this.carregarChamadosDisponiveis();
+        await this.carregarMeusChamados();
+        await this.carregarNotificacoes();
+        this.configurarEventos();
+        this.iniciarSocketIO();
+        this.iniciarVerificacaoNotificacoes();
+      }
+
+      async carregarEstatisticas() {
+        try {
+          const response = await fetch('/ti/painel/api/agente/estatisticas');
+          if (response.ok) {
+            const data = await response.json();
+            document.getElementById('chamadosAtribuidos').textContent = data.atribuidos || 0;
+            document.getElementById('concluidosHoje').textContent = data.concluidos_hoje || 0;
+            document.getElementById('chamadosDisponiveis').textContent = data.disponiveis || 0;
+            document.getElementById('tempoMedio').textContent = data.tempo_medio || '0h';
+          }
+        } catch (error) {
+          console.error('Erro ao carregar estatísticas:', error);
+        }
+      }
+
+      async carregarChamadosDisponiveis() {
+        try {
+          const response = await fetch('/ti/painel/api/chamados/disponiveis');
+          if (response.ok) {
+            const chamados = await response.json();
+            this.renderizarChamadosDisponiveis(chamados);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar chamados disponíveis:', error);
+        }
+      }
+
+      async carregarMeusChamados(filtro = 'ativos') {
+        try {
+          const response = await fetch(`/ti/painel/api/agente/meus-chamados?filtro=${filtro}`);
+          if (response.ok) {
+            const chamados = await response.json();
+            this.renderizarMeusChamados(chamados);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar meus chamados:', error);
+        }
+      }
+      
+      carregarDadosSecao(sectionId) {
+        switch(sectionId) {
+          case 'dashboard-agente':
+            this.carregarEstatisticas();
+            this.carregarChamadosDisponiveis();
+            this.carregarMeusChamados();
+            break;
+          case 'chamados-disponiveis':
+            this.carregarChamadosDisponiveisPage();
+            break;
+          case 'meus-chamados-ativos':
+            this.carregarMeusChamadosPage('ativos');
+            break;
+          case 'meus-chamados-aguardando':
+            this.carregarMeusChamadosPage('aguardando');
+            break;
+          case 'meus-chamados-concluidos':
+            this.carregarMeusChamadosPage('concluidos');
+            break;
+          case 'meus-chamados-cancelados':
+            this.carregarMeusChamadosPage('cancelados');
+            break;
+          case 'historico-agente':
+            this.carregarHistoricoInicial();
+            break;
+          case 'estatisticas-agente':
+            this.carregarEstatisticasDetalhadas();
+            break;
+          case 'notificacoes-agente':
+            this.carregarNotificacoesCompletas();
+            break;
+          case 'gerenciar-usuarios':
+            this.buscarUsuarios(''); // Carregar todos os usuários automaticamente
+            break;
+          case 'perfil-agente':
+            this.carregarPerfilAgente();
+            break;
+        }
+      }
+      
+      async carregarChamadosDisponiveisPage() {
+        try {
+          const response = await fetch('/ti/painel/api/chamados/disponiveis');
+          if (response.ok) {
+            const chamados = await response.json();
+            this.renderizarChamadosDisponiveisPage(chamados);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar chamados disponíveis:', error);
+        }
+      }
+      
+      async carregarMeusChamadosPage(filtro) {
+        try {
+          const response = await fetch(`/ti/painel/api/agente/meus-chamados?filtro=${filtro}`);
+          if (response.ok) {
+            const chamados = await response.json();
+            this.renderizarMeusChamadosPage(chamados, filtro);
+          }
+        } catch (error) {
+          console.error(`Erro ao carregar chamados ${filtro}:`, error);
+        }
+      }
+      
+      async carregarEstatisticasDetalhadas() {
+        try {
+          const response = await fetch('/ti/painel/api/agente/estatisticas-detalhadas');
+          if (response.ok) {
+            const stats = await response.json();
+            this.renderizarEstatisticasDetalhadas(stats);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar estatísticas detalhadas:', error);
+        }
+      }
+      
+      async carregarPerfilAgente() {
+        try {
+          const response = await fetch('/ti/painel/api/agente/perfil');
+          if (response.ok) {
+            const perfil = await response.json();
+            this.preencherPerfilAgente(perfil);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar perfil do agente:', error);
+        }
+      }
+
+      renderizarChamadosDisponiveis(chamados) {
+        const tbody = document.getElementById('tabelaChamadosDisponiveis');
+        const count = document.getElementById('countDisponiveis');
+        
+        count.textContent = chamados.length;
+        
+        if (chamados.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum chamado disponível</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = chamados.map(chamado => `
+          <tr>
+            <td><span class="badge bg-primary">${chamado.codigo}</span></td>
+            <td>${chamado.solicitante}</td>
+            <td>${chamado.problema}</td>
+            <td><span class="badge bg-${this.getPrioridadeClass(chamado.prioridade)}">${chamado.prioridade}</span></td>
+            <td>${chamado.data_abertura}</td>
+            <td>
+              <button class="btn btn-sm btn-success" onclick="painelAgente.atribuirChamado(${chamado.id})">
+                <i class="fas fa-user-plus me-1"></i>Atribuir a Mim
+              </button>
+              <button class="btn btn-sm btn-outline-info" onclick="painelAgente.verDetalhes(${chamado.id})">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      renderizarMeusChamados(chamados) {
+        const tbody = document.getElementById('tabelaMeusChamados');
+        const count = document.getElementById('countMeusChamados');
+        
+        count.textContent = chamados.length;
+        
+        if (chamados.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum chamado atribuído</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = chamados.map(chamado => `
+          <tr>
+            <td><span class="badge bg-primary">${chamado.codigo}</span></td>
+            <td>${chamado.solicitante}</td>
+            <td>${chamado.problema}</td>
+            <td><span class="badge bg-${this.getStatusClass(chamado.status)}">${chamado.status}</span></td>
+            <td><span class="badge bg-${this.getPrioridadeClass(chamado.prioridade)}">${chamado.prioridade}</span></td>
+            <td>${chamado.data_atribuicao}</td>
+            <td>
+              <button class="btn btn-sm btn-primary me-1" onclick="painelAgente.verDetalhes(${chamado.id})">
+                <i class="fas fa-edit me-1"></i>Gerenciar
+              </button>
+              <button class="btn btn-sm btn-outline-info" onclick="painelAgente.abrirModalEnviarEmail(${chamado.id})" title="Enviar por e-mail">
+                <i class="fas fa-envelope"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      async atribuirChamado(chamadoId) {
+        try {
+          // Usar o novo endpoint mais confiável
+          const response = await fetch(`/ti/painel/api/chamados/${chamadoId}/auto-atribuir`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            this.showNotification(data.message || 'Chamado atribuído com sucesso!', 'success');
+            // Recarregar todas as listas
+            await Promise.all([
+              this.carregarEstatisticas(),
+              this.carregarChamadosDisponiveis(),
+              this.carregarMeusChamados(),
+              this.carregarDadosSecao(document.querySelector('.sidebar nav a.active')?.getAttribute('href')?.substring(1))
+            ]);
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || 'Erro ao atribuir chamado', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao atribuir chamado:', error);
+          this.showNotification('Erro de conexão ao atribuir chamado', 'error');
+        }
+      }
+
+      async verDetalhes(chamadoId) {
+        try {
+          // Primeiro tentar buscar detalhes específicos
+          let response = await fetch(`/ti/painel/api/chamados/${chamadoId}/detalhes`);
+
+          if (!response.ok) {
+            // Se falhar, buscar da lista geral de chamados
+            const chamadosResponse = await fetch('/ti/painel/api/chamados');
+            if (chamadosResponse.ok) {
+              const chamados = await chamadosResponse.json();
+              const chamado = chamados.find(c => c.id === chamadoId);
+              if (chamado) {
+                this.mostrarModalDetalhes(chamado);
+                return;
+              }
+            }
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const chamado = await response.json();
+          this.mostrarModalDetalhes(chamado);
+        } catch (error) {
+          console.error('Erro ao carregar detalhes:', error);
+          this.showNotification('Erro ao carregar detalhes do chamado', 'error');
+        }
+      }
+      
+      mostrarModalDetalhes(chamado) {
+        // Preencher dados básicos
+        document.getElementById('modalCodigo').textContent = chamado.codigo;
+        document.getElementById('modalProtocolo').textContent = chamado.protocolo;
+        document.getElementById('modalSolicitante').textContent = chamado.solicitante;
+        document.getElementById('modalEmail').textContent = chamado.email;
+        document.getElementById('modalTelefone').textContent = chamado.telefone || 'Não informado';
+        document.getElementById('modalUnidade').textContent = chamado.unidade;
+        document.getElementById('modalProblema').textContent = chamado.problema;
+        document.getElementById('modalDescricao').textContent = chamado.descricao || 'Sem descrição';
+        document.getElementById('modalDataAbertura').textContent = chamado.data_abertura;
+        
+        // Prioridade com cor
+        const prioridadeBadge = document.getElementById('modalPrioridade');
+        prioridadeBadge.textContent = chamado.prioridade;
+        prioridadeBadge.className = `badge bg-${this.getPrioridadeClass(chamado.prioridade)}`;
+        
+        // Status atual
+        document.getElementById('modalStatus').value = chamado.status;
+        
+        // Informações do agente
+        const agenteInfo = document.getElementById('modalAgenteInfo');
+        const agenteNome = document.getElementById('modalAgente');
+        if (chamado.agente) {
+          agenteInfo.style.display = 'block';
+          agenteNome.textContent = chamado.agente.nome;
+        } else {
+          agenteInfo.style.display = 'none';
+        }
+        
+        // Botões de ação
+        const btnAtribuir = document.getElementById('modalAtribuir');
+        const btnTransferir = document.getElementById('modalTransferir');
+        const transferSection = document.getElementById('modalTransferSection');
+        
+        if (!chamado.agente) {
+          // Chamado sem agente - mostrar botão atribuir
+          btnAtribuir.style.display = 'inline-block';
+          btnTransferir.style.display = 'none';
+          transferSection.style.display = 'none';
+        } else {
+          // Chamado com agente - mostrar botão transferir
+          btnAtribuir.style.display = 'none';
+          btnTransferir.style.display = 'inline-block';
+          transferSection.style.display = 'block';
+          this.carregarAgentesParaTransferencia(chamado.agente.id);
+        }
+        
+        // Guardar ID do chamado
+        this.chamadoAtual = chamado;
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalChamado'));
+        modal.show();
+      }
+      
+      async carregarAgentesParaTransferencia(agenteAtualId) {
+        try {
+          const response = await fetch('/ti/painel/api/agentes/ativos');
+          if (response.ok) {
+            const agentes = await response.json();
+            const select = document.getElementById('modalTransferirPara');
+            select.innerHTML = '<option value="">Selecione um agente...</option>';
+            
+            agentes.forEach(agente => {
+              if (agente.id !== agenteAtualId) {
+                const option = document.createElement('option');
+                option.value = agente.id;
+                option.textContent = `${agente.nome} (${agente.nivel_experiencia}) - ${agente.chamados_ativos}/${agente.max_chamados}`;
+                select.appendChild(option);
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Erro ao carregar agentes:', error);
+        }
+      }
+
+      configurarEventos() {
+        // Filtros dos meus chamados
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.carregarMeusChamados(e.target.getAttribute('data-filter'));
+          });
+        });
+
+        // Auto-refresh a cada 30 segundos
+        setInterval(() => {
+          this.carregarEstatisticas();
+          this.carregarChamadosDisponiveis();
+        }, 30000);
+      }
+
+      iniciarSocketIO() {
+        const socket = io();
+        
+        socket.on('novo_chamado', (data) => {
+          this.showNotification(`Novo chamado: ${data.codigo}`, 'info');
+          this.carregarEstatisticas();
+          this.carregarChamadosDisponiveis();
+        });
+
+        socket.on('chamado_atualizado', (data) => {
+          this.carregarEstatisticas();
+          this.carregarMeusChamados();
+        });
+
+        socket.on('chamado_atribuido', (data) => {
+          // Se o chamado foi atribuído ao agente atual, mostrar notificação e atualizar
+          if (data.agente_email === '{{ current_user.email }}') {
+            this.showNotification(`Novo chamado atribuído: ${data.codigo}`, 'success');
+            this.carregarEstatisticas();
+            this.carregarChamadosDisponiveis();
+            this.carregarMeusChamados();
+            // Atualizar também a seção ativa se for uma das páginas de chamados
+            const activeSection = document.querySelector('.sidebar nav a.active');
+            if (activeSection) {
+              const sectionId = activeSection.getAttribute('href').substring(1);
+              this.carregarDadosSecao(sectionId);
+            }
+          } else {
+            // Apenas atualizar chamados disponíveis se foi atribuído a outro agente
+            this.carregarChamadosDisponiveis();
+            this.carregarEstatisticas();
+          }
+        });
+
+        socket.on('chamado_transferido', (data) => {
+          // Se o chamado foi transferido para o agente atual
+          if (data.agente_destino_email === '{{ current_user.email }}') {
+            this.showNotification(`Chamado transferido para você: ${data.codigo}`, 'info');
+            this.carregarEstatisticas();
+            this.carregarMeusChamados();
+            // Atualizar seção ativa
+            const activeSection = document.querySelector('.sidebar nav a.active');
+            if (activeSection) {
+              const sectionId = activeSection.getAttribute('href').substring(1);
+              this.carregarDadosSecao(sectionId);
+            }
+          }
+          // Se o chamado foi transferido do agente atual para outro
+          else if (data.agente_origem_email === '{{ current_user.email }}') {
+            this.showNotification(`Chamado ${data.codigo} foi transferido para ${data.agente_destino_nome}`, 'info');
+            this.carregarEstatisticas();
+            this.carregarMeusChamados();
+            // Atualizar seção ativa
+            const activeSection = document.querySelector('.sidebar nav a.active');
+            if (activeSection) {
+              const sectionId = activeSection.getAttribute('href').substring(1);
+              this.carregarDadosSecao(sectionId);
+            }
+          }
+        });
+      }
+
+      getPrioridadeClass(prioridade) {
+        const classes = {
+          'Crítica': 'danger',
+          'Alta': 'warning',
+          'Normal': 'info',
+          'Baixa': 'secondary'
+        };
+        return classes[prioridade] || 'secondary';
+      }
+
+      getStatusClass(status) {
+        const classes = {
+          'Aberto': 'primary',
+          'Aguardando': 'warning',
+          'Concluido': 'success',
+          'Cancelado': 'danger'
+        };
+        return classes[status] || 'secondary';
+      }
+
+      showNotification(message, type, duration = 5000) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade`;
+        notification.style.cssText = `
+          transform: translateX(100%);
+          opacity: 0;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        `;
+        notification.innerHTML = `
+          <i class="fas fa-${this.getNotificationIcon(type)} me-2"></i>
+          ${message}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        const container = document.getElementById('notificationContainer');
+        container.appendChild(notification);
+
+        // Animar entrada
+        setTimeout(() => {
+          notification.classList.add('show');
+          notification.style.transform = 'translateX(0)';
+          notification.style.opacity = '1';
+        }, 100);
+
+        // Auto-remover após duração especificada (padrão 5 segundos)
+        setTimeout(() => {
+          this.hideNotification(notification);
+        }, duration);
+
+        // Evento de fechar manual
+        const closeBtn = notification.querySelector('.btn-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            this.hideNotification(notification);
+          });
+        }
+      }
+
+      hideNotification(notification) {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 400);
+      }
+
+      getNotificationIcon(type) {
+        const icons = {
+          'success': 'check-circle',
+          'error': 'exclamation-triangle',
+          'warning': 'exclamation-triangle',
+          'info': 'info-circle',
+          'danger': 'exclamation-triangle'
+        };
+        return icons[type] || 'info-circle';
+      }
+      
+      renderizarChamadosDisponiveisPage(chamados) {
+        const tbody = document.getElementById('tabelaChamadosDisponiveisPage');
+        const count = document.getElementById('countDisponiveisPage');
+        
+        count.textContent = chamados.length;
+        
+        if (chamados.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum chamado disponível</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = chamados.map(chamado => `
+          <tr>
+            <td><span class="badge bg-primary">${chamado.codigo}</span></td>
+            <td><span class="badge bg-secondary">${chamado.protocolo}</span></td>
+            <td>${chamado.solicitante}</td>
+            <td>${chamado.problema}</td>
+            <td><span class="badge bg-${this.getPrioridadeClass(chamado.prioridade)}">${chamado.prioridade}</span></td>
+            <td>${chamado.data_abertura}</td>
+            <td>
+              <div class="text-truncate" style="max-width: 200px;" title="${chamado.descricao || 'Sem descrição'}">
+                ${chamado.descricao || 'Sem descrição'}
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-success me-1" onclick="painelAgente.atribuirChamado(${chamado.id})" title="Atribuir a mim">
+                <i class="fas fa-user-plus"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-info me-1" onclick="painelAgente.verDetalhes(${chamado.id})" title="Ver detalhes">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-success" onclick="painelAgente.abrirModalEnviarEmail(${chamado.id})" title="Enviar por e-mail">
+                <i class="fas fa-envelope"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      
+      renderizarMeusChamadosPage(chamados, filtro) {
+        let tbody, count;
+        
+        switch(filtro) {
+          case 'ativos':
+            tbody = document.getElementById('tabelaMeusChamadosAtivosPage');
+            count = document.getElementById('countAtivosPage');
+            break;
+          case 'aguardando':
+            tbody = document.getElementById('tabelaMeusChamadosAguardandoPage');
+            count = document.getElementById('countAguardandoPage');
+            break;
+          case 'concluidos':
+            tbody = document.getElementById('tabelaMeusChamadosConcluidosPage');
+            count = document.getElementById('countConcluidosPage');
+            break;
+          case 'cancelados':
+            tbody = document.getElementById('tabelaMeusChamadosCanceladosPage');
+            count = document.getElementById('countCanceladosPage');
+            break;
+        }
+        
+        if (!tbody || !count) return;
+        
+        count.textContent = chamados.length;
+        
+        if (chamados.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum chamado encontrado</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = chamados.map(chamado => `
+          <tr>
+            <td><span class="badge bg-primary">${chamado.codigo}</span></td>
+            <td><span class="badge bg-secondary">${chamado.protocolo || 'N/A'}</span></td>
+            <td>${chamado.solicitante}</td>
+            <td>${chamado.problema}</td>
+            <td><span class="badge bg-${this.getStatusClass(chamado.status)}">${chamado.status}</span></td>
+            <td><span class="badge bg-${this.getPrioridadeClass(chamado.prioridade)}">${chamado.prioridade}</span></td>
+            <td>${chamado.data_atribuicao || chamado.data_conclusao || 'N/A'}</td>
+            <td>
+              <button class="btn btn-sm btn-primary me-1" onclick="painelAgente.verDetalhes(${chamado.id})" title="Gerenciar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-success" onclick="painelAgente.abrirModalEnviarEmail(${chamado.id})" title="Enviar por e-mail">
+                <i class="fas fa-envelope"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      
+      renderizarEstatisticasDetalhadas(stats) {
+        document.getElementById('estatTotalAtendidos').textContent = stats.total_atendidos || 0;
+        document.getElementById('estatTempoMedio').textContent = stats.tempo_medio || '0h';
+        document.getElementById('estatAtendimentosHoje').textContent = stats.atendimentos_hoje || 0;
+        document.getElementById('estatAvaliacaoMedia').textContent = stats.avaliacao_media || '5.0';
+      }
+      
+      preencherPerfilAgente(perfil) {
+        document.getElementById('perfilNome').value = perfil.nome || '';
+        document.getElementById('perfilEmail').value = perfil.email || '';
+        document.getElementById('perfilTelefone').value = perfil.telefone || '';
+        document.getElementById('perfilEspecialidades').value = perfil.especialidades || '';
+        document.getElementById('perfilNivelExperiencia').value = perfil.nivel_experiencia || 'junior';
+        document.getElementById('perfilMaxChamados').value = perfil.max_chamados || 10;
+        document.getElementById('perfilNotificacoes').checked = perfil.notificacoes || false;
+        document.getElementById('perfilAutoAtribuicao').checked = perfil.auto_atribuicao || false;
+      }
+      
+      async atualizarChamado() {
+        if (!this.chamadoAtual) return;
+        
+        const novoStatus = document.getElementById('modalStatus').value;
+        const observacoes = document.getElementById('modalObservacoes').value;
+        
+        try {
+          const response = await fetch(`/ti/painel/api/chamados/${this.chamadoAtual.id}/atualizar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              status: novoStatus,
+              observacoes: observacoes
+            })
+          });
+          
+          if (response.ok) {
+            this.showNotification('Chamado atualizado com sucesso!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('modalChamado')).hide();
+            // Recarregar dados
+            this.carregarEstatisticas();
+            this.carregarDadosSecao(document.querySelector('.sidebar nav a.active').getAttribute('href').substring(1));
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || 'Erro ao atualizar chamado', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao atualizar chamado:', error);
+          this.showNotification('Erro ao atualizar chamado', 'error');
+        }
+      }
+      
+      async transferirChamado() {
+        if (!this.chamadoAtual) return;
+        
+        const agenteDestinoId = document.getElementById('modalTransferirPara').value;
+        const observacoes = document.getElementById('modalObservacoes').value;
+        
+        if (!agenteDestinoId) {
+          this.showNotification('Selecione um agente para transferência', 'warning');
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/ti/painel/api/chamados/${this.chamadoAtual.id}/transferir`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              agente_destino_id: agenteDestinoId,
+              observacoes: observacoes
+            })
+          });
+          
+          if (response.ok) {
+            this.showNotification('Chamado transferido com sucesso!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('modalChamado')).hide();
+            // Recarregar dados
+            this.carregarEstatisticas();
+            this.carregarDadosSecao(document.querySelector('.sidebar nav a.active').getAttribute('href').substring(1));
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || 'Erro ao transferir chamado', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao transferir chamado:', error);
+          this.showNotification('Erro ao transferir chamado', 'error');
+        }
+      }
+
+      // === GERENCIAMENTO DE USUÁRIOS ===
+
+      async buscarUsuarios(busca = '') {
+        try {
+          // Mostrar indicador de loading
+          this.mostrarLoadingUsuarios();
+
+          const params = new URLSearchParams();
+          if (busca) params.append('busca', busca);
+          params.append('page', this.currentPage);
+          params.append('per_page', this.perPage);
+
+          const response = await fetch(`/ti/painel/api/usuarios?${params}`);
+          if (response.ok) {
+            const data = await response.json();
+            this.currentData = data;
+            this.renderizarUsuarios(data.usuarios || []);
+            this.atualizarContadorUsuarios(data.total || 0);
+            this.atualizarPaginacao(data);
+            this.atualizarInfoResultados(data);
+          } else {
+            console.error('Erro ao buscar usuários:', response.status);
+            this.showNotification('Erro ao carregar usuários', 'error');
+            this.renderizarUsuariosVazio();
+          }
+        } catch (error) {
+          console.error('Erro ao buscar usuários:', error);
+          this.showNotification('Erro ao carregar usuários', 'error');
+          this.renderizarUsuariosVazio();
+        }
+      }
+
+      mostrarLoadingUsuarios() {
+        const tbody = document.getElementById('tabelaUsuarios');
+        const gradeElement = document.getElementById('gradeUsuarios');
+        const cardsElement = document.getElementById('cardsUsuarios');
+
+        const loadingHtml = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin me-2"></i>Carregando usuários...</div>';
+
+        if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center">${loadingHtml}</td></tr>`;
+        if (gradeElement) gradeElement.innerHTML = `<div class="col-12">${loadingHtml}</div>`;
+        if (cardsElement) cardsElement.innerHTML = `<div class="col-12">${loadingHtml}</div>`;
+
+        // Ocultar paginação durante loading
+        const paginacao = document.getElementById('paginacaoUsuarios');
+        if (paginacao) paginacao.style.display = 'none';
+      }
+
+      alterarVisualizacao(modo) {
+        this.viewMode = modo;
+
+        // Atualizar botões ativos
+        document.querySelectorAll('.btn-group button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`view${modo.charAt(0).toUpperCase() + modo.slice(1)}`).classList.add('active');
+
+        // Mostrar/ocultar visualizações
+        document.querySelectorAll('.view-mode').forEach(view => view.style.display = 'none');
+
+        if (this.currentData) {
+          this.renderizarUsuarios(this.currentData.usuarios || []);
+        }
+      }
+
+      alterarItensPorPagina() {
+        this.perPage = parseInt(document.getElementById('itensPorPagina').value);
+        this.currentPage = 1;
+        this.buscarUsuarios(document.getElementById('buscaUsuario').value);
+      }
+
+      irParaPagina(pagina) {
+        if (pagina >= 1 && pagina <= this.totalPages) {
+          this.currentPage = pagina;
+          this.buscarUsuarios(document.getElementById('buscaUsuario').value);
+        }
+      }
+
+      atualizarInfoResultados(data) {
+        const infoElement = document.getElementById('infoResultados');
+        if (infoElement && data.total > 0) {
+          const inicio = (data.current_page - 1) * data.per_page + 1;
+          const fim = Math.min(data.current_page * data.per_page, data.total);
+          infoElement.textContent = `Exibindo ${inicio} - ${fim} de ${data.total} usuários`;
+        }
+      }
+
+      atualizarPaginacao(data) {
+        const paginacao = document.getElementById('paginacaoUsuarios');
+        const lista = document.getElementById('paginacaoLista');
+
+        this.totalPages = data.pages || 1;
+
+        if (data.total <= data.per_page) {
+          paginacao.style.display = 'none';
+          return;
+        }
+
+        paginacao.style.display = 'block';
+        lista.innerHTML = '';
+
+        // Botão anterior
+        lista.innerHTML += `
+          <li class="page-item ${!data.has_prev ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="painelAgente.irParaPagina(${data.current_page - 1})" ${!data.has_prev ? 'aria-disabled="true"' : ''}>
+              <i class="fas fa-chevron-left"></i>
+            </a>
+          </li>
+        `;
+
+        // Números das páginas
+        const startPage = Math.max(1, data.current_page - 2);
+        const endPage = Math.min(data.pages, data.current_page + 2);
+
+        if (startPage > 1) {
+          lista.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="painelAgente.irParaPagina(1)">1</a></li>`;
+          if (startPage > 2) {
+            lista.innerHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+          }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+          lista.innerHTML += `
+            <li class="page-item ${i === data.current_page ? 'active' : ''}">
+              <a class="page-link" href="#" onclick="painelAgente.irParaPagina(${i})">${i}</a>
+            </li>
+          `;
+        }
+
+        if (endPage < data.pages) {
+          if (endPage < data.pages - 1) {
+            lista.innerHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+          }
+          lista.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="painelAgente.irParaPagina(${data.pages})">${data.pages}</a></li>`;
+        }
+
+        // Botão próximo
+        lista.innerHTML += `
+          <li class="page-item ${!data.has_next ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="painelAgente.irParaPagina(${data.current_page + 1})" ${!data.has_next ? 'aria-disabled="true"' : ''}>
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          </li>
+        `;
+      }
+
+      renderizarUsuarios(usuarios) {
+        // Mostrar visualização correspondente
+        document.querySelectorAll('.view-mode').forEach(view => view.style.display = 'none');
+
+        if (!usuarios || usuarios.length === 0) {
+          this.renderizarUsuariosVazio();
+          return;
+        }
+
+        switch(this.viewMode) {
+          case 'lista':
+            this.renderizarUsuariosLista(usuarios);
+            document.getElementById('visualizacaoLista').style.display = 'block';
+            break;
+          case 'grade':
+            this.renderizarUsuariosGrade(usuarios);
+            document.getElementById('visualizacaoGrade').style.display = 'block';
+            break;
+          case 'cards':
+            this.renderizarUsuariosCards(usuarios);
+            document.getElementById('visualizacaoCards').style.display = 'block';
+            break;
+        }
+      }
+
+      renderizarUsuariosVazio() {
+        const tbody = document.getElementById('tabelaUsuarios');
+        const gradeElement = document.getElementById('gradeUsuarios');
+        const cardsElement = document.getElementById('cardsUsuarios');
+
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum usuário encontrado</td></tr>';
+        if (gradeElement) gradeElement.innerHTML = '<div class="col-12 text-center text-muted">Nenhum usuário encontrado</div>';
+        if (cardsElement) cardsElement.innerHTML = '<div class="col-12 text-center text-muted">Nenhum usuário encontrado</div>';
+
+        document.getElementById('visualizacaoLista').style.display = 'block';
+      }
+
+      renderizarUsuariosLista(usuarios) {
+        const tbody = document.getElementById('tabelaUsuarios');
+        if (!tbody) return;
+
+        tbody.innerHTML = usuarios.map(usuario => `
+          <tr>
+            <td>${usuario.nome} ${usuario.sobrenome}</td>
+            <td>${usuario.email}</td>
+            <td>${usuario.usuario}</td>
+            <td><span class="badge bg-info">${usuario.nivel_acesso}</span></td>
+            <td>
+              <span class="badge bg-${usuario.bloqueado ? 'danger' : 'success'}">
+                ${usuario.bloqueado ? 'Bloqueado' : 'Ativo'}
+              </span>
+            </td>
+            <td>
+              ${this.gerarBotoesAcao(usuario)}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      renderizarUsuariosGrade(usuarios) {
+        const gradeElement = document.getElementById('gradeUsuarios');
+        if (!gradeElement) return;
+
+        gradeElement.innerHTML = usuarios.map(usuario => `
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card bg-dark border-secondary h-100">
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                    <i class="fas fa-user text-white"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="card-title mb-0">${usuario.nome} ${usuario.sobrenome}</h6>
+                    <small class="text-muted">${usuario.usuario}</small>
+                  </div>
+                </div>
+
+                <div class="mb-2">
+                  <small class="text-muted d-block"><i class="fas fa-envelope me-1"></i>${usuario.email}</small>
+                  <span class="badge bg-info me-1">${usuario.nivel_acesso}</span>
+                  <span class="badge bg-${usuario.bloqueado ? 'danger' : 'success'}">${usuario.bloqueado ? 'Bloqueado' : 'Ativo'}</span>
+                </div>
+
+                <div class="mt-auto">
+                  ${this.gerarBotoesAcao(usuario)}
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      renderizarUsuariosCards(usuarios) {
+        const cardsElement = document.getElementById('cardsUsuarios');
+        if (!cardsElement) return;
+
+        cardsElement.innerHTML = usuarios.map(usuario => `
+          <div class="col-12 mb-3">
+            <div class="card bg-dark border-secondary">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                      <i class="fas fa-user text-white fs-5"></i>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <h5 class="card-title mb-1">${usuario.nome} ${usuario.sobrenome}</h5>
+                    <p class="card-text mb-1">
+                      <i class="fas fa-envelope me-2 text-muted"></i>${usuario.email}<br>
+                      <i class="fas fa-user me-2 text-muted"></i>${usuario.usuario}
+                    </p>
+                    <div>
+                      <span class="badge bg-info me-2">${usuario.nivel_acesso}</span>
+                      <span class="badge bg-${usuario.bloqueado ? 'danger' : 'success'}">${usuario.bloqueado ? 'Bloqueado' : 'Ativo'}</span>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    ${this.gerarBotoesAcao(usuario)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      gerarBotoesAcao(usuario) {
+        return `
+          <button class="btn btn-sm btn-primary me-1" onclick="painelAgente.editarUsuario(${usuario.id})" title="Editar">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-warning me-1" onclick="painelAgente.resetarSenhaUsuario(${usuario.id})" title="Resetar senha">
+            <i class="fas fa-key"></i>
+          </button>
+          <button class="btn btn-sm btn-${usuario.bloqueado ? 'success' : 'danger'}" onclick="painelAgente.alternarBloqueioUsuario(${usuario.id}, ${!usuario.bloqueado})" title="${usuario.bloqueado ? 'Desbloquear' : 'Bloquear'}">
+            <i class="fas fa-${usuario.bloqueado ? 'unlock' : 'lock'}"></i>
+          </button>
+        `;
+      }
+
+      buscarUsuariosComDelay() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.resetarPaginacao();
+          this.buscarUsuarios(document.getElementById('buscaUsuario').value);
+        }, 300);
+      }
+
+      resetarPaginacao() {
+        this.currentPage = 1;
+      }
+
+      atualizarContadorUsuarios(total) {
+        const totalElement = document.getElementById('totalUsuarios');
+        if (totalElement) {
+          totalElement.textContent = total;
+        }
+      }
+
+      editarUsuario(userId) {
+        // Implementar edição de usuário
+        this.showNotification('Funcionalidade de edição em desenvolvimento', 'info');
+      }
+
+      resetarSenhaUsuario(userId) {
+        // Implementar reset de senha
+        this.showNotification('Funcionalidade de reset de senha em desenvolvimento', 'info');
+      }
+
+      alternarBloqueioUsuario(userId, bloquear) {
+        // Implementar bloqueio/desbloqueio
+        this.showNotification(`Funcionalidade de ${bloquear ? 'bloqueio' : 'desbloqueio'} em desenvolvimento`, 'info');
+      }
+
+      abrirModalNovoUsuario() {
+        // Implementar criação de usuário
+        this.showNotification('Funcionalidade de criação de usuário em desenvolvimento', 'info');
+      }
+
+      // === SISTEMA DE NOTIFICAÇÕES ===
+
+      async carregarNotificacoes() {
+        try {
+          const response = await fetch('/ti/painel/api/agente/notificacoes?nao_lidas=true&limite=10');
+          if (response.ok) {
+            const notificacoes = await response.json();
+            this.notificacoesNaoLidas = notificacoes.length;
+            this.atualizarContadorNotificacoes();
+            this.renderizarNotificacoes(notificacoes);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar notifica��ões:', error);
+        }
+      }
+
+      atualizarContadorNotificacoes() {
+        // Criar badge de notificações se não existir
+        let badge = document.querySelector('.notification-badge');
+        if (!badge && this.notificacoesNaoLidas > 0) {
+          badge = document.createElement('span');
+          badge.className = 'notification-badge';
+          badge.style.cssText = `
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            min-width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+          `;
+
+          // Adicionar ao ícone de notificações (assumindo que há um)
+          const notificationIcon = document.querySelector('.notification-icon');
+          if (notificationIcon) {
+            notificationIcon.style.position = 'relative';
+            notificationIcon.appendChild(badge);
+          }
+        }
+
+        if (badge) {
+          if (this.notificacoesNaoLidas > 0) {
+            badge.textContent = this.notificacoesNaoLidas > 99 ? '99+' : this.notificacoesNaoLidas;
+            badge.style.display = 'flex';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      }
+
+      renderizarNotificacoes(notificacoes) {
+        // Criar container de notificações se não existir
+        let container = document.getElementById('notificacoes-container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'notificacoes-container';
+          container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 350px;
+          `;
+          document.body.appendChild(container);
+        }
+
+        // Renderizar notificações recentes
+        notificacoes.slice(0, 3).forEach(notif => {
+          if (notif.exibir_popup) {
+            this.exibirNotificacaoPopup(notif);
+          }
+        });
+      }
+
+      exibirNotificacaoPopup(notificacao) {
+        const popup = document.createElement('div');
+        popup.className = `alert alert-${this.getTipoNotificacao(notificacao.tipo)} alert-dismissible fade show mb-2`;
+        popup.style.cssText = `
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          border-left: 4px solid ${this.getCorNotificacao(notificacao.prioridade)};
+        `;
+
+        popup.innerHTML = `
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <strong>${notificacao.titulo}</strong>
+              <div class="small">${notificacao.mensagem}</div>
+              <div class="text-muted small">${notificacao.data_criacao}</div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.parentElement.remove()"></button>
+          </div>
+        `;
+
+        const container = document.getElementById('notificacoes-container');
+        container.appendChild(popup);
+
+        // Som de notificação desabilitado devido a CSP
+        // if (notificacao.som_ativo) {
+        //   this.notificacaoSound.play().catch(() => {});
+        // }
+
+        // Auto-remover após 8 segundos
+        setTimeout(() => {
+          if (popup.parentNode) {
+            popup.remove();
+          }
+        }, 8000);
+
+        // Marcar como lida após exibir
+        setTimeout(() => {
+          this.marcarNotificacaoLida(notificacao.id);
+        }, 2000);
+      }
+
+      getTipoNotificacao(tipo) {
+        const tipos = {
+          'chamado_atribuido': 'info',
+          'chamado_transferido': 'warning',
+          'sistema': 'secondary',
+          'urgente': 'danger'
+        };
+        return tipos[tipo] || 'info';
+      }
+
+      getCorNotificacao(prioridade) {
+        const cores = {
+          'alta': '#dc3545',
+          'normal': '#0d6efd',
+          'baixa': '#198754'
+        };
+        return cores[prioridade] || '#0d6efd';
+      }
+
+      async marcarNotificacaoLida(notificacaoId) {
+        try {
+          await fetch(`/ti/painel/api/agente/notificacoes/${notificacaoId}/marcar-lida`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+          this.notificacoesNaoLidas = Math.max(0, this.notificacoesNaoLidas - 1);
+          this.atualizarContadorNotificacoes();
+        } catch (error) {
+          console.error('Erro ao marcar notificação como lida:', error);
+        }
+      }
+
+      iniciarVerificacaoNotificacoes() {
+        // Verificar novas notificações a cada 30 segundos
+        setInterval(async () => {
+          await this.carregarNotificacoes();
+        }, 30000);
+      }
+
+      async filtrarHistorico() {
+        const dataInicio = document.getElementById('filtroDataInicio').value;
+        const dataFim = document.getElementById('filtroDataFim').value;
+        const status = document.getElementById('filtroStatus').value;
+
+        try {
+          let url = '/ti/painel/api/agente/historico?limite=100';
+
+          if (dataInicio) url += `&data_inicio=${dataInicio}`;
+          if (dataFim) url += `&data_fim=${dataFim}`;
+          if (status && status !== 'Todos') url += `&status=${status}`;
+
+          const response = await fetch(url);
+          if (response.ok) {
+            const historico = await response.json();
+            this.renderizarHistorico(historico);
+          } else {
+            this.showNotification('Erro ao filtrar histórico', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao filtrar histórico:', error);
+          this.showNotification('Erro ao filtrar histórico', 'error');
+        }
+      }
+
+      renderizarHistorico(historico) {
+        const tbody = document.getElementById('tabelaHistoricoAgente');
+
+        if (historico.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum registro encontrado</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = historico.map(item => `
+          <tr>
+            <td>${item.chamado.codigo}</td>
+            <td>${item.chamado.solicitante}</td>
+            <td>${item.chamado.problema}</td>
+            <td>
+              <span class="badge bg-${this.getStatusColor(item.status_final)}">${item.status_final}</span>
+            </td>
+            <td>${item.data_atribuicao}</td>
+            <td>${item.data_conclusao || '-'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-info" onclick="painelAgente.verDetalhes(${item.chamado.id})">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      getStatusColor(status) {
+        const cores = {
+          'Concluido': 'success',
+          'Cancelado': 'secondary',
+          'Em Andamento': 'primary',
+          'Aguardando': 'warning'
+        };
+        return cores[status] || 'secondary';
+      }
+
+      async carregarNotificacoesCompletas() {
+        try {
+          const response = await fetch('/ti/painel/api/agente/notificacoes?limite=50');
+          if (response.ok) {
+            const notificacoes = await response.json();
+            this.renderizarListaNotificacoes(notificacoes);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar notificações completas:', error);
+        }
+      }
+
+      renderizarListaNotificacoes(notificacoes) {
+        const container = document.getElementById('listaNotificacoes');
+
+        if (notificacoes.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-4">
+              <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+              <p class="text-muted">Nenhuma notificação encontrada</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = notificacoes.map(notif => `
+          <div class="card mb-2 ${notif.lida ? 'border-secondary' : 'border-primary'}" style="opacity: ${notif.lida ? '0.7' : '1'}">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h6 class="card-title mb-1 ${notif.lida ? 'text-muted' : 'text-white'}">
+                    ${notif.titulo}
+                    ${!notif.lida ? '<span class="badge bg-primary ms-2">Novo</span>' : ''}
+                  </h6>
+                  <p class="card-text small ${notif.lida ? 'text-muted' : 'text-light'}">${notif.mensagem}</p>
+                  <div class="d-flex align-items-center">
+                    <small class="text-muted me-3">
+                      <i class="fas fa-clock me-1"></i>${notif.data_criacao}
+                    </small>
+                    <span class="badge bg-${this.getTipoNotificacao(notif.tipo)} me-2">${notif.tipo.replace('_', ' ')}</span>
+                    <span class="badge bg-${notif.prioridade === 'alta' ? 'danger' : notif.prioridade === 'normal' ? 'info' : 'success'}">${notif.prioridade}</span>
+                  </div>
+                </div>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-dark">
+                    ${!notif.lida ? `<li><a class="dropdown-item" href="#" onclick="painelAgente.marcarNotificacaoLida(${notif.id})"><i class="fas fa-check me-2"></i>Marcar como Lida</a></li>` : ''}
+                    ${notif.chamado ? `<li><a class="dropdown-item" href="#" onclick="painelAgente.verDetalhes(${notif.chamado.id})"><i class="fas fa-eye me-2"></i>Ver Chamado</a></li>` : ''}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      async marcarTodasNotificacoesLidas() {
+        try {
+          const response = await fetch('/ti/painel/api/agente/notificacoes/marcar-todas-lidas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+
+          if (response.ok) {
+            this.notificacoesNaoLidas = 0;
+            this.atualizarContadorNotificacoes();
+            this.carregarNotificacoesCompletas();
+            this.showNotification('Todas as notificações foram marcadas como lidas', 'success');
+          }
+        } catch (error) {
+          console.error('Erro ao marcar todas as notificações como lidas:', error);
+          this.showNotification('Erro ao marcar notificações como lidas', 'error');
+        }
+      }
+
+      carregarHistoricoInicial() {
+        // Definir datas padrão (último mês)
+        const hoje = new Date();
+        const mesPassado = new Date();
+        mesPassado.setMonth(hoje.getMonth() - 1);
+
+        document.getElementById('filtroDataInicio').value = mesPassado.toISOString().split('T')[0];
+        document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
+        document.getElementById('filtroStatus').value = '';
+
+        // Carregar histórico automaticamente com filtros padrão
+        this.filtrarHistorico();
+      }
+
+      // ========== GERENCIAMENTO DE USUÁRIOS ==========
+
+      async buscarUsuarios() {
+        try {
+          const busca = document.getElementById('buscaUsuario').value.trim();
+          const url = busca ? `/ti/painel/api/usuarios?busca=${encodeURIComponent(busca)}&per_page=20` : '/ti/painel/api/usuarios?per_page=20';
+
+          const response = await fetch(url);
+          if (response.ok) {
+            const data = await response.json();
+            this.renderizarUsuarios(data.usuarios || []);
+            document.getElementById('totalUsuarios').textContent = data.pagination?.total || data.usuarios?.length || 0;
+          } else {
+            this.showNotification('Erro ao buscar usuários', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao buscar usuários:', error);
+          this.showNotification('Erro ao buscar usuários', 'error');
+        }
+      }
+
+      renderizarUsuarios(usuarios) {
+        const tbody = document.getElementById('tabelaUsuarios');
+
+        if (usuarios.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum usuário encontrado</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = usuarios.map(user => `
+          <tr>
+            <td>${user.nome} ${user.sobrenome}</td>
+            <td>${user.email}</td>
+            <td>${user.usuario}</td>
+            <td><span class="badge bg-info">${user.nivel_acesso}</span></td>
+            <td>
+              <span class="badge bg-${user.bloqueado ? 'danger' : 'success'}">
+                ${user.bloqueado ? 'Bloqueado' : 'Ativo'}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary me-1" onclick="painelAgente.editarUsuario(${user.id})" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-warning me-1" onclick="painelAgente.resetarSenhaUsuario(${user.id})" title="Resetar senha">
+                <i class="fas fa-key"></i>
+              </button>
+              <button class="btn btn-sm btn-${user.bloqueado ? 'success' : 'danger'}" onclick="painelAgente.toggleBloqueioUsuario(${user.id})" title="${user.bloqueado ? 'Desbloquear' : 'Bloquear'}">
+                <i class="fas fa-${user.bloqueado ? 'unlock' : 'lock'}"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      abrirModalNovoUsuario() {
+        // Limpar formulário
+        document.getElementById('formGerenciarUsuario').reset();
+        document.getElementById('usuarioId').value = '';
+        document.getElementById('modalGerenciarUsuarioTitle').textContent = 'Novo Usuário';
+        document.getElementById('novaSenhaSection').style.display = 'block';
+        document.getElementById('btnResetarSenha').style.display = 'none';
+        document.getElementById('usuarioSenha').required = true;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalGerenciarUsuario'));
+        modal.show();
+      }
+
+      async editarUsuario(userId) {
+        try {
+          const response = await fetch(`/ti/painel/api/usuarios/${userId}`);
+          if (response.ok) {
+            const user = await response.json();
+
+            // Preencher formul��rio
+            document.getElementById('usuarioId').value = user.id;
+            document.getElementById('usuarioNome').value = user.nome;
+            document.getElementById('usuarioSobrenome').value = user.sobrenome;
+            document.getElementById('usuarioEmail').value = user.email;
+            document.getElementById('usuarioUsuario').value = user.usuario;
+            document.getElementById('usuarioNivelAcesso').value = user.nivel_acesso;
+            document.getElementById('usuarioSetores').value = user.setores || user.setor;
+            document.getElementById('usuarioBloqueado').checked = user.bloqueado;
+
+            document.getElementById('modalGerenciarUsuarioTitle').textContent = 'Editar Usuário';
+            document.getElementById('novaSenhaSection').style.display = 'block';
+            document.getElementById('btnResetarSenha').style.display = 'inline-block';
+            document.getElementById('usuarioSenha').required = false;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalGerenciarUsuario'));
+            modal.show();
+          } else {
+            this.showNotification('Erro ao carregar dados do usuário', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao carregar usuário:', error);
+          this.showNotification('Erro ao carregar dados do usuário', 'error');
+        }
+      }
+
+      async salvarUsuario() {
+        try {
+          const userId = document.getElementById('usuarioId').value;
+          const isEdit = userId !== '';
+
+          const userData = {
+            nome: document.getElementById('usuarioNome').value,
+            sobrenome: document.getElementById('usuarioSobrenome').value,
+            email: document.getElementById('usuarioEmail').value,
+            usuario: document.getElementById('usuarioUsuario').value,
+            nivel_acesso: document.getElementById('usuarioNivelAcesso').value,
+            setores: document.getElementById('usuarioSetores').value,
+            bloqueado: document.getElementById('usuarioBloqueado').checked
+          };
+
+          if (!isEdit) {
+            userData.senha = document.getElementById('usuarioSenha').value;
+            if (!userData.senha) {
+              this.showNotification('Senha é obrigatória para novos usuários', 'warning');
+              return;
+            }
+          } else if (document.getElementById('usuarioSenha').value) {
+            userData.senha = document.getElementById('usuarioSenha').value;
+          }
+
+          const url = isEdit ? `/ti/painel/api/usuarios/${userId}` : '/ti/painel/api/usuarios';
+          const method = isEdit ? 'PUT' : 'POST';
+
+          const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+          });
+
+          if (response.ok) {
+            this.showNotification(`Usuário ${isEdit ? 'atualizado' : 'criado'} com sucesso!`, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('modalGerenciarUsuario')).hide();
+            this.buscarUsuarios(); // Recarregar lista
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || `Erro ao ${isEdit ? 'atualizar' : 'criar'} usuário`, 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao salvar usuário:', error);
+          this.showNotification('Erro ao salvar usuário', 'error');
+        }
+      }
+
+      async resetarSenhaUsuario(userId = null) {
+        try {
+          const id = userId || document.getElementById('usuarioId').value;
+          if (!id) {
+            this.showNotification('ID do usuário não encontrado', 'error');
+            return;
+          }
+
+          const response = await fetch(`/ti/painel/api/usuarios/${id}/gerar-senha`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+
+            // Mostrar modal com a senha gerada
+            mostrarModalSenha(data.nova_senha);
+
+            // Mostrar notificação por 5 segundos
+            this.showNotification(`Nova senha gerada com sucesso! Verifique o modal para copiar.`, 'success', 5000);
+
+            // Se estiver no modal de edição, mostrar a nova senha também
+            if (!userId) {
+              if (document.getElementById('senhaGerada')) {
+                document.getElementById('senhaGerada').textContent = data.nova_senha;
+              }
+              if (document.getElementById('usuarioSenha')) {
+                document.getElementById('usuarioSenha').value = data.nova_senha;
+              }
+            }
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || 'Erro ao resetar senha', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao resetar senha:', error);
+          this.showNotification('Erro ao resetar senha', 'error');
+        }
+      }
+
+      async toggleBloqueioUsuario(userId) {
+        try {
+          const response = await fetch(`/ti/painel/api/usuarios/${userId}/bloquear`, {
+            method: 'PUT'
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            this.showNotification(data.message, 'success');
+            this.buscarUsuarios(); // Recarregar lista
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || 'Erro ao alterar status do usuário', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao alterar status:', error);
+          this.showNotification('Erro ao alterar status do usuário', 'error');
+        }
+      }
+
+      gerarSenhaAleatoria() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+        let senha = '';
+        for (let i = 0; i < 10; i++) {
+          senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        // Preencher campo no formulário
+        document.getElementById('usuarioSenha').value = senha;
+        if (document.getElementById('senhaGerada')) {
+          document.getElementById('senhaGerada').textContent = senha;
+        }
+
+        // Mostrar modal com a senha
+        mostrarModalSenha(senha);
+
+        // Mostrar notificação por 5 segundos
+        this.showNotification(`Senha gerada com sucesso! Verifique o modal para copiar.`, 'success', 5000);
+      }
+
+      // ========== ENVIO DE E-MAIL ==========
+
+      async abrirModalEnviarEmail(chamadoId) {
+        try {
+          // Buscar detalhes do chamado
+          const response = await fetch(`/ti/painel/api/chamados`);
+          if (response.ok) {
+            const chamados = await response.json();
+            const chamado = chamados.find(c => c.id === chamadoId);
+
+            if (!chamado) {
+              this.showNotification('Chamado não encontrado', 'error');
+              return;
+            }
+
+            // Preencher formulário
+            document.getElementById('emailChamadoId').value = chamadoId;
+            document.getElementById('emailDestino').value = chamado.email || '';
+            document.getElementById('emailAssunto').value = `Atualização do Chamado ${chamado.codigo}`;
+
+            // Mensagem padrão
+            const mensagemPadrao = `Olá ${chamado.solicitante},
+
+Estamos entrando em contato sobre o seu chamado ${chamado.codigo}.
+
+Detalhes do chamado:
+- Problema: ${chamado.problema}
+- Prioridade: ${chamado.prioridade}
+- Status: ${chamado.status}
+- Data de abertura: ${chamado.data_abertura}
+
+Em breve entraremos em contato para dar continuidade ao atendimento.
+
+Atenciosamente,
+Equipe de Suporte TI - Evoque Fitness`;
+
+            document.getElementById('emailMensagem').value = mensagemPadrao;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalEnviarEmail'));
+            modal.show();
+          }
+        } catch (error) {
+          console.error('Erro ao carregar dados do chamado:', error);
+          this.showNotification('Erro ao carregar dados do chamado', 'error');
+        }
+      }
+
+      async enviarEmailTicket() {
+        try {
+          const chamadoId = document.getElementById('emailChamadoId').value;
+          const emailData = {
+            destino: document.getElementById('emailDestino').value,
+            assunto: document.getElementById('emailAssunto').value,
+            mensagem: document.getElementById('emailMensagem').value,
+            incluir_detalhes: document.getElementById('incluirDetalhesTicket').checked
+          };
+
+          const response = await fetch(`/ti/painel/api/chamados/${chamadoId}/enviar-email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emailData)
+          });
+
+          if (response.ok) {
+            this.showNotification('E-mail enviado com sucesso!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('modalEnviarEmail')).hide();
+          } else {
+            const error = await response.json();
+            this.showNotification(error.error || 'Erro ao enviar e-mail', 'error');
+          }
+        } catch (error) {
+          console.error('Erro ao enviar e-mail:', error);
+          this.showNotification('Erro ao enviar e-mail', 'error');
+        }
+      }
+
+      abrirModalEnviarEmailFromModal() {
+        if (this.chamadoAtual) {
+          // Fechar modal de detalhes
+          bootstrap.Modal.getInstance(document.getElementById('modalChamado')).hide();
+
+          // Aguardar um pouco para evitar conflito de modais
+          setTimeout(() => {
+            this.abrirModalEnviarEmail(this.chamadoAtual.id);
+          }, 300);
+        }
+      }
+    }
+
+    // Função para testar autenticação
+    async function testarAutenticacao() {
+      try {
+        const response = await fetch('/ti/painel/api/auth/teste');
+        const data = await response.json();
+        if (!data.authenticated) {
+          console.error('Usuário não está autenticado');
+          alert('Sua sessão expirou. Por favor, faça login novamente.');
+          window.location.href = '/login';
+          return false;
+        }
+        console.log('Usuário autenticado:', data);
+        return true;
+      } catch (error) {
+        console.error('Erro ao verificar autenticação:', error);
+        return false;
+      }
+    }
+
+    // DOMContentLoaded removido - inicialização consolidada acima
+  </script>
+</body>
+</html>

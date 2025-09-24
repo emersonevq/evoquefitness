@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - Evoque Fitness</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #FF6200;
+      --secondary-color: #1C2526;
+      --accent-color: #FF914D;
+      --dark-color: #2A2F30;
+      --light-color: #F8F9FA;
+      --text-color: #212529;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--light-color);
+      line-height: 1.6;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    /* Navbar */
+    .navbar {
+      background-color: rgba(28, 37, 38, 0.95) !important;
+      border-bottom: 1.5px solid var(--primary-color); /* Redução de 25% */
+      padding: 11.25px 0; /* Redução de 25% */
+      transition: all 0.3s ease;
+    }
+    
+    .navbar.scrolled {
+      padding: 7.5px 0; /* Redução de 25% */
+      box-shadow: 0 3px 9px rgba(0, 0, 0, 0.15); /* Redução de 25% */
+    }
+    
+    .navbar-brand img {
+      height: 37.5px; /* Redução de 25% */
+      transition: all 0.3s ease;
+    }
+    
+    .navbar.scrolled .navbar-brand img {
+      height: 30px; /* Redução de 25% */
+    }
+    
+    .nav-link {
+      color: var(--light-color) !important;
+      font-weight: 500;
+      margin: 0 6px; /* Redução de 25% */
+      padding: 6px 12px !important; /* Redução de 25% */
+      border-radius: 15px; /* Redução de 25% */
+      transition: all 0.3s ease;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--primary-color);
+      color: white !important;
+      transform: translateY(-1.5px); /* Redução de 25% */
+    }
+    
+    .navbar-toggler {
+      border-color: var(--primary-color);
+    }
+    
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      padding: 90px 0 75px; /* Redução de 25% */
+      text-align: center;
+      overflow: hidden;
+      margin-top: -61.5px; /* Redução de 25% */
+      padding-top: 150px; /* Redução de 25% */
+    }
+    
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://img.freepik.com/premium-vector/green-white-seamless-honeycomb-pattern_713536-278.jpg');
+      background-size: 112.5px; /* Redução de 25% */
+      background-repeat: repeat;
+      opacity: 0.1;
+      filter: hue-rotate(40deg) saturate(2) brightness(0.8);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero-section h1 {
+      font-weight: 700;
+      font-size: 2.625rem; /* Redução de 25% */
+      color: white;
+      text-shadow: 1.5px 1.5px 4.5px rgba(0, 0, 0, 0.5); /* Redução de 25% */
+      margin-bottom: 15px; /* Redução de 25% */
+      letter-spacing: -0.375px; /* Redução de 25% */
+    }
+    
+    .hero-section .lead {
+      font-size: 0.975rem; /* Redução de 25% */
+      max-width: 525px; /* Redução de 25% */
+      margin: 0 auto 22.5px; /* Redução de 25% */
+      text-shadow: 0.75px 0.75px 2.25px rgba(0, 0, 0, 0.3); /* Redução de 25% */
+    }
+    
+    /* Buttons */
+    .btn-hero {
+      background-color: var(--primary-color);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 9px 26.25px; /* Redução de 25% */
+      border-radius: 22.5px; /* Redução de 25% */
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 11.25px rgba(255, 98, 0, 0.4); /* Redução de 25% */
+      position: relative;
+      overflow: hidden;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .btn-hero:hover {
+      background-color: white;
+      color: var(--primary-color);
+      transform: translateY(-2.25px); /* Redução de 25% */
+      box-shadow: 0 4.5px 15px rgba(255, 98, 0, 0.6); /* Redução de 25% */
+    }
+    
+    .btn-hero:active {
+      transform: translateY(0.75px); /* Redução de 25% */
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+      padding: 60px 0; /* Redução de 25% */
+      background-color: var(--secondary-color);
+    }
+    
+    .section-title {
+      font-weight: 700;
+      color: white;
+      margin-bottom: 37.5px; /* Redução de 25% */
+      position: relative;
+      display: inline-block;
+      font-size: 1.125rem; /* Redução de 25% */
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -7.5px; /* Redução de 25% */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px; /* Redução de 25% */
+      height: 2.25px; /* Redução de 25% */
+      background-color: var(--primary-color);
+    }
+    
+    .faq-item {
+      background-color: var(--dark-color);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 9px; /* Redução de 25% */
+      margin-bottom: 15px; /* Redução de 25% */
+      overflow: hidden;
+    }
+    
+    .faq-question {
+      padding: 15px; /* Redução de 25% */
+      background-color: rgba(255, 98, 0, 0.1);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.3s;
+    }
+    
+    .faq-question:hover {
+      background-color: rgba(255, 98, 0, 0.2);
+    }
+    
+    .faq-question h5 {
+      margin: 0;
+      font-size: 0.9375rem; /* Redução de 25% */
+      font-weight: 600;
+    }
+    
+    .faq-answer {
+      padding: 0 15px; /* Redução de 25% */
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+      padding: 15px; /* Redução de 25% */
+      max-height: 1000px; /* Ajuste conforme necessário */
+    }
+    
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+    }
+    
+    .faq-question i {
+      transition: transform 0.3s;
+    }
+    
+    /* Footer */
+    .footer {
+      background-color: var(--dark-color);
+      border-top: 1.5px solid var(--primary-color); /* Redução de 25% */
+      color: white;
+      padding: 22.5px 0; /* Redução de 25% */
+      text-align: center;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .social-icons {
+      margin-bottom: 15px; /* Redução de 25% */
+    }
+    
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; /* Redução de 25% */
+      height: 30px; /* Redução de 25% */
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: 50%;
+      margin: 0 6px; /* Redução de 25% */
+      transition: all 0.3s ease;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .social-icons a:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-2.25px); /* Redução de 25% */
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .hero-section h1 {
+        font-size: 2.1rem; /* Redução de 25% */
+      }
+      
+      .hero-section .lead {
+        font-size: 0.825rem; /* Redução de 25% */
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-section {
+        padding-top: 112.5px; /* Redução de 25% */
+        padding-bottom: 60px; /* Redução de 25% */
+      }
+      
+      .hero-section h1 {
+        font-size: 1.65rem; /* Redução de 25% */
+      }
+      
+      .section-title {
+        margin-bottom: 22.5px; /* Redução de 25% */
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .hero-section {
+        padding-top: 90px; /* Redução de 25% */
+      }
+      
+      .hero-section h1 {
+        font-size: 1.35rem; /* Redução de 25% */
+      }
+      
+      .btn-hero {
+        padding: 7.5px 18.75px; /* Redução de 25% */
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" alt="Evoque Fitness Logo" class="img-fluid">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.index') }}">Início</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('main.faqs') }}">Ajuda</a>
+          </li>
+          
+          <!-- Informações do usuário logado -->
+          {% if current_user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>
+              {{ current_user.nome }} {{ current_user.sobrenome }} ({{ current_user.nivel_acesso }})
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Perfil</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configurações</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
+            </ul>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Central de Ajuda</h1>
+        <p class="lead">Encontre respostas para as dúvidas mais comuns sobre nossos serviços.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="container">
+      <h2 class="text-center section-title">Perguntas Frequentes</h2>
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <!-- FAQ Item 1 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>A catraca parou de funcionar, o que eu faço?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Se a catraca parou de funcionar, verifique os seguintes pontos:</p>
+              <ol>
+                <li>Certifique-se de que a catraca está conectada à energia</li>
+                <li>Verifique se há alguma mensagem de erro no visor</li>
+                <li>Reinicie a catraca desligando e ligando novamente</li>
+                <li>Se o problema persistir, entre em contato com o suporte técnico</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 2 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>Estamos com a internet lenta, o que fazer?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Para melhorar a velocidade da internet:</p>
+              <ol>
+                <li>Reinicie o modem e o roteador</li>
+                <li>Verifique se há muitos dispositivos conectados à rede</li>
+                <li>Teste a velocidade em sites como Speedtest</li>
+                <li>Se a lentidão persistir, contate o suporte de TI</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 3 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>Como posso entrar em contato com o suporte de TI?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Você pode entrar em contato com o suporte de TI das seguintes formas:</p>
+              <ol>
+                <li>Através do e-mail: ti@academiaevoque.com.br</li>
+                <li>Pelo telefone: (XX) XXXX-XXXX</li>
+                <li>Abrindo um chamado no setor de TI do nosso portal</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 4 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>O reconhecimento facial da catraca não está identificando o aluno, o que faço?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Se o reconhecimento facial não está funcionando:</p>
+              <ol>
+                <li>Limpe a lente da câmera com um pano macio</li>
+                <li>Verifique se a iluminação do ambiente está adequada</li>
+                <li>Reinicie a catraca</li>
+                <li>Se o problema persistir, abra um chamado para suporte técnico</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 5 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>As páginas não carregam, o que pode ser?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Se as páginas não estão carregando, verifique:</p>
+              <ol>
+                <li>Sua conexão com a internet</li>
+                <li>Se o problema ocorre em outros sites</li>
+                <li>Tente limpar o cache do navegador</li>
+                <li>Se o problema for específico do nosso portal, contate o suporte</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 6 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>O notebook/desktop da recepção parou de ligar, o que pode ter acontecido?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Se o computador não liga:</p>
+              <ol>
+                <li>Verifique se o cabo de energia está conectado corretamente</li>
+                <li>Teste a tomada com outro aparelho</li>
+                <li>Se for um desktop, verifique se a fonte está ligada</li>
+                <li>Se ainda assim não ligar, pode ser um problema de hardware - contate o suporte</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 7 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>O wifi parou de funcionar ou está lento, como posso melhorar a minha internet?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Para melhorar o sinal Wi-Fi:</p>
+              <ol>
+                <li>Reinicie o roteador</li>
+                <li>Verifique se há interferências (microondas, telefones sem fio)</li>
+                <li>Posicione o roteador em um local central e elevado</li>
+                <li>Se o sinal continuar fraco, considere um repetidor de sinal</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 8 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>O leitor de biometria externo parou de funcionar, tem algo que eu possa fazer?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Se o leitor biométrico externo parou:</p>
+              <ol>
+                <li>Verifique as conexões dos cabos</li>
+                <li>Limpe o sensor com um pano seco e macio</li>
+                <li>Reinicie o equipamento</li>
+                <li>Se não resolver, entre em contato com o suporte técnico</li>
+              </ol>
+            </div>
+          </div>
+          
+          <!-- FAQ Item 9 -->
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <h5>Como entrar em contato com a EVO?</h5>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Você pode entrar em contato com a EVO de várias formas:</p>
+              <ol>
+                <li>Telefone: (XX) XXXX-XXXX</li>
+                <li>E-mail: contato@academiaevoque.com.br</li>
+                <li>Visite uma de nossas unidades</li>
+                <li>Através do formulário de contato em nosso site</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <p class="mb-0">© 2025 Evoque Fitness. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 37.5) { // Redução de 25%
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+    
+    // Toggle FAQ items
+    function toggleFAQ(element) {
+      const faqItem = element.closest('.faq-item');
+      faqItem.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>

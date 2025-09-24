@@ -1,0 +1,778 @@
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Evoque Fitness</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    :root {
+      --primary-color: #FF6200;
+      --secondary-color: #1C2526;
+      --accent-color: #FF914D;
+      --dark-color: #2A2F30;
+      --light-color: #F8F9FA;
+      --text-color: #212529;
+      --scale-factor: 0.85;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-size: calc(1rem * var(--scale-factor));
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--light-color);
+      padding: 0;
+    }
+
+    .login-container {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background-color: var(--dark-color);
+      border: none;
+      border-radius: calc(12px * var(--scale-factor));
+      box-shadow: 0 calc(5px * var(--scale-factor)) calc(15px * var(--scale-factor)) rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: calc(5px * var(--scale-factor));
+      background-color: var(--primary-color);
+    }
+    
+    .card-body {
+      padding: calc(2rem * var(--scale-factor));
+      color: var(--light-color);
+    }
+    
+    .logo {
+      max-height: calc(70px * var(--scale-factor));
+      margin-bottom: calc(1.2rem * var(--scale-factor));
+      width: auto;
+    }
+    
+    h3, h4 {
+      color: var(--light-color);
+      font-weight: 600;
+      font-size: calc(1.25rem * var(--scale-factor));
+    }
+    
+    .form-label {
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 500;
+      font-size: calc(1rem * var(--scale-factor));
+    }
+    
+    .input-group-text {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: calc(1px * var(--scale-factor)) solid rgba(255, 255, 255, 0.2);
+      color: var(--accent-color);
+      font-size: calc(1rem * var(--scale-factor));
+      padding: calc(0.375rem * var(--scale-factor)) calc(0.75rem * var(--scale-factor));
+    }
+    
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: calc(1px * var(--scale-factor)) solid rgba(255, 255, 255, 0.2);
+      color: var(--light-color);
+      padding: calc(0.75rem * var(--scale-factor));
+      font-size: calc(1rem * var(--scale-factor));
+      height: calc(2.5rem * var(--scale-factor));
+    }
+    
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.6) !important;
+      font-size: calc(1rem * var(--scale-factor));
+    }
+    
+    .form-control:focus {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 calc(0.25rem * var(--scale-factor)) rgba(255, 98, 0, 0.25);
+      color: var(--light-color);
+    }
+    
+    .btn {
+      font-size: calc(1rem * var(--scale-factor));
+      padding: calc(0.75rem * var(--scale-factor));
+      border-radius: calc(30px * var(--scale-factor));
+      line-height: 1.5;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 calc(4px * var(--scale-factor)) calc(15px * var(--scale-factor)) rgba(255, 98, 0, 0.4);
+    }
+    
+    .btn-primary:hover {
+      background-color: white;
+      color: var(--primary-color);
+      transform: translateY(calc(-3px * var(--scale-factor)));
+      box-shadow: 0 calc(6px * var(--scale-factor)) calc(20px * var(--scale-factor)) rgba(255, 98, 0, 0.6);
+    }
+    
+    .btn-outline-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--light-color);
+    }
+    
+    .btn-outline-secondary:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+    }
+    
+    .form-check-input {
+      width: calc(1.2em * var(--scale-factor));
+      height: calc(1.2em * var(--scale-factor));
+    }
+    
+    .form-check-label {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: calc(1rem * var(--scale-factor));
+    }
+    
+    .alert {
+      border-radius: calc(8px * var(--scale-factor));
+      font-size: calc(1rem * var(--scale-factor));
+      padding: calc(0.75rem * var(--scale-factor)) calc(1.25rem * var(--scale-factor));
+      /* Correção: Melhor contraste para mensagens */
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      color: white !important;
+    }
+    
+    .alert-success {
+      background-color: rgba(40, 167, 69, 0.2) !important;
+      border: 1px solid rgba(40, 167, 69, 0.3) !important;
+      color: #d4edda !important;
+    }
+    
+    .alert-danger {
+      background-color: rgba(220, 53, 69, 0.2) !important;
+      border: 1px solid rgba(220, 53, 69, 0.3) !important;
+      color: #f8d7da !important;
+    }
+    
+    .additional-text {
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      margin-top: calc(1.5rem * var(--scale-factor));
+      font-size: calc(0.9rem * var(--scale-factor));
+    }
+    
+    .btn-close {
+      width: calc(1em * var(--scale-factor));
+      height: calc(1em * var(--scale-factor));
+      filter: invert(1) !important; /* Ícone branco para melhor contraste */
+    }
+    /* Desktop adjustments: keep full-viewport background but constrain card */
+    @media (min-width: 992px) {
+      body {
+        padding: calc(15px * var(--scale-factor));
+      }
+      .login-container {
+        width: 100%;
+        max-width: calc(520px * var(--scale-factor));
+        height: auto;
+        min-height: 100vh;
+        padding: calc(15px * var(--scale-factor));
+      }
+      .card {
+        height: auto;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="card animate__animated animate__fadeInUp">
+      <div class="card-body">
+        <!-- Logo -->
+        <div class="text-center mb-4">
+          <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" 
+               alt="Evoque Fitness Logo" 
+               class="img-fluid logo">
+          <h3 class="h4 mb-3">Bem vindo, faça login</h3>
+        </div>
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Formulário de Login ou Alteração de Senha -->
+        {% if alterar_senha %}
+          <form method="POST" action="{{ url_for('auth.first_login') }}">
+            <h4 class="mb-4 text-center">Alteração de senha obrigatória</h4>
+            <input type="hidden" name="usuario" value="{{ usuario }}">
+
+            <div class="mb-3">
+              <label for="nova_senha" class="form-label">Nova senha</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('nova_senha', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="confirmar_senha" class="form-label">Confirmar nova senha</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmar_senha', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2">
+              <i class="fas fa-save me-2"></i> Salvar nova senha
+            </button>
+          </form>
+        {% else %}
+          <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="mb-3">
+              <label for="usuario" class="form-label">Usuário</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Digite seu usuário" required>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="senha" class="form-label">Senha</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('senha', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="lembrar" name="lembrar">
+                <label class="form-check-label" for="lembrar">
+                  Lembrar-me
+                </label>
+              </div>
+              <a href="#" class="text-decoration-none" style="color: var(--accent-color);" onclick="abrirModalEsqueceuSenha()">
+                Esqueci minha senha
+              </a>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2">
+              <i class="fas fa-sign-in-alt me-2"></i> Entrar
+            </button>
+          </form>
+          
+          <div class="additional-text">
+            <p>Para suporte técnico, contate: ti@academiaevoque.com.br</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Esqueci Minha Senha -->
+  <div class="modal fade" id="modalEsqueceuSenha" tabindex="-1" aria-labelledby="modalEsqueceuSenhaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background-color: var(--dark-color); border: none;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <h5 class="modal-title" id="modalEsqueceuSenhaLabel" style="color: var(--light-color);">
+            <i class="fas fa-key me-2"></i>Recuperar Senha
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+        </div>
+        <div class="modal-body">
+          <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+            Digite seu usuário ou email para receber um código de recuperação de senha.
+          </p>
+
+          <form id="formEsqueceuSenha">
+            <div class="mb-3">
+              <label for="usuarioEmail" class="form-label">Usuário ou Email</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="usuarioEmail" name="usuario_email" placeholder="Digite seu usuário ou email" required>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary" id="btnEnviarCodigo">
+                <i class="fas fa-paper-plane me-2"></i>Enviar Código
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Validar Código -->
+  <div class="modal fade" id="modalValidarCodigo" tabindex="-1" aria-labelledby="modalValidarCodigoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background-color: var(--dark-color); border: none;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <h5 class="modal-title" id="modalValidarCodigoLabel" style="color: var(--light-color);">
+            <i class="fas fa-shield-alt me-2"></i>Validar Código
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+        </div>
+        <div class="modal-body">
+          <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+            Digite o código de 6 dígitos que foi enviado para seu email.
+          </p>
+
+          <form id="formValidarCodigo">
+            <input type="hidden" id="resetToken" name="token">
+
+            <div class="mb-3">
+              <label for="codigoValidacao" class="form-label">Código de Validação</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                <input type="text" class="form-control text-center" id="codigoValidacao" name="codigo" maxlength="6" placeholder="000000" required style="font-size: 1.2em; letter-spacing: 0.2em;">
+              </div>
+              <small class="text-muted">Código válido por 30 minutos</small>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary" id="btnValidarCodigo">
+                <i class="fas fa-check me-2"></i>Validar Código
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <button type="button" class="btn btn-link" style="color: var(--accent-color);" onclick="reenviarCodigo()">
+              <i class="fas fa-redo me-1"></i>Reenviar código
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+          <button type="button" class="btn btn-outline-secondary" onclick="voltarParaEsqueceuSenha()">Voltar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nova Senha -->
+  <div class="modal fade" id="modalNovaSenha" tabindex="-1" aria-labelledby="modalNovaSenhaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background-color: var(--dark-color); border: none;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <h5 class="modal-title" id="modalNovaSenhaLabel" style="color: var(--light-color);">
+            <i class="fas fa-lock me-2"></i>Nova Senha
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+        </div>
+        <div class="modal-body">
+          <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+            Digite sua nova senha. Ela deve ter pelo menos 8 caracteres.
+          </p>
+
+          <form id="formNovaSenha">
+            <input type="hidden" id="senhaResetToken" name="token">
+
+            <div class="mb-3">
+              <label for="novaSenhaInput" class="form-label">Nova Senha</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="novaSenhaInput" name="nova_senha" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('novaSenhaInput', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirmarNovaSenha" class="form-label">Confirmar Nova Senha</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="confirmarNovaSenha" name="confirmar_senha" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmarNovaSenha', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary" id="btnSalvarSenha">
+                <i class="fas fa-save me-2"></i>Salvar Nova Senha
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+    
+    // Ajuste adicional para garantir centralização em telas muito altas
+    window.addEventListener('resize', function() {
+      const bodyHeight = document.body.clientHeight;
+      const windowHeight = window.innerHeight;
+      
+      if (bodyHeight < windowHeight) {
+        document.body.style.alignItems = 'center';
+      } else {
+        document.body.style.alignItems = 'flex-start';
+      }
+    });
+    
+    // Disparar o evento de resize ao carregar a página
+    window.dispatchEvent(new Event('resize'));
+
+    // Verificar se deve abrir modal de nova senha (acesso via link)
+    {% if reset_token and abrir_modal_senha %}
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          document.getElementById('senhaResetToken').value = '{{ reset_token }}';
+          const modalNovaSenha = new bootstrap.Modal(document.getElementById('modalNovaSenha'));
+          modalNovaSenha.show();
+        }, 500);
+      });
+    {% endif %}
+
+    // ====================== FUNÇÕES RESET DE SENHA ======================
+
+    let dadosResetSenha = {
+      token: null,
+      usuarioEmail: null
+    };
+
+    function abrirModalEsqueceuSenha() {
+      const modal = new bootstrap.Modal(document.getElementById('modalEsqueceuSenha'));
+      modal.show();
+    }
+
+    function voltarParaEsqueceuSenha() {
+      const modalValidar = bootstrap.Modal.getInstance(document.getElementById('modalValidarCodigo'));
+      const modalEsqueceu = new bootstrap.Modal(document.getElementById('modalEsqueceuSenha'));
+      modalValidar.hide();
+      setTimeout(() => modalEsqueceu.show(), 300);
+    }
+
+    function mostrarMensagem(tipo, mensagem, containerId = 'modalEsqueceuSenha') {
+      const container = document.querySelector(`#${containerId} .modal-body`);
+
+      // Remover mensagens anteriores
+      const alertasAntigos = container.querySelectorAll('.alert');
+      alertasAntigos.forEach(alerta => alerta.remove());
+
+      // Criar nova mensagem
+      const alerta = document.createElement('div');
+      alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
+      alerta.innerHTML = `
+        ${mensagem}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+
+      // Inserir no início do modal body
+      container.insertBefore(alerta, container.firstChild);
+    }
+
+    function desabilitarBotao(botaoId, texto = 'Aguarde...') {
+      const botao = document.getElementById(botaoId);
+      botao.disabled = true;
+      botao.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>${texto}`;
+    }
+
+    function habilitarBotao(botaoId, textoOriginal, icone) {
+      const botao = document.getElementById(botaoId);
+      botao.disabled = false;
+      botao.innerHTML = `<i class="${icone} me-2"></i>${textoOriginal}`;
+    }
+
+    // Form Esqueci Senha
+    document.getElementById('formEsqueceuSenha').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const usuarioEmail = document.getElementById('usuarioEmail').value.trim();
+      if (!usuarioEmail) {
+        mostrarMensagem('danger', 'Por favor, digite seu usuário ou email.');
+        return;
+      }
+
+      desabilitarBotao('btnEnviarCodigo', 'Enviando...');
+
+      try {
+        const response = await fetch('/auth/esqueci-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ usuario_email: usuarioEmail })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          dadosResetSenha.token = data.token;
+          dadosResetSenha.usuarioEmail = usuarioEmail;
+
+          // Fechar modal atual e abrir modal de validação
+          const modalEsqueceu = bootstrap.Modal.getInstance(document.getElementById('modalEsqueceuSenha'));
+          modalEsqueceu.hide();
+
+          setTimeout(() => {
+            document.getElementById('resetToken').value = data.token;
+            const modalValidar = new bootstrap.Modal(document.getElementById('modalValidarCodigo'));
+            modalValidar.show();
+          }, 300);
+
+        } else {
+          mostrarMensagem('danger', data.message || 'Erro ao enviar código. Tente novamente.');
+        }
+
+      } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('danger', 'Erro de conexão. Verifique sua internet e tente novamente.');
+      } finally {
+        habilitarBotao('btnEnviarCodigo', 'Enviar Código', 'fas fa-paper-plane');
+      }
+    });
+
+    // Form Validar Código
+    document.getElementById('formValidarCodigo').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const codigo = document.getElementById('codigoValidacao').value.trim();
+      const token = document.getElementById('resetToken').value;
+
+      if (!codigo || codigo.length !== 6) {
+        mostrarMensagem('danger', 'Por favor, digite o código de 6 dígitos.', 'modalValidarCodigo');
+        return;
+      }
+
+      desabilitarBotao('btnValidarCodigo', 'Validando...');
+
+      try {
+        const response = await fetch('/auth/validar-codigo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ codigo: codigo, token: token })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Fechar modal atual e abrir modal de nova senha
+          const modalValidar = bootstrap.Modal.getInstance(document.getElementById('modalValidarCodigo'));
+          modalValidar.hide();
+
+          setTimeout(() => {
+            document.getElementById('senhaResetToken').value = token;
+            const modalNovaSenha = new bootstrap.Modal(document.getElementById('modalNovaSenha'));
+            modalNovaSenha.show();
+          }, 300);
+
+        } else {
+          mostrarMensagem('danger', data.message || 'Código inválido ou expirado.', 'modalValidarCodigo');
+        }
+
+      } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('danger', 'Erro de conexão. Tente novamente.', 'modalValidarCodigo');
+      } finally {
+        habilitarBotao('btnValidarCodigo', 'Validar Código', 'fas fa-check');
+      }
+    });
+
+    // Form Nova Senha
+    document.getElementById('formNovaSenha').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const novaSenha = document.getElementById('novaSenhaInput').value;
+      const confirmarSenha = document.getElementById('confirmarNovaSenha').value;
+      const token = document.getElementById('senhaResetToken').value;
+
+      if (!novaSenha || novaSenha.length < 8) {
+        mostrarMensagem('danger', 'A senha deve ter pelo menos 8 caracteres.', 'modalNovaSenha');
+        return;
+      }
+
+      if (novaSenha !== confirmarSenha) {
+        mostrarMensagem('danger', 'As senhas não coincidem.', 'modalNovaSenha');
+        return;
+      }
+
+      desabilitarBotao('btnSalvarSenha', 'Salvando...');
+
+      try {
+        const response = await fetch('/auth/redefinir-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nova_senha: novaSenha,
+            confirmar_senha: confirmarSenha,
+            token: token
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Fechar modal e mostrar mensagem de sucesso
+          const modalNovaSenha = bootstrap.Modal.getInstance(document.getElementById('modalNovaSenha'));
+          modalNovaSenha.hide();
+
+          // Mostrar alerta de sucesso na página principal
+          setTimeout(() => {
+            const alertaSucesso = document.createElement('div');
+            alertaSucesso.className = 'alert alert-success alert-dismissible fade show animate__animated animate__fadeInDown';
+            alertaSucesso.innerHTML = `
+              <i class="fas fa-check-circle me-2"></i>Senha alterada com sucesso! Você já pode fazer login com sua nova senha.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            const cardBody = document.querySelector('.card-body');
+            cardBody.insertBefore(alertaSucesso, cardBody.firstChild);
+
+            // Limpar campos do formulário
+            document.getElementById('usuario').value = dadosResetSenha.usuarioEmail || '';
+            document.getElementById('senha').value = '';
+          }, 300);
+
+        } else {
+          mostrarMensagem('danger', data.message || 'Erro ao salvar nova senha.', 'modalNovaSenha');
+        }
+
+      } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('danger', 'Erro de conexão. Tente novamente.', 'modalNovaSenha');
+      } finally {
+        habilitarBotao('btnSalvarSenha', 'Salvar Nova Senha', 'fas fa-save');
+      }
+    });
+
+    // Função para reenviar código
+    async function reenviarCodigo() {
+      if (!dadosResetSenha.usuarioEmail) {
+        mostrarMensagem('danger', 'Erro: dados de usuário não encontrados.', 'modalValidarCodigo');
+        return;
+      }
+
+      try {
+        const response = await fetch('/auth/esqueci-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ usuario_email: dadosResetSenha.usuarioEmail })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          dadosResetSenha.token = data.token;
+          document.getElementById('resetToken').value = data.token;
+          document.getElementById('codigoValidacao').value = '';
+          mostrarMensagem('success', 'Novo código enviado para seu email!', 'modalValidarCodigo');
+        } else {
+          mostrarMensagem('danger', data.message || 'Erro ao reenviar código.', 'modalValidarCodigo');
+        }
+
+      } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('danger', 'Erro de conexão.', 'modalValidarCodigo');
+      }
+    }
+
+    // Permitir apenas números no campo de código
+    document.getElementById('codigoValidacao').addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+
+    // Limpar forms quando modals fecham
+    document.getElementById('modalEsqueceuSenha').addEventListener('hidden.bs.modal', function() {
+      document.getElementById('formEsqueceuSenha').reset();
+      const alertas = this.querySelectorAll('.alert');
+      alertas.forEach(alerta => alerta.remove());
+    });
+
+    document.getElementById('modalValidarCodigo').addEventListener('hidden.bs.modal', function() {
+      document.getElementById('formValidarCodigo').reset();
+      const alertas = this.querySelectorAll('.alert');
+      alertas.forEach(alerta => alerta.remove());
+    });
+
+    document.getElementById('modalNovaSenha').addEventListener('hidden.bs.modal', function() {
+      document.getElementById('formNovaSenha').reset();
+      const alertas = this.querySelectorAll('.alert');
+      alertas.forEach(alerta => alerta.remove());
+    });
+
+  </script>
+</body>
+</html>

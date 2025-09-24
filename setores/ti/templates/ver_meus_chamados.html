@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evoque Fitness - Ver Meus Chamados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF6200;
+            --secondary-color: #1C2526;
+            --accent-color: #FF914D;
+            --dark-color: #2A2F30;
+            --light-color: #F8F9FA;
+            --text-color: #212529;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            line-height: 1.4;
+            min-height: 100vh;
+            padding-top: 56px; /* Reduzido de 80px */
+        }
+
+        .navbar {
+            background-color: rgba(28, 37, 38, 0.95) !important;
+            border-bottom: 2px solid var(--primary-color);
+            padding: 10px 0; /* Reduzido de 15px */
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 7px 0; /* Reduzido de 10px */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); /* Reduzido */
+        }
+
+        .navbar-brand img {
+            height: 35px; /* Reduzido de 50px */
+            transition: all 0.3s ease;
+        }
+
+        .status-container {
+            background-color: var(--dark-color);
+            border-radius: 8px; /* Reduzido de 12px */
+            padding: 1.4rem; /* Reduzido de 2rem */
+            margin: 1.4rem auto; /* Reduzido de 2rem */
+            max-width: 420px; /* Reduzido de 600px */
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Reduzido */
+        }
+
+        .status-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.4rem; /* Reduzido de 2rem */
+            padding-bottom: 0.7rem; /* Reduzido de 1rem */
+            border-bottom: 2px solid var(--primary-color);
+            font-size: 1.4rem; /* Reduzido de 2rem */
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .form-label {
+            color: var(--light-color);
+            font-weight: 500;
+            margin-bottom: 0.35rem; /* Reduzido de 0.5rem */
+            font-size: 0.9rem; /* Adicionado para reduzir tamanho */
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 6px; /* Reduzido de 8px */
+            padding: 0.525rem; /* Reduzido de 0.75rem */
+            transition: all 0.3s ease;
+            font-size: 0.9rem; /* Reduzir tamanho da fonte */
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 0.18rem rgba(255, 98, 0, 0.25); /* Reduzido */
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem; /* Reduzir tamanho do placeholder */
+        }
+
+        .btn {
+            padding: 0.525rem 1.05rem; /* Reduzido de 0.75rem 1.5rem */
+            border-radius: 6px; /* Reduzido de 8px */
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem; /* Reduzido de 0.5rem */
+            width: 100%;
+            margin: 0.35rem 0; /* Reduzido de 0.5rem */
+            font-size: 0.9rem; /* Reduzir tamanho da fonte */
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--dark-color);
+            border: 1px solid var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .modal-content {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            border-radius: 8px; /* Reduzido de 12px */
+            border: 1px solid var(--primary-color);
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--primary-color);
+            padding: 1.05rem; /* Reduzido de 1.5rem */
+        }
+
+        .modal-body {
+            padding: 1.4rem; /* Reduzido de 2rem */
+            font-size: 0.9rem; /* Reduzir tamanho da fonte no modal */
+        }
+
+        .modal-footer {
+            border-top: 2px solid var(--primary-color);
+            padding: 1.05rem; /* Reduzido de 1.5rem */
+        }
+
+        .alert {
+            border-radius: 6px; /* Reduzido de 8px */
+            padding: 0.7rem; /* Reduzido de 1rem */
+            margin-bottom: 0.7rem; /* Reduzido de 1rem */
+            font-size: 0.85rem; /* Reduzir tamanho da fonte */
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .dropdown-menu {
+            font-size: 0.9rem; /* Reduzir tamanho do dropdown */
+        }
+
+        .nav-link {
+            font-size: 0.9rem; /* Reduzir tamanho dos links da navbar */
+        }
+
+        @media (max-width: 768px) {
+            .status-container {
+                margin: 0.7rem; /* Reduzido de 1rem */
+                padding: 1.05rem; /* Reduzido de 1.5rem */
+            }
+
+            .status-title {
+                font-size: 1.05rem; /* Reduzido de 1.5rem */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/ti/">
+                <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg7bjJ2aDI2" alt="Evoque Fitness Logo" height="35">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Informações do usuário logado -->
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i>
+                            {{ current_user.nome }} {{ current_user.sobrenome }} ({{ current_user.nivel_acesso }})
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="status-container">
+            <h1 class="status-title">Verificar status do chamado</h1>
+
+            <!-- Flash Messages -->
+            <div id="flashMessages"></div>
+
+            <!-- Form -->
+            <form id="statusForm" method="POST">
+                <div class="mb-3"> <!-- Alterado de mb-4 para mb-3 -->
+                    <label class="form-label" for="codigoInput">Insira o código do chamado:</label>
+                    <input id="codigoInput" 
+                           class="form-control" 
+                           type="text" 
+                           name="codigo" 
+                           placeholder="Digite o código do chamado ou solicitação" 
+                           required>
+                </div>
+                
+                <div class="mt-3"> <!-- Alterado de mt-4 para mt-3 -->
+                    <button class="btn btn-primary mb-2" type="submit"> <!-- Alterado mb-3 para mb-2 -->
+                        <i class="fas fa-search"></i>
+                        Verificar Status
+                    </button>
+                    <a href="{{ url_for('ti.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="chamadoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes do Chamado</h5>
+                    <button type="button" class="btn-close btn-close-white" id="closeModalButton" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Conteúdo será inserido dinamicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="closeModalFooterButton" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('statusForm');
+            const modalElement = document.getElementById('chamadoModal');
+            const modal = new bootstrap.Modal(modalElement);
+            const modalContent = document.getElementById('modalContent');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const closeModalFooterButton = document.getElementById('closeModalFooterButton');
+            const flashMessagesDiv = document.getElementById('flashMessages');
+
+            function openModal() {
+                modal.show();
+            }
+
+            function closeModal() {
+                modal.hide();
+            }
+
+            closeModalButton.addEventListener('click', closeModal);
+            closeModalFooterButton.addEventListener('click', closeModal);
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                // Limpa mensagens anteriores
+                flashMessagesDiv.innerHTML = '';
+                modalContent.innerHTML = '';
+                closeModal();
+
+                const codigo = form.codigo.value.trim();
+
+                if (!codigo) {
+                    flashMessagesDiv.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Por favor, insira um código válido.
+                        </div>`;
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ url_for("ti.ver_meus_chamados") }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'codigo=' + encodeURIComponent(codigo)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        flashMessagesDiv.innerHTML = `
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Erro: ${errorData.message || 'Erro na requisição.'}
+                            </div>`;
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    if (data.status === 'success' && data.resultado) {
+                        const r = data.resultado;
+
+                        let visitaTecnicaTexto = 'Não requisitada';
+                        let dataVisitaTexto = 'Não agendada';
+
+                        if (r.data_visita_tecnica && r.data_visita_tecnica !== 'Não agendada') {
+                            visitaTecnicaTexto = 'Sim';
+                            dataVisitaTexto = r.data_visita_tecnica;
+                        }
+
+                        let htmlContent = `
+                            <div class="chamado-details">
+                                <p><strong>Código do Chamado:</strong> ${r.codigo_chamado || 'Não informado'}</p>
+                                <p><strong>Protocolo:</strong> ${r.protocolo || 'Não informado'}</p>
+                                <p><strong>Nome do Solicitante:</strong> ${r.nome_solicitante || 'Não informado'}</p>
+                                <p><strong>E-mail:</strong> ${r.email || 'Não informado'}</p>
+                                <p><strong>Cargo:</strong> ${r.cargo || 'Não informado'}</p>
+                                <p><strong>Telefone:</strong> ${r.telefone || 'Não informado'}</p>
+                                <p><strong>Unidade:</strong> ${r.unidade || 'Não informado'}</p>
+                                <p><strong>Problema Reportado:</strong> ${r.problema_reportado || 'Não informado'}</p>
+                                <p><strong>Subcategoria Internet:</strong> ${r.internet_item || 'Não informado'}</p>
+                                <p><strong>Descrição:</strong> ${r.descricao || 'Sem descrição'}</p>
+                                <p><strong>Data da Abertura:</strong> ${r.data_abertura || 'Não informado'}</p>
+                                <p><strong>Status:</strong> ${r.status || 'Não informado'}</p>
+                                <p><strong>Visita Técnica:</strong> ${visitaTecnicaTexto}</p>
+                                <p><strong>Data da Visita Técnica:</strong> ${dataVisitaTexto}</p>
+                            </div>`;
+
+                        modalContent.innerHTML = htmlContent;
+                        openModal();
+                    } else {
+                        flashMessagesDiv.innerHTML = `
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Erro: ${data.message || 'Registro não encontrado.'}
+                            </div>`;
+                    }
+                } catch (error) {
+                    flashMessagesDiv.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Erro: ${error.message}
+                        </div>`;
+                }
+            });
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', function() {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 35) { /* Reduzido de 50px */
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
