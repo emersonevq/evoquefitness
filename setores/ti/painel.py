@@ -2221,6 +2221,7 @@ def listar_chamados():
                     'data_abertura': data_abertura_str,
                     'status': getattr(c, 'status', 'Aberto'),
                     'prioridade': getattr(c, 'prioridade', 'Normal'),
+                    'descricao': getattr(c, 'descricao', None),
                     'visita_tecnica': getattr(c, 'visita_tecnica', False),
                     'agente': agente_info,
                     'agente_id': agente_info['id'] if agente_info else None
