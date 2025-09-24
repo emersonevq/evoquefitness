@@ -683,7 +683,7 @@ def carregar_configuracoes_notificacoes():
         config = carregar_configuracoes()
         notificacoes = config.get('notificacoes', CONFIGURACOES_PADRAO['notificacoes'])
         
-        logger.info(f"Configurações de notificações carregadas: {notificacoes}")
+        logger.info(f"Configuraç��es de notificações carregadas: {notificacoes}")
         
         return json_response({
             'notificacoes': notificacoes,
@@ -2546,13 +2546,46 @@ def deletar_chamado(id):
 
         codigo_chamado = chamado.codigo
 
-        # Remover atribuições de agentes antes de deletar o chamado
-        from database import ChamadoAgente
-        atribuicoes = ChamadoAgente.query.filter_by(chamado_id=id).all()
-        for atribuicao in atribuicoes:
+        # Remover registros dependentes para evitar violação de FK
+        from database import (
+            ChamadoAgente,
+            AnexoArquivo,
+            HistoricoTicket,
+            ChamadoTimelineEvent,
+            NotificacaoAgente,
+            HistoricoAtendimento,
+            HistoricoSLA
+        )
+
+        # 1) Timeline (pode referenciar anexos)
+        for ev in ChamadoTimelineEvent.query.filter_by(chamado_id=id).all():
+            db.session.delete(ev)
+
+        # 2) Tickets enviados
+        for t in HistoricoTicket.query.filter_by(chamado_id=id).all():
+            db.session.delete(t)
+
+        # 3) Histórico de atendimentos
+        for h in HistoricoAtendimento.query.filter_by(chamado_id=id).all():
+            db.session.delete(h)
+
+        # 4) Histórico de SLA
+        for h in HistoricoSLA.query.filter_by(chamado_id=id).all():
+            db.session.delete(h)
+
+        # 5) Notificações relacionadas
+        for n in NotificacaoAgente.query.filter_by(chamado_id=id).all():
+            db.session.delete(n)
+
+        # 6) Anexos do chamado (após remover timeline)
+        for a in AnexoArquivo.query.filter_by(chamado_id=id).all():
+            db.session.delete(a)
+
+        # 7) Atribuições de agentes
+        for atribuicao in ChamadoAgente.query.filter_by(chamado_id=id).all():
             db.session.delete(atribuicao)
 
-        # Agora deletar o chamado
+        # 8) Finalmente, deletar o chamado
         db.session.delete(chamado)
         db.session.commit()
 
@@ -4411,7 +4444,7 @@ def excluir_agente(agente_id):
         # Verificar se há chamados ativos atribuídos
         chamados_ativos = agente.get_chamados_ativos()
         if chamados_ativos > 0:
-            return error_response(f'Não é possível excluir agente com {chamados_ativos} chamado(s) ativo(s)')
+            return error_response(f'N��o é possível excluir agente com {chamados_ativos} chamado(s) ativo(s)')
 
         nome_agente = agente.usuario.nome
 
