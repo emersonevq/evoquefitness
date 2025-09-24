@@ -762,6 +762,10 @@ function renderChamadosPage(page) {
             <span>${formatarData(chamado.data_abertura)}</span>
         </div>
         <div class="info-row">
+            <strong>Descrição:</strong>
+            <span class="description-text"></span>
+        </div>
+        <div class="info-row">
             <strong>Agente:</strong>
             ${chamado.agente ? `
                 <span class="badge bg-info">${chamado.agente.nome}</span>
@@ -792,6 +796,13 @@ function renderChamadosPage(page) {
             <i class="fas fa-envelope"></i> Ticket
         </button>
     </div>`;
+
+        // Preencher descrição com segurança (texto puro)
+        const descEl = card.querySelector('.description-text');
+        if (descEl) {
+            const texto = (chamado.descricao || '').toString().trim();
+            descEl.textContent = texto;
+        }
 
         // Prefetch on hover/focus
         card.addEventListener('mouseenter', () => prefetchTimeline(chamado.id));
