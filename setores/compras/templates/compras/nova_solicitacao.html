@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nova Solicitação - Evoque Fitness</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #FF6200;
+      --secondary-color: #1C2526;
+      --accent-color: #FF914D;
+      --dark-color: #2A2F30;
+      --light-color: #F8F9FA;
+      --text-color: #F8F9FA;
+      --text-light: #bfc7ca;
+      --card-bg: #2A2F30;
+      --border-color: #3A4345;
+      --shadow-color: rgba(0,0,0,0.3);
+    }
+
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--text-color) !important;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+    
+    .navbar {
+      background-color: var(--dark-color) !important;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .main-content {
+      margin-top: 80px;
+      padding: 40px 0;
+    }
+    
+    .navbar-brand, .nav-link {
+      color: var(--text-color) !important;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    .card-header {
+      background-color: rgba(255, 98, 0, 0.1);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-color) !important;
+    }
+
+    .card-title {
+      color: var(--primary-color) !important;
+      font-weight: 600;
+    }
+
+    .form-label {
+      color: var(--text-color) !important;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .form-control, .form-select {
+      background-color: var(--secondary-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color) !important;
+      font-weight: 500;
+      padding: 12px 16px;
+    }
+
+    .form-control:focus, .form-select:focus {
+      background-color: var(--secondary-color);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(255, 98, 0, 0.25);
+      color: var(--text-color) !important;
+    }
+
+    .form-control::placeholder {
+      color: var(--text-light) !important;
+    }
+
+    .form-check-label {
+      color: var(--text-color) !important;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white !important;
+      font-weight: 600;
+      padding: 12px 24px;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      color: white !important;
+    }
+
+    .btn-secondary {
+      background-color: var(--border-color);
+      border-color: var(--border-color);
+      color: var(--text-color) !important;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--dark-color);
+      border-color: var(--dark-color);
+      color: var(--text-color) !important;
+    }
+
+    .page-title {
+      color: var(--primary-color) !important;
+      border-bottom: 3px solid var(--primary-color);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-header, .modal-footer {
+      border-color: var(--border-color);
+    }
+
+    .modal-title {
+      color: var(--text-color) !important;
+    }
+
+    .modal-body {
+      color: var(--text-color) !important;
+    }
+
+    /* Garantir que todo texto seja visível */
+    * {
+      color: inherit;
+    }
+
+    p, span, div, label, input, select, textarea {
+      color: var(--text-color) !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
+        <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" alt="Evoque Fitness" height="40">
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="{{ url_for('compras.index') }}">
+          <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="container">
+      <h1 class="page-title">
+        <i class="fas fa-file-alt me-3"></i>Nova Solicitação de Compra
+      </h1>
+      
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">
+                <i class="fas fa-shopping-cart me-2"></i>Informações da Solicitação
+              </h5>
+            </div>
+            <div class="card-body">
+              <form id="formSolicitacao">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="solicitante" class="form-label">Solicitante</label>
+                    <input type="text" class="form-control" id="solicitante" value="{{ current_user.nome }} {{ current_user.sobrenome }}" readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="data" class="form-label">Data da Solicitação</label>
+                    <input type="text" class="form-control" id="data" value="" readonly>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-8 mb-3">
+                    <label for="produto" class="form-label">Produto/Serviço *</label>
+                    <input type="text" class="form-control" id="produto" placeholder="Descreva o produto ou serviço" required>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="quantidade" class="form-label">Quantidade *</label>
+                    <input type="number" class="form-control" id="quantidade" min="1" required>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="categoria" class="form-label">Categoria</label>
+                    <select class="form-select" id="categoria">
+                      <option value="">Selecione uma categoria</option>
+                      <option value="equipamentos">Equipamentos</option>
+                      <option value="materiais">Materiais</option>
+                      <option value="servicos">Serviços</option>
+                      <option value="manutencao">Manutenção</option>
+                      <option value="limpeza">Limpeza</option>
+                      <option value="escritorio">Material de Escritório</option>
+                      <option value="outros">Outros</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="prioridade" class="form-label">Prioridade</label>
+                    <select class="form-select" id="prioridade">
+                      <option value="normal" selected>Normal</option>
+                      <option value="alta">Alta</option>
+                      <option value="urgente">Urgente</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="valorEstimado" class="form-label">Valor Estimado (R$)</label>
+                    <input type="number" class="form-control" id="valorEstimado" step="0.01" min="0" placeholder="0,00">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="dataEntrega" class="form-label">Data Desejada para Entrega</label>
+                    <input type="date" class="form-control" id="dataEntrega">
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="justificativa" class="form-label">Justificativa *</label>
+                  <textarea class="form-control" id="justificativa" rows="4" placeholder="Explique o motivo da solicitação..." required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="observacoes" class="form-label">Observações Adicionais</label>
+                  <textarea class="form-control" id="observacoes" rows="3" placeholder="Informações adicionais relevantes..."></textarea>
+                </div>
+                
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="urgencia">
+                    <label class="form-check-label" for="urgencia">
+                      Esta é uma solicitação urgente
+                    </label>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="enviarEmail" checked>
+                    <label class="form-check-label" for="enviarEmail">
+                      Enviar notificação por email para o setor de compras
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <a href="{{ url_for('compras.index') }}" class="btn btn-secondary me-md-2">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                  </a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i>Enviar Solicitação
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Sucesso -->
+  <div class="modal fade" id="modalSucesso" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content" style="background-color: var(--dark-color); color: var(--light-color);">
+        <div class="modal-header border-bottom border-secondary">
+          <h5 class="modal-title">
+            <i class="fas fa-check-circle text-success me-2"></i>Solicitação Enviada
+          </h5>
+        </div>
+        <div class="modal-body">
+          <p>Sua solicitação foi enviada com sucesso!</p>
+          <p><strong>Protocolo:</strong> <span id="protocoloGerado"></span></p>
+          <p>Você receberá atualizações sobre o status da sua solicitação.</p>
+        </div>
+        <div class="modal-footer border-top border-secondary">
+          <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('compras.acompanhar_pedidos') }}'">
+            Acompanhar Pedidos
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('compras.index') }}'">
+            Voltar ao Início
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Definir data atual
+      const hoje = new Date();
+      document.getElementById('data').value = hoje.toLocaleDateString('pt-BR');
+      
+      // Definir data mínima para entrega (hoje)
+      document.getElementById('dataEntrega').min = hoje.toISOString().split('T')[0];
+      
+      // Handler do formulário
+      document.getElementById('formSolicitacao').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const botaoSubmit = this.querySelector('button[type="submit"]');
+        const textoOriginal = botaoSubmit.innerHTML;
+        
+        // Coletar dados do formulário
+        const dados = {
+          produto: document.getElementById('produto').value,
+          quantidade: parseInt(document.getElementById('quantidade').value),
+          categoria: document.getElementById('categoria').value,
+          prioridade: document.getElementById('prioridade').value,
+          valorEstimado: parseFloat(document.getElementById('valorEstimado').value) || 0,
+          dataEntrega: document.getElementById('dataEntrega').value,
+          justificativa: document.getElementById('justificativa').value,
+          observacoes: document.getElementById('observacoes').value,
+          urgente: document.getElementById('urgencia').checked
+        };
+        
+        // Validações
+        if (!dados.produto.trim()) {
+          alert('Por favor, informe o produto ou serviço.');
+          return;
+        }
+        
+        if (!dados.quantidade || dados.quantidade <= 0) {
+          alert('Por favor, informe uma quantidade válida.');
+          return;
+        }
+        
+        if (!dados.justificativa.trim()) {
+          alert('Por favor, informe a justificativa da solicitação.');
+          return;
+        }
+        
+        // Mostrar loading
+        botaoSubmit.disabled = true;
+        botaoSubmit.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+        
+        try {
+          const response = await fetch('{{ url_for("compras.criar_solicitacao") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dados)
+          });
+          
+          const resultado = await response.json();
+          
+          if (resultado.sucesso) {
+            // Mostrar protocolo no modal
+            document.getElementById('protocoloGerado').textContent = resultado.protocolo;
+            
+            // Mostrar modal de sucesso
+            const modal = new bootstrap.Modal(document.getElementById('modalSucesso'));
+            modal.show();
+            
+            // Limpar formulário
+            this.reset();
+            
+          } else {
+            alert('Erro: ' + (resultado.erro || 'Erro desconhecido'));
+          }
+          
+        } catch (error) {
+          console.error('Erro:', error);
+          alert('Erro de conexão. Tente novamente.');
+        } finally {
+          // Restaurar botão
+          botaoSubmit.disabled = false;
+          botaoSubmit.innerHTML = textoOriginal;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

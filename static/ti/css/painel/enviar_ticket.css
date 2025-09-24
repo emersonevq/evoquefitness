@@ -1,0 +1,59 @@
+/* Estilos para o modal de ticket */
+.modal#modalTicket .modal-content {
+    max-width: 600px;
+}
+
+.modal#modalTicket .form-group {
+    margin-bottom: 1rem;
+}
+
+.modal#modalTicket label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.modal#modalTicket textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.modal#modalTicket .form-check {
+    margin-top: 1rem;
+}
+
+.modal#modalTicket .modal-footer {
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+/* Estilos para o botão de ticket nos cards */
+.btn-ticket-sm {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    transition: background-color 0.2s;
+}
+
+.btn-ticket-sm:hover {
+    background-color: #138496;
+}
+
+/* Animação do modal */
+.modal#modalTicket.active .modal-content {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

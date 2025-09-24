@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evoque Fitness - Setor de Marketing</title>
+    <meta name="description" content="Setor de Marketing Evoque Fitness - Gestão de campanhas e estratégias de marketing" />
+    <meta name="keywords" content="marketing, campanhas, redes sociais, evoque fitness" />
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        :root {
+            --primary-color: #FF6200;
+            --secondary-color: #1C2526;
+            --accent-color: #FF914D;
+            --dark-color: #2A2F30;
+            --light-color: #F8F9FA;
+            --text-color: #212529;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --purple-color: #6f42c1;
+            --pink-color: #e83e8c;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            line-height: 1.6;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: rgba(28, 37, 38, 0.95) !important;
+            border-bottom: 2px solid var(--primary-color);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand img {
+            height: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: var(--light-color) !important;
+            font-weight: 500;
+            margin: 0 8px;
+            padding: 8px 16px !important;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+            padding: 120px 0 100px;
+            text-align: center;
+            overflow: hidden;
+            margin-top: -82px;
+            padding-top: 200px;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://img.freepik.com/free-vector/marketing-pattern-background_1061-392.jpg');
+            background-size: cover;
+            opacity: 0.1;
+            animation: backgroundMove 20s linear infinite;
+        }
+
+        @keyframes backgroundMove {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 100% 100%;
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section h1 {
+            font-weight: 700;
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-section .lead {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Marketing Cards */
+        .marketing-section {
+            padding: 80px 0;
+            background-color: var(--secondary-color);
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: white;
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--purple-color));
+        }
+
+        .marketing-card {
+            background-color: var(--dark-color);
+            border: none;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            height: 100%;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .marketing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--purple-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .marketing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 98, 0, 0.2);
+            background-color: #3a4142;
+        }
+
+        .marketing-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .marketing-card .card-body {
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .marketing-card .card-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .marketing-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(to right, var(--primary-color), var(--purple-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .marketing-card h5 {
+            color: var(--light-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .marketing-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Metrics Section */
+        .metrics-section {
+            padding: 80px 0;
+            background-color: var(--dark-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metrics-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color) 0%, var(--purple-color) 100%);
+            opacity: 0.05;
+        }
+
+        .metric-card {
+            background-color: var(--secondary-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--purple-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--light-color);
+            position: relative;
+            display: inline-block;
+        }
+
+        .metric-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Campaigns Section */
+        .campaigns-section {
+            padding: 80px 0;
+            background-color: var(--secondary-color);
+        }
+
+        .campaign-card {
+            background-color: var(--dark-color);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .campaign-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .campaign-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .campaign-card:hover .campaign-image img {
+            transform: scale(1.1);
+        }
+
+        .campaign-content {
+            padding: 20px;
+        }
+
+        .campaign-title {
+            color: var(--light-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .campaign-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .campaign-stat {
+            text-align: center;
+        }
+
+        .campaign-stat-number {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .campaign-stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Social Media Section */
+        .social-media-section {
+            padding: 80px 0;
+            background-color: var(--dark-color);
+        }
+
+        .social-media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .social-media-card {
+            background-color: var(--secondary-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-media-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .social-media-card.facebook .social-media-icon {
+            color: #1877f2;
+        }
+
+        .social-media-card.instagram .social-media-icon {
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .social-media-card.linkedin .social-media-icon {
+            color: #0077b5;
+        }
+
+        .social-media-card.youtube .social-media-icon {
+            color: #ff0000;
+        }
+
+        .social-media-stats {
+            margin-top: 15px;
+        }
+
+        .social-media-stat {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--light-color);
+        }
+
+        .social-media-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Call to Action Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--dark-color);
+            border-top: 2px solid var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .social-icons {
+            margin-bottom: 20px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .hero-section h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-section .lead {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding-top: 150px;
+                padding-bottom: 80px;
+            }
+
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+
+            .metric-card {
+                margin-bottom: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-section {
+                padding-top: 120px;
+            }
+
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" 
+                     alt="Evoque Fitness Logo" 
+                     class="img-fluid"
+                     loading="lazy">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('marketing.index') }}">Marketing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if current_user.is_authenticated and current_user.tem_acesso_setor('Marketing') %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="animate__animated animate__fadeInDown">Setor de Marketing</h1>
+                <p class="lead animate__animated animate__fadeIn animate__delay-02s">
+                    Impulsione o crescimento com estratégias inovadoras e campanhas de alto impacto
+                </p>
+                <a href="#services" class="btn btn-light btn-lg animate__animated animate__fadeInUp animate__delay-04s">
+                    Explorar Serviços <i class="fas fa-chevron-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketing Services Section -->
+    <section id="services" class="marketing-section">
+        <div class="container">
+            <h2 class="text-center section-title animate__animated animate__fadeIn">Nossos Serviços</h2>
+            <div class="row g-4">
+                <!-- Campanhas -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a href="{{ url_for('marketing.campanhas') }}" class="text-decoration-none">
+                        <div class="marketing-card animate__animated animate__fadeInUp">
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <h5>Campanhas</h5>
+                                <p>Crie e gerencie campanhas de marketing impactantes.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Redes Sociais -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a href="{{ url_for('marketing.redes_sociais') }}" class="text-decoration-none">
+                        <div class="marketing-card animate__animated animate__fadeInUp animate__delay-02s">
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                                <h5>Redes Sociais</h5>
+                                <p>Gerencie conteúdo e engajamento nas redes sociais.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Analytics -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a href="{{ url_for('marketing.analytics') }}" class="text-decoration-none">
+                        <div class="marketing-card animate__animated animate__fadeInUp animate__delay-04s">
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h5>Analytics</h5>
+                                <p>Analise métricas e resultados das campanhas.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Conteúdo -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a href="{{ url_for('marketing.conteudo') }}" class="text-decoration-none">
+                        <div class="marketing-card animate__animated animate__fadeInUp animate__delay-06s">
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-pen-fancy"></i>
+                                </div>
+                                <h5>Conteúdo</h5>
+                                <p>Crie e gerencie conteúdo para todas as plataformas.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Campanhas Ativas Section -->
+    <section class="campaigns-section">
+        <div class="container">
+            <h2 class="text-center section-title animate__animated animate__fadeIn">Campanhas Ativas</h2>
+            <div class="row">
+                <!-- Campanha 1 -->
+                <div class="col-md-4">
+                    <div class="campaign-card">
+                        <div class="campaign-image">
+                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3"
+                                 alt="Campanha Verão"
+                                 loading="lazy">
+                        </div>
+                        <div class="campaign-content">
+                            <h3 class="campaign-title">Campanha Verão 2025</h3>
+                            <p>Promoção especial para preparação do verão com descontos exclusivos.</p>
+                            <div class="campaign-stats">
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">15K</div>
+                                    <div class="campaign-stat-label">Alcance</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">8.5%</div>
+                                    <div class="campaign-stat-label">Conversão</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">4.8</div>
+                                    <div class="campaign-stat-label">ROI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campanha 2 -->
+                <div class="col-md-4">
+                    <div class="campaign-card">
+                        <div class="campaign-image">
+                            <img src="https://images.unsplash.com/photo-1549060279-7e168fcee0c2?ixlib=rb-4.0.3"
+                                 alt="Campanha Treino em Grupo"
+                                 loading="lazy">
+                        </div>
+                        <div class="campaign-content">
+                            <h3 class="campaign-title">Treinos em Grupo</h3>
+                            <p>Nova modalidade de treinos em grupo com instrutores especializados.</p>
+                            <div class="campaign-stats">
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">12K</div>
+                                    <div class="campaign-stat-label">Alcance</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">7.2%</div>
+                                    <div class="campaign-stat-label">Conversão</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">3.9</div>
+                                    <div class="campaign-stat-label">ROI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campanha 3 -->
+                <div class="col-md-4">
+                    <div class="campaign-card">
+                        <div class="campaign-image">
+                            <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?ixlib=rb-4.0.3"
+                                 alt="Campanha Nutrição"
+                                 loading="lazy">
+                        </div>
+                        <div class="campaign-content">
+                            <h3 class="campaign-title">Programa Nutrição</h3>
+                            <p>Acompanhamento nutricional personalizado para resultados efetivos.</p>
+                            <div class="campaign-stats">
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">10K</div>
+                                    <div class="campaign-stat-label">Alcance</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">6.8%</div>
+                                    <div class="campaign-stat-label">Conversão</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-number">3.5</div>
+                                    <div class="campaign-stat-label">ROI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Section -->
+    <section class="metrics-section">
+        <div class="container">
+            <h2 class="text-center section-title animate__animated animate__fadeIn">Métricas de Desempenho</h2>
+            <div class="row g-4">
+                <!-- Alcance -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <i class="fas fa-users metric-icon"></i>
+                        <div class="metric-number">50K+</div>
+                        <div class="metric-text">Alcance Mensal</div>
+                    </div>
+                </div>
+
+                <!-- Engajamento -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <i class="fas fa-heart metric-icon"></i>
+                        <div class="metric-number">85%</div>
+                        <div class="metric-text">Taxa de Engajamento</div>
+                    </div>
+                </div>
+
+                <!-- Conversões -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <i class="fas fa-chart-bar metric-icon"></i>
+                        <div class="metric-number">2.5K</div>
+                        <div class="metric-text">Conversões Mensais</div>
+                    </div>
+                </div>
+
+                <!-- ROI -->
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <i class="fas fa-dollar-sign metric-icon"></i>
+                        <div class="metric-number">300%</div>
+                        <div class="metric-text">ROI Médio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% else %}
+    <div class="container" style="margin-top: 150px;">
+        <div class="alert alert-danger text-center" role="alert">
+            <i class="fas fa-lock"></i> Você não tem permissão para acessar o Setor de Marketing.
+        </div>
+    </div>
+{% endif %}
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p class="mb-0">© 2025 Evoque Fitness - Setor de Marketing. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+</body>
+</html>

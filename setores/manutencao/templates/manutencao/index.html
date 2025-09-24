@@ -1,0 +1,638 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evoque Fitness - Setor de Manutenção</title>
+  <meta name="description" content="Setor de Manutenção Evoque Fitness - Gestão de manutenção preventiva e corretiva">
+  <meta name="keywords" content="manutenção, equipamentos, academia, evoque fitness">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
+  <style>
+:root {
+  --primary-color: #FF6200;
+  --secondary-color: #1C2526;
+  --accent-color: #FF914D;
+  --dark-color: #2A2F30;
+  --light-color: #F8F9FA;
+  --text-color: #212529;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--light-color);
+  line-height: 1.6;
+}
+
+/* Navbar Styles */
+.navbar {
+  background-color: rgba(28, 37, 38, 0.95) !important;
+  border-bottom: 2px solid var(--primary-color);
+  padding: 15px 0;
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  padding: 10px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand img {
+  height: 50px;
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  color: var(--light-color) !important;
+  font-weight: 500;
+  margin: 0 8px;
+  padding: 8px 16px !important;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  background-color: var(--primary-color);
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  padding: 120px 0 100px;
+  text-align: center;
+  overflow: hidden;
+  margin-top: -82px;
+  padding-top: 200px;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://img.freepik.com/free-vector/white-abstract-background_23-2148810113.jpg');
+  background-size: cover;
+  opacity: 0.1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-section h1 {
+  font-weight: 700;
+  font-size: 3.5rem;
+  color: white;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+
+.hero-section .lead {
+  font-size: 1.3rem;
+  max-width: 700px;
+  margin: 0 auto 30px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Buttons */
+.btn-maintenance {
+  background-color: var(--primary-color);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px 35px;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 98, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-maintenance:hover {
+  background-color: white;
+  color: var(--primary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 98, 0, 0.6);
+}
+
+/* Service Cards */
+.services-section {
+  padding: 80px 0;
+  background-color: var(--secondary-color);
+}
+
+.section-title {
+  font-weight: 700;
+  color: white;
+  margin-bottom: 50px;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.service-card {
+  background-color: var(--dark-color);
+  border: none;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  text-decoration: none !important;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: var(--primary-color);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(255, 98, 0, 0.2);
+  background-color: #3a4142;
+}
+
+.service-card:hover::before {
+  transform: scaleX(1);
+}
+
+.service-card .card-body {
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.service-card .card-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .card-icon {
+  transform: scale(1.1);
+}
+
+.service-card h5 {
+  color: var(--light-color);
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.service-card p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover h5 {
+  color: var(--primary-color);
+}
+
+.service-card:hover p {
+  color: rgba(255, 255, 255, 1);
+}
+
+.service-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
+}
+
+/* Status Section */
+.status-section {
+  padding: 80px 0;
+  background-color: var(--dark-color);
+}
+
+.status-card {
+  background-color: var(--secondary-color);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.status-card:hover {
+  transform: translateY(-5px);
+}
+
+.status-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.status-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--light-color);
+}
+
+.status-text {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.status-success {
+  color: var(--success-color);
+}
+
+.status-warning {
+  color: var(--warning-color);
+}
+
+.status-danger {
+  color: var(--danger-color);
+}
+
+/* Footer */
+.footer {
+  background-color: var(--dark-color);
+  border-top: 2px solid var(--primary-color);
+  color: white;
+  padding: 30px 0;
+  text-align: center;
+}
+
+.social-icons {
+  margin-bottom: 20px;
+}
+
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 50%;
+  margin: 0 8px;
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  background-color: var(--primary-color);
+  transform: translateY(-3px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .hero-section h1 {
+    font-size: 2.8rem;
+  }
+  
+  .hero-section .lead {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 150px;
+    padding-bottom: 80px;
+  }
+  
+  .hero-section h1 {
+    font-size: 2.2rem;
+  }
+  
+  .status-card {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding-top: 120px;
+  }
+  
+  .hero-section h1 {
+    font-size: 1.8rem;
+  }
+  
+  .btn-maintenance {
+    padding: 10px 25px;
+  }
+}
+
+/* Animations */
+.animate__delay-02s {
+  animation-delay: 0.2s;
+}
+
+.animate__delay-04s {
+  animation-delay: 0.4s;
+}
+
+.animate__delay-06s {
+  animation-delay: 0.6s;
+}
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
+        <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" 
+             alt="Evoque Fitness Logo" 
+             class="img-fluid"
+             loading="lazy">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.index') }}">Início</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('manutencao.index') }}">Manutenção</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="animate__animated animate__fadeInDown">Setor de Manutenção</h1>
+        <p class="lead animate__animated animate__fadeIn animate__delay-02s">
+          Mantenha seus equipamentos em perfeito estado com nossa equipe especializada
+        </p>
+        <a href="#services" class="btn btn-maintenance animate__animated animate__fadeInUp animate__delay-04s">
+          Solicitar Manutenção <i class="fas fa-wrench ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="services-section">
+    <div class="container">
+      <h2 class="text-center section-title animate__animated animate__fadeIn">Nossos Serviços</h2>
+      <div class="row g-4">
+        <!-- Manutenção Preventiva -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a href="{{ url_for('manutencao.preventiva') }}" class="text-decoration-none">
+            <div class="card service-card animate__animated animate__fadeInUp">
+              <div class="card-body">
+                <div class="card-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5>Manutenção Preventiva</h5>
+                <p>Evite problemas com checagens regulares dos equipamentos.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Manutenção Corretiva -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a href="{{ url_for('manutencao.corretiva') }}" class="text-decoration-none">
+            <div class="card service-card animate__animated animate__fadeInUp animate__delay-02s">
+              <div class="card-body">
+                <div class="card-icon">
+                  <i class="fas fa-tools"></i>
+                </div>
+                <h5>Manutenção Corretiva</h5>
+                <p>Resolva problemas específicos com rapidez e eficiência.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Acompanhamento -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a href="{{ url_for('manutencao.acompanhamento') }}" class="text-decoration-none">
+            <div class="card service-card animate__animated animate__fadeInUp animate__delay-04s">
+              <div class="card-body">
+                <div class="card-icon">
+                  <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h5>Acompanhamento</h5>
+                <p>Acompanhe o status das suas solicitações de manutenção.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Histórico -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a href="{{ url_for('manutencao.historico') }}" class="text-decoration-none">
+            <div class="card service-card animate__animated animate__fadeInUp animate__delay-06s">
+              <div class="card-body">
+                <div class="card-icon">
+                  <i class="fas fa-history"></i>
+                </div>
+                <h5>Histórico</h5>
+                <p>Consulte o histórico completo de manutenções realizadas.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Status Section -->
+  <section class="status-section">
+    <div class="container">
+      <h2 class="text-center section-title animate__animated animate__fadeIn">Status do Sistema</h2>
+      <div class="row">
+        <!-- Equipamentos Ativos -->
+        <div class="col-md-3">
+          <div class="status-card">
+            <i class="fas fa-dumbbell status-icon status-success"></i>
+            <div class="status-number">95%</div>
+            <div class="status-text">Equipamentos Ativos</div>
+          </div>
+        </div>
+
+        <!-- Manutenções em Andamento -->
+        <div class="col-md-3">
+          <div class="status-card">
+            <i class="fas fa-cogs status-icon status-warning"></i>
+            <div class="status-number">12</div>
+            <div class="status-text">Manutenções em Andamento</div>
+          </div>
+        </div>
+
+        <!-- Tempo Médio de Resposta -->
+        <div class="col-md-3">
+          <div class="status-card">
+            <i class="fas fa-clock status-icon"></i>
+            <div class="status-number">4h</div>
+            <div class="status-text">Tempo Médio de Resposta</div>
+          </div>
+        </div>
+
+        <!-- Solicitações Concluídas -->
+        <div class="col-md-3">
+          <div class="status-card">
+            <i class="fas fa-check-circle status-icon status-success"></i>
+            <div class="status-number">850+</div>
+            <div class="status-text">Solicitações Concluídas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="social-icons">
+        <a href="#" aria-label="Facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="#" aria-label="LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="#" aria-label="YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+      <p class="mb-0">© 2025 Evoque Fitness - Setor de Manutenção. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Animate status numbers
+    function animateNumbers() {
+      const statusNumbers = document.querySelectorAll('.status-number');
+      
+      statusNumbers.forEach(number => {
+        const finalValue = number.innerText;
+        const isPercentage = finalValue.includes('%');
+        const numericValue = parseInt(finalValue);
+        let currentValue = 0;
+        
+        const increment = Math.ceil(numericValue / 50); // Ajuste a velocidade da animação aqui
+        
+        const timer = setInterval(() => {
+          currentValue += increment;
+          
+          if (currentValue >= numericValue) {
+            currentValue = numericValue;
+            clearInterval(timer);
+          }
+          
+          number.innerText = isPercentage ? `${currentValue}%` : 
+                            finalValue.includes('+') ? `${currentValue}+` : 
+                            currentValue;
+        }, 30);
+      });
+    }
+
+    // Trigger number animation when section becomes visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateNumbers();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const statusSection = document.querySelector('.status-section');
+    if (statusSection) {
+      observer.observe(statusSection);
+    }
+
+    // Add hover effect to service cards
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.querySelector('.card-icon').style.transform = 'scale(1.1) rotate(10deg)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.querySelector('.card-icon').style.transform = 'scale(1) rotate(0deg)';
+      });
+    });
+  </script>
+</body>
+</html>

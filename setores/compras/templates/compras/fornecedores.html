@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fornecedores - Evoque Fitness</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #FF6200;
+      --secondary-color: #1C2526;
+      --accent-color: #FF914D;
+      --dark-color: #2A2F30;
+      --light-color: #F8F9FA;
+      --text-color: #F8F9FA;
+      --text-light: #bfc7ca;
+      --card-bg: #2A2F30;
+      --border-color: #3A4345;
+      --shadow-color: rgba(0,0,0,0.3);
+    }
+
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--text-color) !important;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .navbar-brand, .nav-link {
+      color: var(--text-color) !important;
+    }
+    
+    .navbar {
+      background-color: var(--dark-color) !important;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .main-content {
+      margin-top: 80px;
+      padding: 40px 0;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      background-color: rgba(255, 98, 0, 0.1);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-color) !important;
+    }
+
+    .card-title {
+      color: var(--primary-color) !important;
+      font-weight: 600;
+    }
+
+    .page-title {
+      color: var(--primary-color) !important;
+      border-bottom: 3px solid var(--primary-color);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+      font-weight: 700;
+    }
+    
+    .search-filters {
+      background-color: var(--dark-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-control, .form-select {
+      background-color: var(--secondary-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color) !important;
+      font-weight: 500;
+    }
+
+    .form-control:focus, .form-select:focus {
+      background-color: var(--secondary-color);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(255, 98, 0, 0.25);
+      color: var(--text-color) !important;
+    }
+
+    /* Garantir que todo texto seja visível */
+    * {
+      color: inherit;
+    }
+
+    p, span, div, label, input, select, textarea, h1, h2, h3, h4, h5, h6 {
+      color: var(--text-color) !important;
+    }
+    
+    .fornecedor-card {
+      height: 100%;
+    }
+    
+    .rating {
+      color: #ffd700;
+    }
+    
+    .contact-info {
+      font-size: 0.9rem;
+    }
+    
+    .category-badge {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
+        <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" alt="Evoque Fitness" height="40">
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="{{ url_for('compras.index') }}">
+          <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0">
+          <i class="fas fa-truck me-3"></i>Fornecedores Parceiros
+        </h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNovoFornecedor">
+          <i class="fas fa-plus me-2"></i>Adicionar Fornecedor
+        </button>
+      </div>
+      
+      <!-- Filtros -->
+      <div class="search-filters">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="filtroNome" class="form-label">Nome do Fornecedor</label>
+            <input type="text" class="form-control" id="filtroNome" placeholder="Digite o nome...">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="filtroCategoria" class="form-label">Categoria</label>
+            <select class="form-select" id="filtroCategoria">
+              <option value="">Todas as categorias</option>
+              <option value="equipamentos">Equipamentos</option>
+              <option value="materiais">Materiais</option>
+              <option value="servicos">Serviços</option>
+              <option value="manutencao">Manutenção</option>
+              <option value="limpeza">Limpeza</option>
+              <option value="alimentacao">Alimentação</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" onclick="filtrarFornecedores()">
+              <i class="fas fa-search me-2"></i>Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Lista de Fornecedores -->
+      <div id="listaFornecedores" class="row">
+        <!-- Fornecedores serão carregados aqui -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Novo Fornecedor -->
+  <div class="modal fade" id="modalNovoFornecedor" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="background-color: var(--dark-color); color: var(--light-color);">
+        <div class="modal-header border-bottom border-secondary">
+          <h5 class="modal-title">
+            <i class="fas fa-plus-circle me-2"></i>Novo Fornecedor
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formNovoFornecedor">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="nomeFornecedor" class="form-label">Nome da Empresa *</label>
+                <input type="text" class="form-control" id="nomeFornecedor" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="cnpjFornecedor" class="form-label">CNPJ</label>
+                <input type="text" class="form-control" id="cnpjFornecedor" placeholder="00.000.000/0000-00">
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="categoriaFornecedor" class="form-label">Categoria *</label>
+                <select class="form-select" id="categoriaFornecedor" required>
+                  <option value="">Selecione uma categoria</option>
+                  <option value="equipamentos">Equipamentos</option>
+                  <option value="materiais">Materiais</option>
+                  <option value="servicos">Serviços</option>
+                  <option value="manutencao">Manutenção</option>
+                  <option value="limpeza">Limpeza</option>
+                  <option value="alimentacao">Alimentação</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="telefoneFornecedor" class="form-label">Telefone</label>
+                <input type="tel" class="form-control" id="telefoneFornecedor" placeholder="(00) 0000-0000">
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="emailFornecedor" class="form-label">E-mail</label>
+                <input type="email" class="form-control" id="emailFornecedor">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="contatoFornecedor" class="form-label">Pessoa de Contato</label>
+                <input type="text" class="form-control" id="contatoFornecedor">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="enderecoFornecedor" class="form-label">Endereço</label>
+              <textarea class="form-control" id="enderecoFornecedor" rows="2"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label for="observacoesFornecedor" class="form-label">Observações</label>
+              <textarea class="form-control" id="observacoesFornecedor" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="salvarFornecedor()">
+            <i class="fas fa-save me-2"></i>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalhes do Fornecedor -->
+  <div class="modal fade" id="modalDetalhes" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="background-color: var(--dark-color); color: var(--light-color);">
+        <div class="modal-header border-bottom border-secondary">
+          <h5 class="modal-title">
+            <i class="fas fa-info-circle me-2"></i>Detalhes do Fornecedor
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="conteudoDetalhes">
+            <!-- Conteúdo será carregado dinamicamente -->
+          </div>
+        </div>
+        <div class="modal-footer border-top border-secondary">
+          <button type="button" class="btn btn-warning" onclick="editarFornecedor()">
+            <i class="fas fa-edit me-2"></i>Editar
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Dados de exemplo - em produção viria de uma API
+    const fornecedoresExemplo = [
+      {
+        id: 1,
+        nome: 'TechFit Equipamentos',
+        categoria: 'equipamentos',
+        telefone: '(11) 3456-7890',
+        email: 'contato@techfit.com.br',
+        contato: 'Carlos Silva',
+        endereco: 'Rua das Indústrias, 123 - São Paulo/SP',
+        cnpj: '12.345.678/0001-90',
+        rating: 4.5,
+        observacoes: 'Fornecedor especializado em equipamentos de academia. Ótimo atendimento.'
+      },
+      {
+        id: 2,
+        nome: 'Clean Services Ltda',
+        categoria: 'limpeza',
+        telefone: '(11) 9876-5432',
+        email: 'vendas@cleanservices.com.br',
+        contato: 'Maria Santos',
+        endereco: 'Av. Paulista, 456 - São Paulo/SP',
+        cnpj: '98.765.432/0001-10',
+        rating: 4.8,
+        observacoes: 'Empresa de limpeza e produtos de higiene. Entrega pontual.'
+      },
+      {
+        id: 3,
+        nome: 'Manutenção Total',
+        categoria: 'manutencao',
+        telefone: '(11) 2345-6789',
+        email: 'suporte@manutencaototal.com.br',
+        contato: 'João Oliveira',
+        endereco: 'Rua dos Técnicos, 789 - São Paulo/SP',
+        cnpj: '11.222.333/0001-44',
+        rating: 4.2,
+        observacoes: 'Serviços de manutenção preventiva e corretiva.'
+      },
+      {
+        id: 4,
+        nome: 'Office Supplies',
+        categoria: 'materiais',
+        telefone: '(11) 8765-4321',
+        email: 'pedidos@officesupplies.com.br',
+        contato: 'Ana Costa',
+        endereco: 'Alameda dos Escritórios, 321 - São Paulo/SP',
+        cnpj: '33.444.555/0001-66',
+        rating: 4.0,
+        observacoes: 'Materiais de escritório e papelaria em geral.'
+      }
+    ];
+
+    function carregarFornecedores(filtros = {}) {
+      const container = document.getElementById('listaFornecedores');
+      
+      // Filtrar fornecedores
+      let fornecedoresFiltrados = fornecedoresExemplo;
+      
+      if (filtros.nome) {
+        fornecedoresFiltrados = fornecedoresFiltrados.filter(f => 
+          f.nome.toLowerCase().includes(filtros.nome.toLowerCase())
+        );
+      }
+      
+      if (filtros.categoria) {
+        fornecedoresFiltrados = fornecedoresFiltrados.filter(f => f.categoria === filtros.categoria);
+      }
+      
+      if (fornecedoresFiltrados.length === 0) {
+        container.innerHTML = `
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>Nenhum fornecedor encontrado</h5>
+                <p class="text-muted">Tente ajustar os filtros de busca</p>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      // Renderizar fornecedores
+      container.innerHTML = fornecedoresFiltrados.map(fornecedor => `
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card fornecedor-card" onclick="mostrarDetalhes(${fornecedor.id})">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="card-title mb-0">${fornecedor.nome}</h5>
+                <span class="category-badge">${getCategoriaLabel(fornecedor.categoria)}</span>
+              </div>
+              
+              <div class="contact-info mb-3">
+                <div class="mb-1">
+                  <i class="fas fa-phone me-2"></i>${fornecedor.telefone}
+                </div>
+                <div class="mb-1">
+                  <i class="fas fa-envelope me-2"></i>${fornecedor.email}
+                </div>
+                <div class="mb-1">
+                  <i class="fas fa-user me-2"></i>${fornecedor.contato}
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="rating">
+                  ${renderStars(fornecedor.rating)}
+                  <small class="text-muted ms-1">(${fornecedor.rating})</small>
+                </div>
+                <i class="fas fa-chevron-right text-muted"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getCategoriaLabel(categoria) {
+      const labels = {
+        equipamentos: 'Equipamentos',
+        materiais: 'Materiais',
+        servicos: 'Serviços',
+        manutencao: 'Manutenção',
+        limpeza: 'Limpeza',
+        alimentacao: 'Alimentação'
+      };
+      return labels[categoria] || categoria;
+    }
+
+    function renderStars(rating) {
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 !== 0;
+      let stars = '';
+      
+      for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star"></i>';
+      }
+      
+      if (hasHalfStar) {
+        stars += '<i class="fas fa-star-half-alt"></i>';
+      }
+      
+      const emptyStars = 5 - Math.ceil(rating);
+      for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star"></i>';
+      }
+      
+      return stars;
+    }
+
+    function mostrarDetalhes(fornecedorId) {
+      const fornecedor = fornecedoresExemplo.find(f => f.id === fornecedorId);
+      if (!fornecedor) return;
+      
+      const conteudo = document.getElementById('conteudoDetalhes');
+      conteudo.innerHTML = `
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <h4>${fornecedor.nome}</h4>
+            <span class="category-badge">${getCategoriaLabel(fornecedor.categoria)}</span>
+          </div>
+          <div class="col-md-4 text-end">
+            <div class="rating mb-2">
+              ${renderStars(fornecedor.rating)}
+              <div><small class="text-muted">Avaliação: ${fornecedor.rating}/5</small></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h6>Informações de Contato</h6>
+            <p><i class="fas fa-phone me-2"></i>${fornecedor.telefone}</p>
+            <p><i class="fas fa-envelope me-2"></i>${fornecedor.email}</p>
+            <p><i class="fas fa-user me-2"></i>${fornecedor.contato}</p>
+          </div>
+          <div class="col-md-6">
+            <h6>Dados da Empresa</h6>
+            <p><i class="fas fa-id-card me-2"></i>CNPJ: ${fornecedor.cnpj}</p>
+            <p><i class="fas fa-map-marker-alt me-2"></i>${fornecedor.endereco}</p>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <h6>Observações</h6>
+          <p>${fornecedor.observacoes}</p>
+        </div>
+      `;
+      
+      // Armazenar ID do fornecedor selecionado para edição
+      window.fornecedorSelecionado = fornecedor.id;
+      
+      const modal = new bootstrap.Modal(document.getElementById('modalDetalhes'));
+      modal.show();
+    }
+
+    function filtrarFornecedores() {
+      const filtros = {
+        nome: document.getElementById('filtroNome').value,
+        categoria: document.getElementById('filtroCategoria').value
+      };
+      
+      carregarFornecedores(filtros);
+    }
+
+    function salvarFornecedor() {
+      // Simular salvamento
+      alert('Fornecedor salvo com sucesso!');
+      
+      // Fechar modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalNovoFornecedor'));
+      modal.hide();
+      
+      // Limpar formulário
+      document.getElementById('formNovoFornecedor').reset();
+      
+      // Recarregar lista
+      carregarFornecedores();
+    }
+
+    function editarFornecedor() {
+      // Implementar edição
+      alert('Funcionalidade de edição será implementada em breve.');
+    }
+
+    // Carregar fornecedores ao inicializar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      carregarFornecedores();
+    });
+  </script>
+</body>
+</html>

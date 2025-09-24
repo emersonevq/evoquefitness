@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de ajuda - Suporte TI</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .help-header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #f1f8ff;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #0d6efd;
+        }
+        .contact-card {
+            border-left: 4px solid #0d6efd;
+        }
+        .video-thumbnail {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        .video-thumbnail iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="help-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-question-circle me-2"></i>Central de Ajuda</h1>
+                    <p class="lead">Encontre respostas para suas dúvidas sobre o sistema de chamados TI</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <img src="https://via.placeholder.com/150x80?text=EVOQUE+TI" alt="Logo TI" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="sticky-top pt-3" style="top: 20px;">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-search me-2"></i>Buscar Ajuda</h5>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Digite sua dúvida...">
+                                <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-pills flex-column mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#faq-section"><i class="fas fa-question me-2"></i>Perguntas Frequentes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#manuais-section"><i class="fas fa-book me-2"></i>Manuais e Guias</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contato-section"><i class="fas fa-headset me-2"></i>Contato do Suporte</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#videos-section"><i class="fas fa-video me-2"></i>Tutoriais em Vídeo</a>
+                        </li>
+                    </ul>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-exclamation-triangle me-2"></i>Urgente?</h5>
+                            <p class="card-text">Para problemas críticos que afetam o funcionamento da academia:</p>
+                            <a href="tel:+5511999999999" class="btn btn-danger w-100">
+                                <i class="fas fa-phone me-2"></i>Ligar para Suporte
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <!-- FAQ Section -->
+                <section id="faq-section" class="mb-5">
+                    <h2 class="mb-4"><i class="fas fa-question-circle me-2"></i>Perguntas Frequentes</h2>
+                    
+                    <div class="accordion" id="faqAccordion">
+                        {% for faq in faqs %}
+                        <div class="card mb-2">
+                            <div class="card-header" id="heading{{ loop.index }}">
+                                <h3 class="mb-0">
+                                    <button class="btn btn-link btn-block text-start" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                                        {{ faq[0] }}
+                                    </button>
+                                </h3>
+                            </div>
+                            <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#faqAccordion">
+                                <div class="card-body">
+                                    {{ faq[1]|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Manuais Section -->
+                <section id="manuais-section" class="mb-5">
+                    <h2 class="mb-4"><i class="fas fa-book me-2"></i>Manuais e Guias</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-file-pdf me-2 text-danger"></i>Manual do Sistema</h5>
+                                    <p class="card-text">Guia completo de utilização do sistema de chamados TI.</p>
+                                    <a href="#" class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>Baixar PDF</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-file-word me-2 text-primary"></i>Fluxo de Atendimento</h5>
+                                    <p class="card-text">Diagrama do fluxo de atendimento técnico.</p>
+                                    <a href="#" class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>Baixar DOCX</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-file-excel me-2 text-success"></i>Planilha de Controle</h5>
+                                    <p class="card-text">Modelo para acompanhamento de chamados.</p>
+                                    <a href="#" class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>Baixar XLSX</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-file-powerpoint me-2 text-warning"></i>Apresentação do Sistema</h5>
+                                    <p class="card-text">Slides de treinamento para novos usuários.</p>
+                                    <a href="#" class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>Baixar PPTX</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contato Section -->
+                <section id="contato-section" class="mb-5">
+                    <h2 class="mb-4"><i class="fas fa-headset me-2"></i>Contato do Suporte</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 contact-card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-envelope me-2"></i>E-mail</h5>
+                                    <p class="card-text">Para solicitações não urgentes:</p>
+                                    <a href="mailto:ti@academiaevoque.com.br" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-paper-plane me-2"></i>ti@academiaevoque.com.br
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 contact-card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-phone me-2"></i>Telefone</h5>
+                                    <p class="card-text">Atendimento das 8h às 18h:</p>
+                                    <a href="tel:+5511999999999" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-phone me-2"></i>(11) 99999-9999
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-map-marker-alt me-2"></i>Localização</h5>
+                                    <p class="card-text">Setor de TI - Matriz Evoque Fitness</p>
+                                    <div class="ratio ratio-16x9">
+                                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.0754267452926!2d-46.65342658440639!3d-23.565734367638952!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%2C%201000%20-%20Bela%20Vista%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2001310-100!5e0!3m2!1spt-BR!2sbr!4v1620000000000!5m2!1spt-BR!2sbr" allowfullscreen="" loading="lazy"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Videos Section -->
+                <section id="videos-section" class="mb-5">
+                    <h2 class="mb-4"><i class="fas fa-video me-2"></i>Tutoriais em Vídeo</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-play-circle me-2 text-danger"></i>Abrir Chamado</h5>
+                                    <div class="video-thumbnail mb-3">
+                                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <p class="card-text">Como abrir um novo chamado no sistema.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-play-circle me-2 text-danger"></i>Acompanhar Chamado</h5>
+                                    <div class="video-thumbnail mb-3">
+                                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <p class="card-text">Como acompanhar o status de um chamado existente.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-play-circle me-2 text-danger"></i>Relatórios</h5>
+                                    <div class="video-thumbnail mb-3">
+                                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <p class="card-text">Como gerar relatórios de chamados.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-play-circle me-2 text-danger"></i>Configurações</h5>
+                                    <div class="video-thumbnail mb-3">
+                                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <p class="card-text">Configurações avançadas do sistema.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Suporte TI - Evoque Fitness</h5>
+                    <p>Atendimento de segunda a sexta, das 8h às 18h.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>&copy; 2023 Evoque Fitness. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Ativa os tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Scroll suave para as seções
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

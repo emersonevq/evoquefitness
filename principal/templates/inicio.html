@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evoque Fitness - Portal Geral</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    :root {
+      --primary-color: #FF6200;
+      --secondary-color: #1C2526;
+      --accent-color: #FF914D;
+      --dark-color: #2A2F30;
+      --light-color: #F8F9FA;
+      --text-color: #212529;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--light-color);
+      line-height: 1.6;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    /* Navbar */
+    .navbar {
+      background-color: rgba(28, 37, 38, 0.95) !important;
+      border-bottom: 1.5px solid var(--primary-color); /* Redução de 25% */
+      padding: 11.25px 0; /* Redução de 25% */
+      transition: all 0.3s ease;
+    }
+    
+    .navbar.scrolled {
+      padding: 7.5px 0; /* Redução de 25% */
+      box-shadow: 0 3px 9px rgba(0, 0, 0, 0.15); /* Redução de 25% */
+    }
+    
+    .navbar-brand img {
+      height: 37.5px; /* Redução de 25% */
+      transition: all 0.3s ease;
+    }
+    
+    .navbar.scrolled .navbar-brand img {
+      height: 30px; /* Redução de 25% */
+    }
+    
+    .nav-link {
+      color: var(--light-color) !important;
+      font-weight: 500;
+      margin: 0 6px; /* Redução de 25% */
+      padding: 6px 12px !important; /* Redução de 25% */
+      border-radius: 15px; /* Redução de 25% */
+      transition: all 0.3s ease;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--primary-color);
+      color: white !important;
+      transform: translateY(-1.5px); /* Redução de 25% */
+    }
+    
+    .navbar-toggler {
+      border-color: var(--primary-color);
+    }
+    
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      padding: 90px 0 75px; /* Redução de 25% */
+      text-align: center;
+      overflow: hidden;
+      margin-top: -61.5px; /* Redução de 25% */
+      padding-top: 150px; /* Redução de 25% */
+    }
+    
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://img.freepik.com/premium-vector/green-white-seamless-honeycomb-pattern_713536-278.jpg');
+      background-size: 112.5px; /* Redução de 25% */
+      background-repeat: repeat;
+      opacity: 0.1;
+      filter: hue-rotate(40deg) saturate(2) brightness(0.8);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero-section h1 {
+      font-weight: 700;
+      font-size: 2.625rem; /* Redução de 25% */
+      color: white;
+      text-shadow: 1.5px 1.5px 4.5px rgba(0, 0, 0, 0.5); /* Redução de 25% */
+      margin-bottom: 15px; /* Redução de 25% */
+      letter-spacing: -0.375px; /* Redução de 25% */
+    }
+    
+    .hero-section .lead {
+      font-size: 0.975rem; /* Redução de 25% */
+      max-width: 525px; /* Redução de 25% */
+      margin: 0 auto 22.5px; /* Redução de 25% */
+      text-shadow: 0.75px 0.75px 2.25px rgba(0, 0, 0, 0.3); /* Redução de 25% */
+    }
+    
+    /* Buttons */
+    .btn-hero {
+      background-color: var(--primary-color);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 9px 26.25px; /* Redução de 25% */
+      border-radius: 22.5px; /* Redução de 25% */
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 11.25px rgba(255, 98, 0, 0.4); /* Redução de 25% */
+      position: relative;
+      overflow: hidden;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .btn-hero:hover {
+      background-color: white;
+      color: var(--primary-color);
+      transform: translateY(-2.25px); /* Redução de 25% */
+      box-shadow: 0 4.5px 15px rgba(255, 98, 0, 0.6); /* Redução de 25% */
+    }
+    
+    .btn-hero:active {
+      transform: translateY(0.75px); /* Redução de 25% */
+    }
+    
+    /* Sector Cards */
+    .sectors-section {
+      padding: 60px 0; /* Redução de 25% */
+      background-color: var(--secondary-color);
+    }
+    
+    .section-title {
+      font-weight: 700;
+      color: white;
+      margin-bottom: 37.5px; /* Redução de 25% */
+      position: relative;
+      display: inline-block;
+      font-size: 1.125rem; /* Redução de 25% */
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -7.5px; /* Redução de 25% */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px; /* Redução de 25% */
+      height: 2.25px; /* Redução de 25% */
+      background-color: var(--primary-color);
+    }
+    
+    .sector-card {
+      background-color: var(--dark-color);
+      border: none;
+      border-radius: 9px; /* Redução de 25% */
+      transition: all 0.4s ease;
+      height: 100%;
+      overflow: hidden;
+      box-shadow: 0 3.75px 11.25px rgba(0, 0, 0, 0.1); /* Redução de 25% */
+      position: relative;
+    }
+    
+    .sector-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3.75px; /* Redução de 25% */
+      background-color: var(--primary-color);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    
+    .sector-card:hover {
+      transform: translateY(-7.5px); /* Redução de 25% */
+      box-shadow: 0 11.25px 22.5px rgba(255, 98, 0, 0.2); /* Redução de 25% */
+    }
+    
+    .sector-card .card-body {
+      padding: 22.5px 15px; /* Redução de 25% */
+      text-align: center;
+    }
+    
+    .sector-card .card-icon {
+      font-size: 1.875rem; /* Redução de 25% */
+      color: var(--primary-color);
+      margin-bottom: 15px; /* Redução de 25% */
+      transition: all 0.3s ease;
+    }
+    
+    .sector-card:hover .card-icon {
+      transform: scale(1.1);
+    }
+    
+    .sector-card h5 {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 11.25px; /* Redução de 25% */
+      font-size: 0.9375rem; /* Redução de 25% */
+    }
+    
+    .sector-card p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.7125rem; /* Redução de 25% */
+      margin-bottom: 0;
+    }
+    
+    /* Footer */
+    .footer {
+      background-color: var(--dark-color);
+      border-top: 1.5px solid var(--primary-color); /* Redução de 25% */
+      color: white;
+      padding: 22.5px 0; /* Redução de 25% */
+      text-align: center;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .social-icons {
+      margin-bottom: 15px; /* Redução de 25% */
+    }
+    
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; /* Redução de 25% */
+      height: 30px; /* Redução de 25% */
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: 50%;
+      margin: 0 6px; /* Redução de 25% */
+      transition: all 0.3s ease;
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+    
+    .social-icons a:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-2.25px); /* Redução de 25% */
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .hero-section h1 {
+        font-size: 2.1rem; /* Redução de 25% */
+      }
+      
+      .hero-section .lead {
+        font-size: 0.825rem; /* Redução de 25% */
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-section {
+        padding-top: 112.5px; /* Redução de 25% */
+        padding-bottom: 60px; /* Redução de 25% */
+      }
+      
+      .hero-section h1 {
+        font-size: 1.65rem; /* Redução de 25% */
+      }
+      
+      .section-title {
+        margin-bottom: 22.5px; /* Redução de 25% */
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .hero-section {
+        padding-top: 90px; /* Redução de 25% */
+      }
+      
+      .hero-section h1 {
+        font-size: 1.35rem; /* Redução de 25% */
+      }
+      
+      .btn-hero {
+        padding: 7.5px 18.75px; /* Redução de 25% */
+      }
+    }
+    
+    /* Admin Panel Card */
+    .admin-panel-card {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+      border: none;
+      border-radius: 12px;
+      transition: all 0.4s ease;
+      box-shadow: 0 6px 20px rgba(255, 98, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-panel-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .admin-panel-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(255, 98, 0, 0.4);
+    }
+
+    .admin-panel-card:hover::before {
+      opacity: 1;
+    }
+
+    .admin-panel-card .card-body {
+      padding: 30px 20px;
+      color: white;
+    }
+
+    .admin-panel-icon {
+      font-size: 3rem;
+      color: white;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .admin-panel-card:hover .admin-panel-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .admin-panel-card h5 {
+      color: white;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+    }
+
+    .admin-panel-card p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.875rem;
+      margin-bottom: 20px;
+    }
+
+    .admin-panel-badge {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Agent Panel Card */
+    .agent-panel-card {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: none;
+      border-radius: 12px;
+      transition: all 0.4s ease;
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .agent-panel-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .agent-panel-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(40, 167, 69, 0.4);
+    }
+
+    .agent-panel-card:hover::before {
+      opacity: 1;
+    }
+
+    .agent-panel-card .card-body {
+      padding: 30px 20px;
+      color: white;
+    }
+
+    .agent-panel-icon {
+      font-size: 3rem;
+      color: white;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .agent-panel-card:hover .agent-panel-icon {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .agent-panel-card h5 {
+      color: white;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+    }
+
+    .agent-panel-card p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.875rem;
+      margin-bottom: 20px;
+    }
+
+    .agent-panel-badge {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Animations */
+    .animate__delay-02s {
+      animation-delay: 0.2s;
+    }
+
+    .animate__delay-04s {
+      animation-delay: 0.4s;
+    }
+
+    .animate__delay-06s {
+      animation-delay: 0.6s;
+    }
+
+    .animate__delay-08s {
+      animation-delay: 0.8s;
+    }
+
+    .animate__delay-09s {
+      animation-delay: 0.9s;
+    }
+    
+    /* Ajuste geral de tamanhos */
+    h1, h2, h3, h4, h5, h6 {
+      font-size: 0.75rem; /* Redução base */
+    }
+    
+    .dropdown-menu {
+      font-size: 0.75rem; /* Redução de 25% */
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" alt="Evoque Fitness Logo" class="img-fluid">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Início</a>
+          </li>
+          
+          <!-- Informações do usuário logado -->
+          {% if current_user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>
+              {{ current_user.nome }} {{ current_user.sobrenome }} ({{ current_user.nivel_acesso }})
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Perfil</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configurações</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
+            </ul>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Seção Hero -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="animate__animated animate__fadeInDown">Evoque Fitness</h1>
+        <p class="lead animate__animated animate__fadeIn animate__delay-02s">Explore nossos setores e eleve sua experiência com serviços personalizados!</p>
+        <a href="#setores" class="btn btn-hero animate__animated animate__fadeInUp animate__delay-04s">
+          Escolher Setor <i class="fas fa-chevron-down ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção de Setores -->
+  <section id="setores" class="sectors-section">
+    <div class="container">
+      <h2 class="text-center section-title animate__animated animate__fadeIn">Nossos setores</h2>
+      <div class="row g-3"> <!-- Redução de 25% no espaçamento -->
+        <!-- Setor de TI -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a href="{{ url_for('ti.index') }}" class="text-decoration-none">
+            <div class="card sector-card animate__animated animate__fadeInUp">
+              <div class="card-body">
+                <div class="card-icon">
+                  <i class="fas fa-laptop-code"></i>
+                </div>
+                <h5>Setor de TI</h5>
+                <p>Gerencie chamados e otimize serviços de tecnologia.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <!-- Setor de Compras -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a href="{{ url_for('compras.index') }}" class="text-decoration-none">
+            <div class="card sector-card animate__animated animate__fadeInUp animate__delay-02s">
+              <div class="card-body">
+                <div class="card-icon">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h5>Setor de Compras</h5>
+                <p>Registre e acompanhe solicitações de compras.</p>
+              </div>
+            </div>
+          </a>
+        </div>      
+        <!-- Setor de Manutenção -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{{ url_for('manutencao.index') }}" class="text-decoration-none">
+                <div class="card sector-card animate__animated animate__fadeInUp animate__delay-06s">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h5>Setor de Manutenção</h5>
+                        <p>Gerencie solicitações e acompanhe reparos.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+          
+      <!-- Setor Financeiro -->
+      <div class="col-12 col-sm-6 col-lg-3">
+        <a href="{{ url_for('financeiro.index') }}" class="text-decoration-none">
+          <div class="card sector-card animate__animated animate__fadeInUp animate__delay-04s">
+            <div class="card-body">
+              <div class="card-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h5>Setor Financeiro</h5>
+              <p>Controle financeiro e relatórios de pagamentos.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+          
+        <!-- Setor de Marketing -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{{ url_for('marketing.index') }}" class="text-decoration-none">
+                <div class="card sector-card animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h5>Setor de Marketing</h5>
+                        <p>Planeje campanhas e acompanhe resultados.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Setor de Produtos -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{{ url_for('produtos.index') }}" class="text-decoration-none">
+                <div class="card sector-card animate__animated animate__fadeInUp animate__delay-02s">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <h5>Setor de Produtos</h5>
+                        <p>Gerencie produtos e estoques da academia.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+                
+        <!-- Setor Comercial -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{{ url_for('comercial.index') }}" class="text-decoration-none">
+                <div class="card sector-card animate__animated animate__fadeInUp animate__delay-04s">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h5>Setor Comercial</h5>
+                        <p>Acompanhe vendas e metas comerciais.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+            <!-- Outros Serviços -->
+            <div class="col-12 col-sm-6 col-lg-3">
+              <a href="{{ url_for('outros.index') }}" class="text-decoration-none">
+                <div class="card sector-card animate__animated animate__fadeInUp animate__delay-06s">
+                  <div class="card-body">
+                    <div class="card-icon">
+                      <i class="fas fa-ellipsis-h"></i> <!-- Ícone alterado para representar "outros" -->
+                    </div>
+                    <h5>Outros Serviços</h5>
+                    <p>Acesse diversos serviços complementares da academia.</p> <!-- Descrição atualizada -->
+                  </div>
+                </div>
+              </a>
+            </div>
+      </div>
+
+      <!-- Painéis Administrativos (apenas para usuários autorizados) -->
+      {% if current_user.is_authenticated %}
+        <div class="row justify-content-center mt-4">
+          <!-- Painel Administrativo (apenas para administradores) -->
+          {% if current_user.nivel_acesso == 'Administrador' %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <a href="{{ url_for('ti.painel') }}" class="text-decoration-none">
+              <div class="card admin-panel-card animate__animated animate__fadeInUp animate__delay-08s">
+                <div class="card-body text-center">
+                  <div class="admin-panel-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                  </div>
+                  <h5>Painel Admin</h5>
+                  <p>Controle total do sistema</p>
+                  <div class="admin-panel-badge">
+                    <i class="fas fa-shield-alt me-1"></i>Administrador
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endif %}
+
+          <!-- Painel do Agente (para agentes de suporte) -->
+          {% if current_user.nivel_acesso == 'Gestor' or current_user.nivel_acesso == 'Agente de suporte' %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <a href="{{ url_for('ti.painel_agente') }}" class="text-decoration-none">
+              <div class="card agent-panel-card animate__animated animate__fadeInUp animate__delay-09s">
+                <div class="card-body text-center">
+                  <div class="agent-panel-icon">
+                    <i class="fas fa-headset"></i>
+                  </div>
+                  <h5>Painel Agente</h5>
+                  <p>Gerenciar chamados atribuídos</p>
+                  <div class="agent-panel-badge">
+                    <i class="fas fa-user-cog me-1"></i>Agente
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <div class="container">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <p class="mb-0">© 2025 Evoque Fitness. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 37.5) { // Redução de 25%
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

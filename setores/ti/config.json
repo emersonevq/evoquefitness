@@ -1,0 +1,34 @@
+{
+  "sla": {
+    "primeira_resposta": 17,
+    "resolucao_critico": 2,
+    "resolucao_alto": 8,
+    "resolucao_normal": 17,
+    "resolucao_baixo": 72
+  },
+  "notificacoes": {
+    "email_novo_chamado": true,
+    "email_status_mudou": true,
+    "notificar_sla_risco": false,
+    "intervalo_verificacao": 15
+  },
+  "email": {
+    "servidor_smtp": "smtp.gmail.com",
+    "porta": 587,
+    "usar_tls": true,
+    "email_sistema": "sistema@evoquefitness.com"
+  },
+  "sistema": {
+    "timeout_sessao": 15,
+    "maximo_tentativas_login": 5,
+    "backup_automatico": true,
+    "log_nivel": "INFO"
+  },
+  "chamados": {
+    "auto_atribuicao": false,
+    "escalacao": false,
+    "lembretes_sla": false,
+    "prazo_padrao_sla": 17,
+    "prioridade_padrao": "Urgente"
+  }
+}

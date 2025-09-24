@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evoque Fitness - Abrir Chamado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary-color: #FF6200;
+            --secondary-color: #1C2526;
+            --accent-color: #FF914D;
+            --dark-color: #2A2F30;
+            --light-color: #F8F9FA;
+            --text-color: #212529;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        .navbar {
+            background-color: rgba(28, 37, 38, 0.95) !important;
+            border-bottom: 2px solid var(--primary-color);
+            padding: 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 8px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled .navbar-brand img {
+            height: 32px;
+        }
+
+        .form-container {
+            background-color: var(--dark-color);
+            border-radius: 10px;
+            padding: 1.6rem;
+            margin: 1.6rem auto;
+            max-width: 640px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.6rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--primary-color);
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .form-label {
+            color: var(--light-color);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 6px;
+            padding: 0.6rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(255, 98, 0, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-select option {
+            background-color: var(--dark-color);
+            color: white;
+        }
+
+        textarea.form-control {
+            min-height: 96px;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            width: 100%;
+            margin: 0.4rem 0;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--dark-color);
+            border: 1px solid var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .prioridade {
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin: 0.8rem 0;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .prioridade.critica {
+            background-color: rgba(139, 0, 0, 0.3);
+            color: #ff4444;
+            border: 1px solid rgba(139, 0, 0, 0.5);
+        }
+
+        .prioridade.urgente {
+            background-color: rgba(255, 69, 0, 0.3);
+            color: #ff6347;
+            border: 1px solid rgba(255, 69, 0, 0.5);
+        }
+
+        .prioridade.alta {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .prioridade.normal {
+            background-color: rgba(255, 255, 0, 0.2);
+            color: #ffff00;
+            border: 1px solid rgba(255, 255, 0, 0.3);
+        }
+
+        .prioridade.baixa {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        /* Estilos do Modal Atualizado */
+        .modal-content {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            border-radius: 13px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--primary-color);
+            padding: 1.2rem;
+            background-color: rgba(40, 45, 50, 0.9);
+        }
+
+        .modal-body {
+            padding: 1.6rem;
+            text-align: center;
+        }
+
+        .modal-footer {
+            border-top: 2px solid var(--primary-color);
+            padding: 1.2rem;
+            background-color: rgba(40, 45, 50, 0.9);
+        }
+
+        .modal-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .checkmark-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            background-color: #4caf50;
+            position: relative;
+            box-shadow: 0 3px 6px rgba(76, 175, 80, 0.3);
+            animation: checkmarkScale 0.5s ease-in-out;
+        }
+
+        .checkmark {
+            font-size: 2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes checkmarkScale {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loading-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 98, 0, 0.2);
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .protocolo-info {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+
+        .protocolo-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .protocolo-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .protocolo-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .protocolo-value {
+            font-weight: 700;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .email-notification {
+            background-color: rgba(255, 98, 0, 0.1);
+            border-left: 3px solid var(--primary-color);
+            padding: 12px;
+            margin-top: 16px;
+            text-align: left;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .email-notification i {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 0.8rem;
+                padding: 1.2rem;
+            }
+
+            .form-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/ti/">
+                <img src="https://images.totalpass.com/public/1280x720/czM6Ly90cC1pbWFnZS1hZG1pbi1wcm9kL2d5bXMvNHVrOWtkOGd3M2xlMXg4OGNzdzViN2NhdmUzY2hhNWV3Y2lyd2pyNmI4djl6aXdiNTV2YXg3bjJ2aDI2" alt="Evoque Fitness Logo" height="40" />
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Abrir Chamado</h2>
+
+            <form id="chamadoForm" onsubmit="abrirModal(event)" method="POST" action="/ti/abrir-chamado">
+                <div class="mb-3">
+                    <label class="form-label">Nome do solicitante:</label>
+                    <input class="form-control" type="text" name="nome_solicitante" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Cargo:</label>
+                    <select class="form-select" name="cargo" required>
+                        <option value="Gerente">Gerente</option>
+                        <option value="Gerente Regional">Gerente Regional</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">E-mail:</label>
+                    <input class="form-control" type="email" name="email" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Telefone:</label>
+                    <input class="form-control" type="tel" name="telefone" pattern="\d{11}" placeholder="Ex: 11987654321" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Selecione a unidade:</label>
+                    <select class="form-select" name="unidade" id="unidadeSelect" required>
+                        <option value="">Selecione</option>
+                        {% for unidade in unidades %}
+                        <option value="{{ unidade.id }}">{{ unidade.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <input type="hidden" name="unidade_nome" id="unidadeNomeInput" />
+
+                <div class="mb-3">
+                    <label class="form-label">Problema Reportado:</label>
+                    <select class="form-select" name="problema" id="problema" onchange="toggleDescricao()" required>
+                        <option value="">Selecione</option>
+                        {% for problema in problemas %}
+                        <option value="{{ problema.id }}" 
+                                data-prioridade="{{ problema.prioridade_padrao }}"
+                                data-requer-item="{{ problema.requer_item_internet|lower }}">
+                            {{ problema.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3" id="internetSubcategoria" style="display: none;">
+                    <label class="form-label">Selecione o item de Internet:</label>
+                    <select class="form-select" name="internet_item">
+                        <option value="">Selecione</option>
+                        {% for item in itens_internet %}
+                        <option value="{{ item.id }}">{{ item.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3" id="descricaoField" style="display:none;">
+                    <label class="form-label">Descrição:</label>
+                    <textarea class="form-control" name="descricao" id="descricao" placeholder="Descreva o problema"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Visita Técnica:</label>
+                    <input class="form-control" type="date" name="data_visita" id="data_visita" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Anexos (opcional):</label>
+                    <input class="form-control" type="file" name="anexos" id="anexos" multiple accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx" />
+                    <small class="text-muted">Formatos permitidos: JPG, PNG, GIF, PDF, DOC, DOCX</small>
+                </div>
+
+                <div id="prioridade" class="prioridade"></div>
+
+                <input type="hidden" name="prioridade" id="prioridadeInput" value="Normal" />
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary mb-2">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar chamado
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="voltar()">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Processando seu chamado...</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="fecharModal()" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loadingIndicator" class="loading-circle"></div>
+                    <div id="successContent" style="display: none;">
+                        <div class="checkmark-circle">
+                            <i class="fas fa-check checkmark"></i>
+                        </div>
+                        <h4 class="mb-3" style="font-size: 1.2rem;">Chamado criado com sucesso!</h4>
+
+                        <div class="protocolo-info">
+                            <div class="protocolo-item">
+                                <span class="protocolo-label">Número do Chamado:</span>
+                                <span class="protocolo-value" id="codigoChamado"></span>
+                            </div>
+                            <div class="protocolo-item">
+                                <span class="protocolo-label">Protocolo:</span>
+                                <span class="protocolo-value" id="protocoloChamado"></span>
+                            </div>
+                        </div>
+
+                        <div class="email-notification">
+                            <p><i class="fas fa-envelope"></i> Uma cópia deste chamado foi enviada para o e-mail cadastrado. Verifique sua caixa de entrada e a pasta de spam.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="modalFooter" style="display: none;">
+                    <button type="button" class="btn btn-primary" onclick="fecharModal()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-check me-1"></i> Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleDescricao() {
+            const select = document.getElementById("problema");
+            const selectedOption = select.options[select.selectedIndex];
+            const descricaoField = document.getElementById("descricaoField");
+            const internetSubcategoria = document.getElementById("internetSubcategoria");
+            const prioridade = document.getElementById("prioridade");
+            const prioridadeInput = document.getElementById("prioridadeInput");
+
+            if (!select.value) {
+                descricaoField.style.display = "none";
+                internetSubcategoria.style.display = "none";
+                prioridade.innerText = "";
+                prioridade.className = "prioridade";
+                prioridadeInput.value = "Normal";
+                return;
+            }
+
+            const requerItem = selectedOption.getAttribute("data-requer-item") === "true";
+            internetSubcategoria.style.display = requerItem ? "block" : "none";
+
+            const prioridadePadrao = selectedOption.getAttribute("data-prioridade") || "Normal";
+            prioridadeInput.value = prioridadePadrao;
+            
+            switch(prioridadePadrao) {
+                case "Crítica":
+                    prioridade.innerText = "PRIORIDADE: CRÍTICA";
+                    prioridade.className = "prioridade critica";
+                    break;
+                case "Urgente":
+                    prioridade.innerText = "PRIORIDADE: URGENTE";
+                    prioridade.className = "prioridade urgente";
+                    break;
+                case "Alta":
+                    prioridade.innerText = "PRIORIDADE: ALTA";
+                    prioridade.className = "prioridade alta";
+                    break;
+                case "Normal":
+                    prioridade.innerText = "PRIORIDADE: NORMAL";
+                    prioridade.className = "prioridade normal";
+                    break;
+                case "Baixa":
+                    prioridade.innerText = "PRIORIDADE: BAIXA";
+                    prioridade.className = "prioridade baixa";
+                    break;
+            }
+
+            descricaoField.style.display = "block";
+            document.getElementById("descricao").required = true;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            toggleDescricao();
+            
+            const selectUnidade = document.getElementById("unidadeSelect");
+            const unidadeNomeInput = document.getElementById("unidadeNomeInput");
+            
+            selectUnidade.addEventListener("change", function() {
+                if (selectUnidade.selectedIndex > 0) {
+                    unidadeNomeInput.value = selectUnidade.options[selectUnidade.selectedIndex].text;
+                } else {
+                    unidadeNomeInput.value = "";
+                }
+            });
+        });
+
+        function abrirModal(event) {
+            event.preventDefault();
+            const form = document.getElementById("chamadoForm");
+
+            const selectUnidade = document.getElementById("unidadeSelect");
+            const unidadeNomeInput = document.getElementById("unidadeNomeInput");
+            unidadeNomeInput.value = selectUnidade.options[selectUnidade.selectedIndex].text;
+
+            const formData = new FormData(form);
+
+            const modal = new bootstrap.Modal(document.getElementById("modal"));
+            modal.show();
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Erro na resposta do servidor");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.status === "success") {
+                        document.getElementById("loadingIndicator").style.display = "none";
+                        document.getElementById("successContent").style.display = "block";
+                        document.getElementById("modalFooter").style.display = "block";
+                        document.querySelector(".modal-header h5").textContent =
+                            "Chamado criado com sucesso!";
+
+                        document.getElementById("codigoChamado").innerText = data.codigo_chamado;
+                        document.getElementById("protocoloChamado").innerText = data.protocolo_chamado;
+                    } else {
+                        modal.hide();
+                        alert("Erro ao abrir chamado: " + (data.message || "Tente novamente."));
+                    }
+                })
+                .catch((error) => {
+                    console.error("Erro:", error);
+                    modal.hide();
+                    alert("Erro ao abrir chamado. Tente novamente.");
+                });
+        }
+
+        function fecharModal() {
+            const modalElement = document.getElementById("modal");
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            document.getElementById("loadingIndicator").style.display = "block";
+            document.getElementById("successContent").style.display = "none";
+            document.getElementById("modalFooter").style.display = "none";
+            document.querySelector(".modal-header h5").textContent = "Processando seu chamado...";
+
+            document.getElementById("chamadoForm").reset();
+            window.location.href = "/ti/";
+        }
+
+        function voltar() {
+            window.location.href = "/ti/";
+        }
+
+        window.addEventListener("scroll", function () {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 40) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+    </script>
+</body>
+</html>
