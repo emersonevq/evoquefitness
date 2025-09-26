@@ -68,8 +68,13 @@
 <body data-theme="dark">
 
   <!-- Botão para alternar sidebar em mobile -->
+<<<<<<< HEAD
   <button class="sidebar-toggle" id="sidebarToggle" aria-label="Alternar menu">
     <i class="fas fa-bars"></i>
+=======
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Alternar menu lateral">
+    <i class="fas fa-bars-staggered"></i>
+>>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   </button>
 
   <!-- Sidebar -->
@@ -179,7 +184,11 @@
     <div class="container-fluid">
       <div class="d-flex align-items-center">
         <button class="btn btn-link text-white me-3 d-lg-none" id="mobileSidebarToggle" aria-label="Alternar menu lateral">
+<<<<<<< HEAD
           <i class="fas fa-bars"></i>
+=======
+          <i class="fas fa-bars-staggered"></i>
+>>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
         </button>
         <span class="navbar-brand mb-0 h1 d-none d-lg-block">Painel Administrativo</span>
       </div>
@@ -1270,7 +1279,11 @@
       <h2><i class="fas fa-database me-2"></i>Backup & Manutenção do Sistema</h2>
 
       <div class="row">
+<<<<<<< HEAD
         <!-- Seção de Backup -->
+=======
+        <!-- Se��ão de Backup -->
+>>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
         <div class="col-md-6">
           <div class="card">
             <div class="card-header">
@@ -2738,6 +2751,56 @@
 
   <style>.skeleton-line{position:relative;min-height:12px;background:linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.12) 37%, rgba(0,0,0,0.06) 63%);background-size:400% 100%;animation:skl 1.4s ease infinite;border-radius:4px;margin:8px 0;padding:6px 0}@keyframes skl{0%{background-position:100% 50%}100%{background-position:0 50%}}</style>
 
+<<<<<<< HEAD
+=======
+  <!-- Fallback seguro para garantir funcionamento do menu lateral -->
+  <script>
+    (function() {
+      const sidebar = document.getElementById('sidebar');
+      const buttons = [document.getElementById('sidebarToggle'), document.getElementById('mobileSidebarToggle')];
+      function ensureBackdrop() {
+        let b = document.getElementById('sidebarBackdrop');
+        if (!b) {
+          b = document.createElement('div');
+          b.id = 'sidebarBackdrop';
+          b.className = 'sidebar-backdrop';
+          b.addEventListener('click', () => {
+            sidebar?.classList.remove('active');
+            b.classList.remove('show');
+          });
+          document.body.appendChild(b);
+        }
+        return b;
+      }
+      buttons.forEach(btn => btn && btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!sidebar) return;
+        const opening = !sidebar.classList.contains('active');
+        sidebar.classList.toggle('active');
+        const bd = ensureBackdrop();
+        if (opening && window.innerWidth <= 1024) {
+          bd.classList.add('show');
+        } else {
+          bd.classList.remove('show');
+        }
+      }));
+      document.querySelectorAll('.sidebar nav a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+        if (window.innerWidth <= 1024 && sidebar && sidebar.classList.contains('active')) {
+          sidebar.classList.remove('active');
+          const bd = document.getElementById('sidebarBackdrop');
+          if (bd) bd.classList.remove('show');
+        }
+      }));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          sidebar?.classList.remove('active');
+          document.getElementById('sidebarBackdrop')?.classList.remove('show');
+        }
+      });
+    })();
+  </script>
+
+>>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   <!-- Scripts do painel - carregam DEPOIS da navegação -->
   <script src="/static/ti/js/painel/error-handler.js"></script>
   <script src="/static/ti/js/painel/chart-utils.js"></script>
