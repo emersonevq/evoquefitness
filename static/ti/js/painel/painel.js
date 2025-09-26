@@ -1,8 +1,10 @@
 // Sidebar toggle for mobile - robust binding after DOM ready
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
+    console.log('toggleSidebar called. sidebar element?', !!sidebar);
     if (!sidebar) return;
     const willActivate = !sidebar.classList.contains('active');
+    console.log('Sidebar willActivate:', willActivate, 'current classes:', sidebar.className);
     sidebar.classList.toggle('active');
 
     // Backdrop for mobile
