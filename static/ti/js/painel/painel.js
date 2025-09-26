@@ -46,6 +46,17 @@ function attachSidebarListeners() {
     const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggle');
     if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
     if (mobileSidebarToggleBtn) mobileSidebarToggleBtn.addEventListener('click', toggleSidebar);
+
+    // Delegated handler as fallback if elements get replaced dynamically
+    document.addEventListener('click', function delegatedSidebarHandler(e) {
+        const btn = e.target.closest('#sidebarToggle, #mobileSidebarToggle, .sidebar-toggle, .btn-link#mobileSidebarToggle, .sidebar-toggle i');
+        if (btn) {
+            try {
+                e.preventDefault();
+            } catch (_) {}
+            toggleSidebar();
+        }
+    });
 }
 
 // Ensure listeners are attached after DOMContentLoaded
