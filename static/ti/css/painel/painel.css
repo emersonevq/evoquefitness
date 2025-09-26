@@ -2139,6 +2139,41 @@ select option:checked {
   .sidebar-toggle {
     display: flex;
   }
+
+  /* Remove default browser/Bootstrap orange focus square on the burger button while keeping accessibility */
+  .sidebar-toggle,
+  #sidebarToggle,
+  #mobileSidebarToggle,
+  .btn-link#mobileSidebarToggle {
+    -webkit-tap-highlight-color: transparent; /* mobile touch */
+  }
+
+  .sidebar-toggle:focus,
+  #sidebarToggle:focus,
+  #mobileSidebarToggle:focus,
+  .btn-link#mobileSidebarToggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.12); /* subtle ring, not a solid orange square */
+    background: rgba(255, 98, 0, 0.06);
+    border-color: transparent;
+  }
+
+  /* Ensure icon inside button doesn't get text-decoration or ugly selection box */
+  .sidebar-toggle i,
+  #sidebarToggle i,
+  #mobileSidebarToggle i {
+    text-decoration: none;
+    user-select: none;
+  }
+
+  /* Active/focus-visible state for keyboard users */
+  .sidebar-toggle.active,
+  .sidebar-toggle:focus-visible,
+  #sidebarToggle:focus-visible,
+  #mobileSidebarToggle:focus-visible {
+    background: rgba(255, 98, 0, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 98, 0, 0.14);
+  }
   
   .navbar-panel {
     left: 0 !important;
