@@ -1,9 +1,6 @@
-// Sidebar toggle for mobile
-const sidebar = document.getElementById('sidebar');
-const sidebarToggleBtn = document.getElementById('sidebarToggle');
-const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggle');
-
+// Sidebar toggle for mobile - robust binding after DOM ready
 function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
     const willActivate = !sidebar.classList.contains('active');
     sidebar.classList.toggle('active');
@@ -15,7 +12,8 @@ function toggleSidebar() {
         backdrop.id = 'sidebarBackdrop';
         backdrop.className = 'sidebar-backdrop';
         backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
+            const sb = document.getElementById('sidebar');
+            if (sb) sb.classList.remove('active');
             backdrop.classList.remove('show');
         });
         document.body.appendChild(backdrop);
@@ -27,8 +25,19 @@ function toggleSidebar() {
     }
 }
 
-sidebarToggleBtn?.addEventListener('click', toggleSidebar);
-mobileSidebarToggleBtn?.addEventListener('click', toggleSidebar);
+function attachSidebarListeners() {
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+    const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggle');
+    if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
+    if (mobileSidebarToggleBtn) mobileSidebarToggleBtn.addEventListener('click', toggleSidebar);
+}
+
+// Ensure listeners are attached after DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachSidebarListeners);
+} else {
+    attachSidebarListeners();
+}
 
 // Submenu toggle - aplicado após DOM carregar
 function initializeSubmenuToggles() {
@@ -2521,7 +2530,7 @@ function inicializarSistemaPainel() {
             return;
         }
 
-        // 2. Inicializar navegação
+        // 2. Inicializar navegaç��o
         initializeSubmenuToggles();
         initializeNavigation();
 
@@ -2784,7 +2793,7 @@ document.querySelectorAll('.modal').forEach(modal => {
     });
 });
 
-// Configuração do Socket.IO
+// Configuraç��o do Socket.IO
 let socket = null;
 let painelSocketInitialized = false;
 
