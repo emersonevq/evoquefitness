@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from database import db, User, Chamado, Unidade, AgenteSuporte, ResetSenha, get_brazil_time
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+from sqlalchemy import or_
 import secrets
 import string
 import random
@@ -92,7 +93,7 @@ def login():
             flash('Por favor, preencha todos os campos.', 'danger')
             return render_template('login.html')
         
-        user = User.query.filter_by(usuario=usuario).first()
+        user = User.query.filter(or_(User.usuario == usuario, User.email == usuario)).first()
         
         if user and user.check_password(senha):
             if user.bloqueado:
