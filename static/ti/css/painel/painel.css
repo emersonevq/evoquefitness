@@ -2197,30 +2197,80 @@ select option:checked {
     padding: var(--spacing-sm);
     margin-top: calc(var(--navbar-height) - 10px);
   }
-  
+
   .navbar-panel {
     height: calc(var(--navbar-height) - 10px);
     padding: var(--spacing-xs) 0;
   }
-  
+
   .content-section {
     padding: var(--spacing-md);
   }
-  
+
   h2 {
     font-size: 16px;
   }
-  
+
   .cards-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-sm);
   }
-  
-  .modal-content {
-    margin: var(--spacing-sm);
-    max-width: calc(100vw - calc(var(--spacing-sm) * 2));
+
+  /* Make modals occupy the entire viewport on mobile in the painel context */
+  .modal {
+    z-index: 2000; /* ensure above sidebar/backdrop */
   }
-  
+
+  .modal-dialog {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .modal-content {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: none;
+    max-width: 100%;
+  }
+
+  .modal-header,
+  .modal-footer {
+    flex: 0 0 auto;
+  }
+
+  .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+  }
+
+  /* Small margin for large mobile screens to avoid touching edges if desired */
+  .modal.modal-dialog-margin .modal-content {
+    width: calc(100vw - 1rem);
+    height: calc(100vh - 1rem);
+    margin: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .modal-backdrop.show {
+    opacity: 0.6;
+  }
+
+  .modal.show {
+    display: block; /* ensure visible */
+  }
+
+  /* keep previous behavior for non-modal content */
   .modal-body {
     grid-template-columns: 1fr;
     padding: var(--spacing-md);
