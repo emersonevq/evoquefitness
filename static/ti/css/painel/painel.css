@@ -2066,9 +2066,38 @@ select option:checked {
   bottom: 0;
   background: rgba(0,0,0,0.45);
   z-index: 1140;
-  display: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
 }
-.sidebar-backdrop.show { display: block; }
+.sidebar-backdrop.show {
+  opacity: 0.6;
+  pointer-events: auto;
+}
+
+/* Sidebar base improvements */
+.sidebar {
+  background: var(--sidebar-bg);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.45);
+  opacity: 1;
+}
+
+/* Submenu collapse animation */
+.sidebar nav ul .submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 260ms ease, opacity 220ms ease, padding 200ms ease;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.sidebar nav ul li.has-submenu.open .submenu {
+  max-height: 1000px; /* suficiente para conter itens */
+  opacity: 1;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
 
 /* ============ SEÇÃO: RESPONSIVIDADE ============ */
 @media (max-width: 1200px) {
