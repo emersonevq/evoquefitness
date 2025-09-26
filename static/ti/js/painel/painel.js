@@ -232,11 +232,17 @@ function initializeNavigation() {
             activateSection(targetId);
             window.location.hash = targetId;
 
-            // Close sidebar on mobile after navigation
-            if (window.innerWidth <= 1024 && sidebar && sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                const backdrop = document.getElementById('sidebarBackdrop');
-                if (backdrop) backdrop.classList.remove('show');
+            // Always close sidebar after navigation (mobile and desktop small screens)
+            const sb = document.getElementById('sidebar');
+            const bd = document.getElementById('sidebarBackdrop');
+            if (sb && sb.classList.contains('active')) {
+                try {
+                    closeSidebar(sb, bd);
+                } catch (err) {
+                    // Fallback: remove classes/styles
+                    sb.classList.remove('active');
+                    if (bd) bd.classList.remove('show');
+                }
             }
         });
     });
@@ -1435,7 +1441,7 @@ document.getElementById('btnGerarSenha')?.addEventListener('click', function(e) 
     gerarSenha();
 });
 
-// Funç��o para validar dados do usuário
+// Funç���o para validar dados do usuário
 function validarDadosUsuario(dados) {
     const erros = [];
     
