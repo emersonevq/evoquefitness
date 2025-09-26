@@ -1,4 +1,22 @@
 // Sidebar toggle for mobile - robust binding after DOM ready
+function openSidebar(sidebar, backdrop) {
+    sidebar.classList.add('active');
+    sidebar.style.transition = 'transform 280ms ease, width 280ms ease, opacity 200ms ease';
+    sidebar.style.transform = 'translateX(0)';
+    sidebar.style.width = '280px';
+    sidebar.style.opacity = '1';
+    if (backdrop && window.innerWidth <= 1024) backdrop.classList.add('show');
+}
+
+function closeSidebar(sidebar, backdrop) {
+    sidebar.classList.remove('active');
+    sidebar.style.transition = 'transform 220ms ease, width 220ms ease, opacity 180ms ease';
+    sidebar.style.transform = 'translateX(-100%)';
+    sidebar.style.width = '0';
+    sidebar.style.opacity = '0';
+    if (backdrop) backdrop.classList.remove('show');
+}
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     console.log('toggleSidebar called. sidebar element?', !!sidebar);
@@ -14,31 +32,51 @@ function toggleSidebar() {
         backdrop.className = 'sidebar-backdrop';
         backdrop.addEventListener('click', () => {
             const sb = document.getElementById('sidebar');
-            if (sb) {
-                sb.classList.remove('active');
-                sb.style.transform = 'translateX(-100%)';
-                sb.style.width = '0';
-            }
-            backdrop.classList.remove('show');
+            if (sb) closeSidebar(sb, backdrop);
         });
         document.body.appendChild(backdrop);
     }
 
-    // Apply explicit inline styles to force visibility/animation
     if (willActivate) {
-        sidebar.classList.add('active');
-        // Force the visible transform and width (use inline to override potential conflicting rules)
-        sidebar.style.transition = 'transform 280ms ease, width 280ms ease';
-        sidebar.style.transform = 'translateX(0)';
-        sidebar.style.width = '280px';
-        if (window.innerWidth <= 1024) backdrop.classList.add('show');
+        openSidebar(sidebar, backdrop);
     } else {
-        sidebar.classList.remove('active');
-        sidebar.style.transition = 'transform 280ms ease, width 280ms ease';
-        sidebar.style.transform = 'translateX(-100%)';
-        sidebar.style.width = '0';
-        backdrop.classList.remove('show');
+        closeSidebar(sidebar, backdrop);
     }
+}
+
+function attachSidebarListeners() {
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+    const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggle');
+    if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
+    if (mobileSidebarToggleBtn) mobileSidebarToggleBtn.addEventListener('click', toggleSidebar);
+
+    // Delegated handler as fallback if elements get replaced dynamically
+    document.addEventListener('click', function delegatedSidebarHandler(e) {
+        const btn = e.target.closest('#sidebarToggle, #mobileSidebarToggle, .sidebar-toggle, .btn-link#mobileSidebarToggle, .sidebar-toggle i');
+        if (btn) {
+            try { e.preventDefault(); } catch(_) {}
+            toggleSidebar();
+            return;
+        }
+
+        // Close sidebar when clicking outside of it
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        if (sidebar && sidebar.classList.contains('active')) {
+            const insideSidebar = e.target.closest('.sidebar');
+            const clickedToggle = e.target.closest('#sidebarToggle, #mobileSidebarToggle');
+            if (!insideSidebar && !clickedToggle) {
+                closeSidebar(sidebar, backdrop);
+            }
+        }
+    });
+}
+
+// Ensure listeners are attached after DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachSidebarListeners);
+} else {
+    attachSidebarListeners();
 }
 
 function attachSidebarListeners() {
@@ -717,7 +755,7 @@ async function updateChamadoStatus(chamadoId, novoStatus) {
             if (ch) ch.historico = data.historico;
         }
 
-        // Se o status foi atualizado com sucesso e é um dos status que requer notificação
+        // Se o status foi atualizado com sucesso e é um dos status que requer notifica��ão
         if (['Aguardando', 'Cancelado', 'Concluido'].includes(novoStatus)) {
             // Envia a notificação
             const notificacaoResponse = await fetch(`/ti/painel/api/chamados/${chamadoId}/notificar`, {
