@@ -4,7 +4,27 @@ const sidebarToggleBtn = document.getElementById('sidebarToggle');
 const mobileSidebarToggleBtn = document.getElementById('mobileSidebarToggle');
 
 function toggleSidebar() {
+    if (!sidebar) return;
+    const willActivate = !sidebar.classList.contains('active');
     sidebar.classList.toggle('active');
+
+    // Backdrop for mobile
+    let backdrop = document.getElementById('sidebarBackdrop');
+    if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.id = 'sidebarBackdrop';
+        backdrop.className = 'sidebar-backdrop';
+        backdrop.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            backdrop.classList.remove('show');
+        });
+        document.body.appendChild(backdrop);
+    }
+    if (willActivate && window.innerWidth <= 1024) {
+        backdrop.classList.add('show');
+    } else {
+        backdrop.classList.remove('show');
+    }
 }
 
 sidebarToggleBtn?.addEventListener('click', toggleSidebar);
@@ -116,20 +136,15 @@ function initializeNavigation() {
             const targetId = href.substring(1);
             console.log(`=== NAVEGAÇÃO PARA: ${targetId} ===`);
 
-            // Verificar se a seção existe
             const targetSection = document.getElementById(targetId);
             if (!targetSection) {
                 console.error('Seção não encontrada:', targetId);
                 return;
             }
 
-            // Remove active class from all navigation links
             document.querySelectorAll('.sidebar nav ul li a').forEach(l => l.classList.remove('active'));
-
-            // Add active class to clicked link
             this.classList.add('active');
 
-            // Handle submenu parent activation
             const parentLi = this.closest('li.has-submenu');
             if (parentLi) {
                 parentLi.classList.add('open');
@@ -140,11 +155,15 @@ function initializeNavigation() {
                 }
             }
 
-            // Activate the target section
             activateSection(targetId);
-
-            // Update URL hash
             window.location.hash = targetId;
+
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth <= 1024 && sidebar && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                const backdrop = document.getElementById('sidebarBackdrop');
+                if (backdrop) backdrop.classList.remove('show');
+            }
         });
     });
 
@@ -3614,7 +3633,7 @@ async function filtrarListaUsuarios(termoBusca, page = 1) {
 
     try {
         isSearching = true;
-        // Atualizar variáveis globais
+        // Atualizar vari��veis globais
         currentUsuariosBusca = termoBusca;
         currentUsuariosPage = page;
 
