@@ -2089,10 +2089,18 @@ select option:checked {
   .sidebar {
     transform: translateX(-100%);
     z-index: 1150;
+    /* Garantir largura mínima no mobile para que o menu fique visível quando aberto */
+    width: 0; /* manter 0 por padrão para não empurrar layout */
+    min-width: 0;
   }
-  
+
   .sidebar.active {
     transform: translateX(0);
+    /* Ao abrir no mobile, forçamos largura visível e overflow para exibir o conteúdo */
+    width: 280px;
+    min-width: 240px;
+    max-width: 90vw;
+    overflow-y: auto;
   }
   
   .main-content {
