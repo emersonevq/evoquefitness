@@ -278,10 +278,10 @@
         {% else %}
           <form method="POST" action="{{ url_for('auth.login') }}">
             <div class="mb-3">
-              <label for="usuario" class="form-label">Usuário</label>
+              <label for="usuario" class="form-label">Usuário ou Email</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Digite seu usuário" required>
+                <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Digite seu usuário ou email" required>
               </div>
             </div>
 
