@@ -5,9 +5,8 @@ function toggleSidebar() {
     if (!sidebar) return;
     const willActivate = !sidebar.classList.contains('active');
     console.log('Sidebar willActivate:', willActivate, 'current classes:', sidebar.className);
-    sidebar.classList.toggle('active');
 
-    // Backdrop for mobile
+    // Ensure backdrop exists
     let backdrop = document.getElementById('sidebarBackdrop');
     if (!backdrop) {
         backdrop = document.createElement('div');
@@ -15,14 +14,29 @@ function toggleSidebar() {
         backdrop.className = 'sidebar-backdrop';
         backdrop.addEventListener('click', () => {
             const sb = document.getElementById('sidebar');
-            if (sb) sb.classList.remove('active');
+            if (sb) {
+                sb.classList.remove('active');
+                sb.style.transform = 'translateX(-100%)';
+                sb.style.width = '0';
+            }
             backdrop.classList.remove('show');
         });
         document.body.appendChild(backdrop);
     }
-    if (willActivate && window.innerWidth <= 1024) {
-        backdrop.classList.add('show');
+
+    // Apply explicit inline styles to force visibility/animation
+    if (willActivate) {
+        sidebar.classList.add('active');
+        // Force the visible transform and width (use inline to override potential conflicting rules)
+        sidebar.style.transition = 'transform 280ms ease, width 280ms ease';
+        sidebar.style.transform = 'translateX(0)';
+        sidebar.style.width = '280px';
+        if (window.innerWidth <= 1024) backdrop.classList.add('show');
     } else {
+        sidebar.classList.remove('active');
+        sidebar.style.transition = 'transform 280ms ease, width 280ms ease';
+        sidebar.style.transform = 'translateX(-100%)';
+        sidebar.style.width = '0';
         backdrop.classList.remove('show');
     }
 }
