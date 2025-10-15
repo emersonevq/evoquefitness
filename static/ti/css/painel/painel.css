@@ -1993,27 +1993,17 @@ select option:checked {
   position: fixed;
   top: var(--spacing-sm);
   left: var(--spacing-sm);
-<<<<<<< HEAD
   background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 50%;
   width: 36px;
   height: 36px;
-=======
-  background: transparent;
-  color: var(--light-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 1200;
-<<<<<<< HEAD
   box-shadow: 0 2px 10px rgba(255, 98, 0, 0.3);
   transition: all var(--transition-speed) ease;
   font-size: var(--font-size-small);
@@ -2021,17 +2011,6 @@ select option:checked {
 
 .sidebar-toggle:hover {
   transform: scale(1.05);
-=======
-  box-shadow: 0 2px 8px var(--shadow-color);
-  transition: all var(--transition-speed) ease;
-  font-size: var(--font-size-base);
-}
-
-.sidebar-toggle:hover {
-  background: rgba(255, 98, 0, 0.08);
-  border-color: var(--primary-color);
-  transform: translateY(-1px);
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
 }
 
 /* ============ SEÇÃO: PAGINAÇÃO ============ */
@@ -2085,44 +2064,9 @@ select option:checked {
   bottom: 0;
   background: rgba(0,0,0,0.45);
   z-index: 1140;
-<<<<<<< HEAD
   display: none;
 }
 .sidebar-backdrop.show { display: block; }
-=======
-  opacity: 0;
-  transition: opacity 200ms ease;
-  pointer-events: none;
-}
-.sidebar-backdrop.show {
-  opacity: 0.6;
-  pointer-events: auto;
-}
-
-/* Sidebar base improvements */
-.sidebar {
-  background: var(--sidebar-bg);
-  box-shadow: 4px 0 20px rgba(0,0,0,0.45);
-  opacity: 1;
-}
-
-/* Submenu collapse animation */
-.sidebar nav ul .submenu {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 260ms ease, opacity 220ms ease, padding 200ms ease;
-  opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.sidebar nav ul li.has-submenu.open .submenu {
-  max-height: 1000px; /* suficiente para conter itens */
-  opacity: 1;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
 
 /* ============ SEÇÃO: RESPONSIVIDADE ============ */
 @media (max-width: 1200px) {
@@ -2143,25 +2087,10 @@ select option:checked {
   .sidebar {
     transform: translateX(-100%);
     z-index: 1150;
-<<<<<<< HEAD
-  }
-  
-  .sidebar.active {
-    transform: translateX(0);
-=======
-    /* Garantir largura mínima no mobile para que o menu fique visível quando aberto */
-    width: 0; /* manter 0 por padrão para não empurrar layout */
-    min-width: 0;
   }
 
   .sidebar.active {
     transform: translateX(0);
-    /* Ao abrir no mobile, forçamos largura visível e overflow para exibir o conteúdo */
-    width: 280px;
-    min-width: 240px;
-    max-width: 90vw;
-    overflow-y: auto;
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   }
   
   .main-content {
@@ -2171,44 +2100,6 @@ select option:checked {
   .sidebar-toggle {
     display: flex;
   }
-<<<<<<< HEAD
-=======
-
-  /* Remove default browser/Bootstrap orange focus square on the burger button while keeping accessibility */
-  .sidebar-toggle,
-  #sidebarToggle,
-  #mobileSidebarToggle,
-  .btn-link#mobileSidebarToggle {
-    -webkit-tap-highlight-color: transparent; /* mobile touch */
-  }
-
-  .sidebar-toggle:focus,
-  #sidebarToggle:focus,
-  #mobileSidebarToggle:focus,
-  .btn-link#mobileSidebarToggle:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.12); /* subtle ring, not a solid orange square */
-    background: rgba(255, 98, 0, 0.06);
-    border-color: transparent;
-  }
-
-  /* Ensure icon inside button doesn't get text-decoration or ugly selection box */
-  .sidebar-toggle i,
-  #sidebarToggle i,
-  #mobileSidebarToggle i {
-    text-decoration: none;
-    user-select: none;
-  }
-
-  /* Active/focus-visible state for keyboard users */
-  .sidebar-toggle.active,
-  .sidebar-toggle:focus-visible,
-  #sidebarToggle:focus-visible,
-  #mobileSidebarToggle:focus-visible {
-    background: rgba(255, 98, 0, 0.08);
-    box-shadow: 0 0 0 4px rgba(255, 98, 0, 0.14);
-  }
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   
   .navbar-panel {
     left: 0 !important;
@@ -2232,27 +2123,10 @@ select option:checked {
     padding: var(--spacing-sm);
     margin-top: calc(var(--navbar-height) - 10px);
   }
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   .navbar-panel {
     height: calc(var(--navbar-height) - 10px);
     padding: var(--spacing-xs) 0;
   }
-<<<<<<< HEAD
-  
-  .content-section {
-    padding: var(--spacing-md);
-  }
-  
-  h2 {
-    font-size: 16px;
-  }
-  
-=======
-
   .content-section {
     padding: var(--spacing-md);
   }
@@ -2260,77 +2134,14 @@ select option:checked {
   h2 {
     font-size: 16px;
   }
-
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   .cards-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-sm);
   }
-<<<<<<< HEAD
-  
   .modal-content {
     margin: var(--spacing-sm);
     max-width: calc(100vw - calc(var(--spacing-sm) * 2));
   }
-  
-=======
-
-  /* Make modals occupy the entire viewport on mobile in the painel context */
-  .modal {
-    z-index: 2000; /* ensure above sidebar/backdrop */
-  }
-
-  .modal-dialog {
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-  }
-
-  .modal-content {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: none;
-    max-width: 100%;
-  }
-
-  .modal-header,
-  .modal-footer {
-    flex: 0 0 auto;
-  }
-
-  .modal-body {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    padding: var(--spacing-md);
-  }
-
-  /* Small margin for large mobile screens to avoid touching edges if desired */
-  .modal.modal-dialog-margin .modal-content {
-    width: calc(100vw - 1rem);
-    height: calc(100vh - 1rem);
-    margin: 0.5rem;
-    border-radius: 8px;
-  }
-
-  .modal-backdrop.show {
-    opacity: 0.6;
-  }
-
-  .modal.show {
-    display: block; /* ensure visible */
-  }
-
-  /* keep previous behavior for non-modal content */
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
   .modal-body {
     grid-template-columns: 1fr;
     padding: var(--spacing-md);
@@ -2399,18 +2210,6 @@ select option:checked {
   .collapsible-content {
     padding: 1rem;
   }
-<<<<<<< HEAD
-=======
-  /* Garantir que as seções ocupem toda a tela no mobile */
-  .content-section {
-    min-height: calc(100vh - var(--navbar-height) - var(--spacing-md) * 2);
-    width: 100%;
-  }
-  .main-content {
-    min-height: 100vh;
-    width: 100vw;
-  }
->>>>>>> 124108a (Atualizando projeto com as últimas mudanças)
 }
 
 @media (max-width: 576px) {
