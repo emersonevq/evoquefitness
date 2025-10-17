@@ -864,7 +864,7 @@ function renderPagination(totalItems) {
     }
 
     const nextBtn = document.createElement('button');
-    nextBtn.textContent = '»';
+    nextBtn.textContent = '��';
     nextBtn.disabled = currentPage === totalPages;
     nextBtn.addEventListener('click', () => {
         if (currentPage < totalPages) {
@@ -1227,6 +1227,27 @@ async function openModal(chamado) {
                 });
             }
             timelineList.innerHTML = fallback.join('');
+            // Se houver anexos no fallback, garantir que a descrição do chamado seja exibida antes do anexo
+            if (chamado && chamado.descricao) {
+                // Pequeno timeout para garantir que o innerHTML tenha sido aplicado
+                setTimeout(() => {
+                    try {
+                        const attachments = timelineList.querySelectorAll('.timeline-item .timeline-attachment');
+                        attachments.forEach(att => {
+                            const body = att.closest('.timeline-body');
+                            if (!body) return;
+                            if (body.querySelector('.chamado-descricao')) return; // já inserido
+                            const descContainer = document.createElement('div');
+                            descContainer.className = 'chamado-descricao';
+                            descContainer.innerHTML = '<div><strong>Descrição do chamado:</strong></div>' +
+                                '<div class="text-wrap">' + (chamado.descricao || '').replace(/\n/g,'<br>') + '</div>' +
+                                '<div><strong>Enviou um anexo:</strong></div>';
+                            const attachmentEl = body.querySelector('.timeline-attachment');
+                            if (attachmentEl) body.insertBefore(descContainer, attachmentEl);
+                        });
+                    } catch (e) { console.warn('Erro ao injetar descrição do chamado nos anexos (fallback):', e); }
+                }, 50);
+            }
         } else {
             timelineList.innerHTML = items.join('');
         }
@@ -1376,7 +1397,7 @@ document.getElementById('btnGerarSenha')?.addEventListener('click', function(e) 
     gerarSenha();
 });
 
-// Funç��o para validar dados do usuário
+// Funç���o para validar dados do usuário
 function validarDadosUsuario(dados) {
     const erros = [];
     
@@ -2865,7 +2886,7 @@ function initializeSocketIO() {
 
         socket.on('status_atualizado', function(data) {
             console.log('Status de chamado atualizado:', data);
-            // Notificação visual já é tratada em notificacoes.js
+            // Notificação visual já �� tratada em notificacoes.js
             // Recarregar dados se necessário
             if (document.getElementById('gerenciar-chamados').classList.contains('active')) {
                 loadChamados();
