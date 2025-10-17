@@ -864,7 +864,7 @@ function renderPagination(totalItems) {
     }
 
     const nextBtn = document.createElement('button');
-    nextBtn.textContent = '»';
+    nextBtn.textContent = '��';
     nextBtn.disabled = currentPage === totalPages;
     nextBtn.addEventListener('click', () => {
         if (currentPage < totalPages) {
@@ -1174,9 +1174,13 @@ async function openModal(chamado) {
                     if (ev.tipo === 'ticket_sent' && ev.metadados) {
                         const md = ev.metadados;
                         const assunto = md.assunto ? `<div><strong>${md.assunto}</strong></div>` : '';
-                        const msg = md.mensagem ? `<div class="text-wrap">${(md.mensagem || '').replace(/\n/g,'<br>')}</div>` : '';
+                        const msg = md.mensagem ? `<div class=\"text-wrap\">${(md.mensagem || '').replace(/\n/g,'<br>')}</div>` : '';
                         extra = `${assunto}${msg}`;
                     }
+
+                    const bodyInner = (ev.tipo === 'attachment_received' || ev.tipo === 'attachment_sent')
+                        ? `<div><div><strong>Descrição do chamado:</strong></div>${chamado.descricao ? '<div class="text-wrap">' + (chamado.descricao || '').replace(/\n/g,'<br>') + '</div>' : ''}<div><strong>Enviou um anexo:</strong></div>${anexoHtml || ''}</div>`
+                        : `<span>${label}${anexoHtml}${extra ? '<div class=\"mt-1\">'+extra+'</div>' : ''}</span>`;
 
                     items.push(`
                         <li class="timeline-item ${senderType==='Suporte' ? 'from-suporte' : senderType==='Solicitante' ? 'from-solicitante' : 'from-sistema'}">
@@ -1186,9 +1190,9 @@ async function openModal(chamado) {
                             <span class="spacer"></span>
                             ${when}
                           </div>
-                          <div class="timeline-body">
-                            <i class="fas ${icon} history-icon"></i>
-                            <span>${label}${anexoHtml}${extra ? '<div class="mt-1">'+extra+'</div>' : ''}</span>
+                          <div class=\"timeline-body\">
+                            <i class=\"fas ${icon} history-icon\"></i>
+                            ${bodyInner}
                           </div>
                         </li>`);
                 });
@@ -1205,7 +1209,7 @@ async function openModal(chamado) {
                     const url = ax.url || (ax.id ? `/ti/api/anexos/${ax.id}/download` : null);
                     const nome = ax.nome || fileNameFrom(url || '');
                     if (url) {
-                        const anexoItem = `\n<li class="timeline-item from-solicitante">\n  <div class="timeline-header">\n    <span class="sender-badge badge-solicitante">Solicitante</span>\n    <span class="sender-name">${chamado.solicitante || 'Solicitante'}</span>\n    <span class="spacer"></span>\n    <span class="timestamp">${ax.data_upload || chamado.data_abertura || ''}</span>\n  </div>\n  <div class="timeline-body">\n    <i class="fas fa-paperclip history-icon"></i>\n    <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nome}" class="timeline-attachment-image"/></a></div>\n  </div>\n</li>`;
+                        const anexoItem = `\n<li class=\"timeline-item from-solicitante\">\n  <div class=\"timeline-header\">\n    <span class=\"sender-badge badge-solicitante\">Solicitante</span>\n    <span class=\"sender-name\">${chamado.solicitante || 'Solicitante'}</span>\n    <span class=\"spacer\"></span>\n    <span class=\"timestamp\">${ax.data_upload || chamado.data_abertura || ''}</span>\n  </div>\n  <div class=\"timeline-body\">\n    <i class=\"fas fa-paperclip history-icon\"></i>\n    <div>\n      <div><strong>Descrição do chamado:</strong></div>\n      <div><strong>Enviou um anexo:</strong></div>\n      <div class=\"timeline-attachment\"><a href=\"${url}\" target=\"_blank\" rel=\"noopener\"><img src=\"${url}\" alt=\"${nome}\" class=\"timeline-attachment-image\"/></a></div>\n    </div>\n  </div>\n</li>`;
                         items.push(anexoItem);
                     }
                 } catch (e) { console.warn('Erro ao adicionar fallback de anexo ao timeline:', e); }
@@ -1223,6 +1227,27 @@ async function openModal(chamado) {
                 });
             }
             timelineList.innerHTML = fallback.join('');
+            // Se houver anexos no fallback, garantir que a descrição do chamado seja exibida antes do anexo
+            if (chamado && chamado.descricao) {
+                // Pequeno timeout para garantir que o innerHTML tenha sido aplicado
+                setTimeout(() => {
+                    try {
+                        const attachments = timelineList.querySelectorAll('.timeline-item .timeline-attachment');
+                        attachments.forEach(att => {
+                            const body = att.closest('.timeline-body');
+                            if (!body) return;
+                            if (body.querySelector('.chamado-descricao')) return; // já inserido
+                            const descContainer = document.createElement('div');
+                            descContainer.className = 'chamado-descricao';
+                            descContainer.innerHTML = '<div><strong>Descrição do chamado:</strong></div>' +
+                                '<div class="text-wrap">' + (chamado.descricao || '').replace(/\n/g,'<br>') + '</div>' +
+                                '<div><strong>Enviou um anexo:</strong></div>';
+                            const attachmentEl = body.querySelector('.timeline-attachment');
+                            if (attachmentEl) body.insertBefore(descContainer, attachmentEl);
+                        });
+                    } catch (e) { console.warn('Erro ao injetar descrição do chamado nos anexos (fallback):', e); }
+                }, 50);
+            }
         } else {
             timelineList.innerHTML = items.join('');
         }
@@ -1372,7 +1397,7 @@ document.getElementById('btnGerarSenha')?.addEventListener('click', function(e) 
     gerarSenha();
 });
 
-// Funç��o para validar dados do usuário
+// Funç���o para validar dados do usuário
 function validarDadosUsuario(dados) {
     const erros = [];
     
@@ -2861,7 +2886,7 @@ function initializeSocketIO() {
 
         socket.on('status_atualizado', function(data) {
             console.log('Status de chamado atualizado:', data);
-            // Notificação visual já é tratada em notificacoes.js
+            // Notificação visual já �� tratada em notificacoes.js
             // Recarregar dados se necessário
             if (document.getElementById('gerenciar-chamados').classList.contains('active')) {
                 loadChamados();
