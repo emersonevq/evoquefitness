@@ -1,0 +1,23 @@
+[33m2a48f10[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update painel.css
+[33md988a29[m Update painel.js
+[33m9f46d20[m Update painel.html
+[33m5cdb4d8[m Merge pull request #3 from emersonevq/ai_main_777847411eb0
+[33mecf3760[m[33m ([m[1;31morigin/ai_main_777847411eb0[m[33m)[m Reduce distracting animation on login card to avoid sliding stripe effect
+[33mebf1267[m Add backdrop styles for mobile sidebar and polish burger button
+[33maead31a[m Fix mobile burger menu behavior and add backdrop; close sidebar on navigation
+[33m9aead6c[m Tweak desktop breakpoint so login card is centered at typical desktop widths
+[33me532d18[m Merge pull request #2 from emersonevq/ai_main_777847411eb0
+[33m3f928b0[m Update login form label and placeholder to support email or username
+[33m2572999[m Allow login by email or username and update imports
+[33mb2159f6[m Merge pull request #1 from emersonevq/ai_main_e810da003507
+[33mdf21e9a[m[33m ([m[1;31morigin/ai_main_e810da003507[m[33m)[m Merge remote-tracking branch 'refs/remotes/origin/main' into ai_main_e810da003507
+[33ma6d2809[m Update painel.py
+[33m5c6d54d[m Fix delete chamado by removing dependent records before deleting the ticket
+[33m5875867[m Subindo projeto do zero
+[33m1baa26a[m Hide description on cards and keep only in modal; remove card description DOM and population
+[33m3e8a8cd[m Include descricao in lightweight chamados API
+[33m6e4c6d4[m Show descrição in chamado cards on painel
+[33m777e44f[m Change Flask dev port to 5000
+[33mb940eed[m completionId: cgen-240cfa3b038b47a8bdaa323b0cce8824
+[33md84c4b9[m Subindo arquivos do PC para o GitHub
+[33m767b221[m first commit
