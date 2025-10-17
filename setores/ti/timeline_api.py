@@ -8,7 +8,6 @@ timeline_bp = Blueprint('timeline', __name__)
 
 @timeline_bp.route('/api/chamados/<int:id>/timeline', methods=['GET'])
 @login_required
-@setor_required('Administrador')
 def obter_timeline_chamado(id):
     try:
         from datetime import datetime
