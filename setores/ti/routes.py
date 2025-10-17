@@ -402,55 +402,70 @@ def abrir_chamado():
                 except Exception as e:
                     current_app.logger.warning(f"Falha ao registrar timeline de criação: {str(e)}")
 
-                # Processar anexos enviados
+                # Processar anexos enviados - armazenar conteúdo no banco (blob) em vez de filesystem
                 try:
                     from werkzeug.utils import secure_filename
                     from security.security_config import SecurityConfig
                     arquivos = request.files.getlist('anexos') or request.files.getlist('anexos[]')
+
+                    # Debug logging: show received files info
+                    try:
+                        keys = list(request.files.keys())
+                        current_app.logger.info(f"Upload debug - request.files keys: {keys}")
+                        current_app.logger.info(f"Upload debug - arquivos length: {len(arquivos) if arquivos is not None else 0}")
+                    except Exception as _:
+                        current_app.logger.info("Upload debug - could not read request.files keys")
+
                     if arquivos:
-                        base_dir = os.path.join('static', 'uploads', 'chamados', codigo_gerado)
-                        os.makedirs(base_dir, exist_ok=True)
+                        from database import AnexoArquivo, ChamadoTimelineEvent
                         for arquivo in arquivos:
-                            if not arquivo or arquivo.filename == '':
-                                continue
-                            filename = secure_filename(arquivo.filename)
-                            ext = os.path.splitext(filename)[1].lower()
-                            if SecurityConfig.UPLOAD_EXTENSIONS and ext not in SecurityConfig.UPLOAD_EXTENSIONS:
-                                continue
-                            caminho = os.path.join(base_dir, filename)
-                            arquivo.save(caminho)
-                            tamanho = os.path.getsize(caminho) if os.path.exists(caminho) else None
-
-                            from database import AnexoArquivo, ChamadoTimelineEvent
-                            anexo = AnexoArquivo(
-                                chamado_id=novo_chamado.id,
-                                nome_original=arquivo.filename,
-                                caminho_arquivo=caminho.replace('\\', '/'),
-                                mime_type=arquivo.mimetype,
-                                tamanho_bytes=tamanho,
-                                usuario_id=current_user.id
-                            )
-                            db.session.add(anexo)
-                            db.session.flush()
-
-                            # Registrar timeline do anexo recebido na abertura
                             try:
-                                evento_anexo = ChamadoTimelineEvent(
+                                if not arquivo or arquivo.filename == '':
+                                    current_app.logger.info("Upload debug - skipping empty file object")
+                                    continue
+                                filename = secure_filename(arquivo.filename)
+                                ext = os.path.splitext(filename)[1].lower()
+                                if SecurityConfig.UPLOAD_EXTENSIONS and ext not in SecurityConfig.UPLOAD_EXTENSIONS:
+                                    current_app.logger.info(f"Upload debug - extension not allowed for file: {filename}")
+                                    continue
+
+                                # Ler conteúdo em memória e salvar no banco
+                                data = arquivo.read()
+                                tamanho = len(data) if data is not None else None
+                                current_app.logger.info(f"Upload debug - read file {filename} size={tamanho}")
+
+                                anexo = AnexoArquivo(
                                     chamado_id=novo_chamado.id,
-                                    usuario_id=current_user.id,
-                                    tipo='attachment_received',
-                                    descricao=f'Anexo recebido na abertura: {arquivo.filename}',
-                                    anexo_id=anexo.id,
-                                    metadados=json.dumps({
-                                        'arquivo_nome': arquivo.filename,
-                                        'mime_type': arquivo.mimetype,
-                                        'tamanho_bytes': tamanho,
-                                        'origem': 'solicitante'
-                                    })
+                                    nome_original=arquivo.filename,
+                                    caminho_arquivo=None,
+                                    arquivo_blob=data,
+                                    mime_type=arquivo.mimetype,
+                                    tamanho_bytes=tamanho,
+                                    usuario_id=current_user.id
                                 )
-                                db.session.add(evento_anexo)
+                                db.session.add(anexo)
+                                db.session.flush()
+
+                                # Registrar timeline do anexo recebido na abertura
+                                try:
+                                    evento_anexo = ChamadoTimelineEvent(
+                                        chamado_id=novo_chamado.id,
+                                        usuario_id=current_user.id,
+                                        tipo='attachment_received',
+                                        descricao=f'Anexo recebido na abertura: {arquivo.filename}',
+                                        anexo_id=anexo.id,
+                                        metadados=json.dumps({
+                                            'arquivo_nome': arquivo.filename,
+                                            'mime_type': arquivo.mimetype,
+                                            'tamanho_bytes': tamanho,
+                                            'origem': 'solicitante'
+                                        })
+                                    )
+                                    db.session.add(evento_anexo)
+                                except Exception as e:
+                                    current_app.logger.warning(f"Falha ao registrar timeline de anexo: {str(e)}")
                             except Exception as e:
-                                current_app.logger.warning(f"Falha ao registrar timeline de anexo: {str(e)}")
+                                current_app.logger.error(f"Erro ao processar arquivo de upload: {str(e)}")
                         db.session.commit()
                 except Exception as e:
                     current_app.logger.error(f"Erro ao salvar anexos do chamado {codigo_gerado}: {str(e)}")

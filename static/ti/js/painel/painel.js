@@ -736,27 +736,8 @@ function renderChamadosPage(page) {
             'cancelado': 'fa-times-circle'
         }[statusClass] || 'fa-circle';
 
-        const anexosHtml = (Array.isArray(chamado.anexos) && chamado.anexos.length > 0) ? `
-        <div class="attachments-section">
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 12px;">
-                <div style="font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 8px;">
-                    <i class="fas fa-paperclip" style="color: #00a6d6; margin-right: 4px;"></i>
-                    Histórico - Anexos (${chamado.anexos.length})
-                </div>
-                <ul class="attachments-list">
-                    ${chamado.anexos.map(ax => {
-                        const tamanhoText = ax.tamanho_kb ? ` (${ax.tamanho_kb} KB)` : '';
-                        const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(ax.nome);
-                        return `<li title="${ax.nome}">
-                            <i class="fas ${isImage ? 'fa-image' : 'fa-file'}" style="color: #00a6d6; min-width: 16px;"></i>
-                            <a href="${ax.url}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; word-break: break-word;">
-                                ${ax.nome}${tamanhoText}
-                            </a>
-                        </li>`;
-                    }).join('')}
-                </ul>
-            </div>
-        </div>` : '';
+        // Não exibir anexos diretamente no card — anexos serão exibidos apenas na aba Histórico do modal
+        let anexosHtml = '';
 
         card.innerHTML = `
     <div class="card-header">
@@ -1140,10 +1121,8 @@ async function openModal(chamado) {
         }
 
         try {
-            let eventos = timelineCache.get(chamado.id)?.events;
-            if (!eventos) {
-                eventos = await prefetchTimeline(chamado.id) || [];
-            }
+            const cached = timelineCache.get(chamado.id) || {};
+            let eventos = await prefetchTimeline(chamado.id) || cached.events || [];
             if (Array.isArray(eventos)) {
 
                 // Ordenar por data (mais antigo -> mais recente)
@@ -1176,7 +1155,20 @@ async function openModal(chamado) {
                     const whoBadge = `<span class="sender-badge ${senderType==='Suporte' ? 'badge-suporte' : senderType==='Solicitante' ? 'badge-solicitante' : 'badge-sistema'}">${senderType}</span>`;
                     const whoName = `<span class="sender-name">${ev.usuario_nome || 'Sistema'}</span>`;
                     const when = ev.criado_em ? `<span class="timestamp">${ev.criado_em}</span>` : '';
-                    const anexoHtml = ev.anexo ? ` <a href="${ev.anexo.url}" target="_blank" rel="noopener">${fileNameFrom(ev.anexo.url, ev.anexo.nome)}</a>` : '';
+                    let anexoHtml = '';
+                    if (ev.anexo) {
+                        const mime = ev.anexo.mime_type || '';
+                        const url = ev.anexo.url || (ev.anexo.id ? `/ti/api/anexos/${ev.anexo.id}/download` : null);
+                        const nomeAnexo = ev.anexo.nome || fileNameFrom(ev.anexo.url, ev.anexo.nome);
+                        const isImage = mime.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp)$/i.test(url || nomeAnexo);
+                        if (url) {
+                            if (isImage) {
+                                anexoHtml = ` <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nomeAnexo}" class="timeline-attachment-image"/></a></div>`;
+                            } else {
+                                anexoHtml = ` <a href="${url}" target="_blank" rel="noopener">${nomeAnexo}</a>`;
+                            }
+                        }
+                    }
 
                     let extra = '';
                     if (ev.tipo === 'ticket_sent' && ev.metadados) {
@@ -1203,6 +1195,21 @@ async function openModal(chamado) {
             }
         } catch (e) {
             console.warn('Falha ao carregar timeline:', e);
+        }
+
+        // Se nenhum evento da timeline contém anexo, mas chamado.anexos existe, adicionar como fallback
+        const hasEventWithAnexo = items.some(it => /timeline-attachment|fa-paperclip/.test(it));
+        if (!hasEventWithAnexo && Array.isArray(chamado.anexos) && chamado.anexos.length > 0) {
+            chamado.anexos.forEach(ax => {
+                try {
+                    const url = ax.url || (ax.id ? `/ti/api/anexos/${ax.id}/download` : null);
+                    const nome = ax.nome || fileNameFrom(url || '');
+                    if (url) {
+                        const anexoItem = `\n<li class="timeline-item from-solicitante">\n  <div class="timeline-header">\n    <span class="sender-badge badge-solicitante">Solicitante</span>\n    <span class="sender-name">${chamado.solicitante || 'Solicitante'}</span>\n    <span class="spacer"></span>\n    <span class="timestamp">${ax.data_upload || chamado.data_abertura || ''}</span>\n  </div>\n  <div class="timeline-body">\n    <i class="fas fa-paperclip history-icon"></i>\n    <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nome}" class="timeline-attachment-image"/></a></div>\n  </div>\n</li>`;
+                        items.push(anexoItem);
+                    }
+                } catch (e) { console.warn('Erro ao adicionar fallback de anexo ao timeline:', e); }
+            });
         }
 
         // Fallback simples caso a API não retorne eventos
@@ -2504,7 +2511,7 @@ window.debugNavigation = function() {
     activateSection('sla-dashboard');
 };
 
-// Função de inicialização compreensiva
+// Função de inicializa��ão compreensiva
 function inicializarSistemaPainel() {
     console.log('=== INICIALIZANDO SISTEMA DO PAINEL ===');
 
@@ -5147,7 +5154,7 @@ function criarBackup() {
 
 function executarManutencao() {
     if (window.advancedNotificationSystem) {
-        window.advancedNotificationSystem.showInfo('Manutenção', 'Iniciando processo de manutenção...');
+        window.advancedNotificationSystem.showInfo('Manutenç����o', 'Iniciando processo de manutenção...');
     }
 }
 
@@ -5242,7 +5249,7 @@ function debugSistemaPainel() {
         console.log('--- TESTE DE NAVEGAÇÃO ---');
         try {
             if (typeof activateSection === 'function') {
-                console.log('Testando ativaç��o da seção visao-geral...');
+                console.log('Testando ativaç���o da seção visao-geral...');
                 activateSection('visao-geral');
                 console.log('✓ Navegação funcionando');
             } else {

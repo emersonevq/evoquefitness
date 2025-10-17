@@ -1,5 +1,7 @@
 from flask import Blueprint, request, make_response, jsonify
 from flask_login import login_required, current_user
+from flask import Blueprint, request, make_response, send_file, redirect, current_app
+import os
 from auth.auth_helpers import setor_required
 from database import db, Chamado, ChamadoTimelineEvent, AnexoArquivo, User
 from setores.ti.painel import json_response, error_response
@@ -8,7 +10,6 @@ timeline_bp = Blueprint('timeline', __name__)
 
 @timeline_bp.route('/api/chamados/<int:id>/timeline', methods=['GET'])
 @login_required
-@setor_required('Administrador')
 def obter_timeline_chamado(id):
     try:
         from datetime import datetime
@@ -50,7 +51,9 @@ def obter_timeline_chamado(id):
                     anexo_info = {
                         'id': anexo.id,
                         'nome': anexo.nome_original,
-                        'url': anexo.url_publica() if hasattr(anexo, 'url_publica') else ('/' + anexo.caminho_arquivo if anexo.caminho_arquivo else None)
+                        'url': anexo.url_publica() if hasattr(anexo, 'url_publica') else ('/' + anexo.caminho_arquivo if anexo.caminho_arquivo else None),
+                        'mime_type': getattr(anexo, 'mime_type', None),
+                        'tamanho_bytes': getattr(anexo, 'tamanho_bytes', None)
                     }
 
             autor_id = ev.usuario_id
@@ -138,3 +141,33 @@ def obter_timeline_chamado(id):
         return resp
     except Exception as e:
         return error_response('Erro interno no servidor')
+
+
+@timeline_bp.route('/api/anexos/<int:anexo_id>/download', methods=['GET'])
+@login_required
+def download_anexo(anexo_id):
+    try:
+        anexo = AnexoArquivo.query.get_or_404(anexo_id)
+        # Preferir blob em DB
+        if anexo.arquivo_blob:
+            from io import BytesIO
+            buf = BytesIO(anexo.arquivo_blob)
+            return send_file(buf, mimetype=anexo.mime_type or 'application/octet-stream', as_attachment=True, download_name=anexo.nome_original)
+        # Fallback para caminho_arquivo (compatibilidade retroativa)
+        if anexo.caminho_arquivo:
+            # caminho_arquivo pode ser um caminho relativo que começa com 'static/'
+            path = anexo.caminho_arquivo
+            if path.startswith('static/'):
+                # servir via flask.send_from_directory
+                from flask import send_from_directory
+                rel = os.path.relpath(path, 'static')
+                dirpart = os.path.join('static', os.path.dirname(rel))
+                filename = os.path.basename(path)
+                return send_from_directory(dirpart, filename, mimetype=anexo.mime_type or 'application/octet-stream', as_attachment=True)
+            else:
+                # caminho público
+                return redirect(anexo.caminho_arquivo)
+        return error_response('Arquivo não encontrado', 404)
+    except Exception as e:
+        current_app.logger.error(f"Erro ao baixar anexo {anexo_id}: {str(e)}")
+        return error_response('Erro ao baixar anexo', 500)
