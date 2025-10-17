@@ -1174,9 +1174,13 @@ async function openModal(chamado) {
                     if (ev.tipo === 'ticket_sent' && ev.metadados) {
                         const md = ev.metadados;
                         const assunto = md.assunto ? `<div><strong>${md.assunto}</strong></div>` : '';
-                        const msg = md.mensagem ? `<div class="text-wrap">${(md.mensagem || '').replace(/\n/g,'<br>')}</div>` : '';
+                        const msg = md.mensagem ? `<div class=\"text-wrap\">${(md.mensagem || '').replace(/\n/g,'<br>')}</div>` : '';
                         extra = `${assunto}${msg}`;
                     }
+
+                    const bodyInner = (ev.tipo === 'attachment_received' || ev.tipo === 'attachment_sent')
+                        ? `<div><div><strong>Descrição do chamado:</strong></div><div><strong>Enviou um anexo:</strong></div>${anexoHtml || ''}</div>`
+                        : `<span>${label}${anexoHtml}${extra ? '<div class=\"mt-1\">'+extra+'</div>' : ''}</span>`;
 
                     items.push(`
                         <li class="timeline-item ${senderType==='Suporte' ? 'from-suporte' : senderType==='Solicitante' ? 'from-solicitante' : 'from-sistema'}">
@@ -1186,9 +1190,9 @@ async function openModal(chamado) {
                             <span class="spacer"></span>
                             ${when}
                           </div>
-                          <div class="timeline-body">
-                            <i class="fas ${icon} history-icon"></i>
-                            <span>${label}${anexoHtml}${extra ? '<div class="mt-1">'+extra+'</div>' : ''}</span>
+                          <div class=\"timeline-body\">
+                            <i class=\"fas ${icon} history-icon\"></i>
+                            ${bodyInner}
                           </div>
                         </li>`);
                 });
@@ -1205,7 +1209,7 @@ async function openModal(chamado) {
                     const url = ax.url || (ax.id ? `/ti/api/anexos/${ax.id}/download` : null);
                     const nome = ax.nome || fileNameFrom(url || '');
                     if (url) {
-                        const anexoItem = `\n<li class="timeline-item from-solicitante">\n  <div class="timeline-header">\n    <span class="sender-badge badge-solicitante">Solicitante</span>\n    <span class="sender-name">${chamado.solicitante || 'Solicitante'}</span>\n    <span class="spacer"></span>\n    <span class="timestamp">${ax.data_upload || chamado.data_abertura || ''}</span>\n  </div>\n  <div class="timeline-body">\n    <i class="fas fa-paperclip history-icon"></i>\n    <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nome}" class="timeline-attachment-image"/></a></div>\n  </div>\n</li>`;
+                        const anexoItem = `\n<li class=\"timeline-item from-solicitante\">\n  <div class=\"timeline-header\">\n    <span class=\"sender-badge badge-solicitante\">Solicitante</span>\n    <span class=\"sender-name\">${chamado.solicitante || 'Solicitante'}</span>\n    <span class=\"spacer\"></span>\n    <span class=\"timestamp\">${ax.data_upload || chamado.data_abertura || ''}</span>\n  </div>\n  <div class=\"timeline-body\">\n    <i class=\"fas fa-paperclip history-icon\"></i>\n    <div>\n      <div><strong>Descrição do chamado:</strong></div>\n      <div><strong>Enviou um anexo:</strong></div>\n      <div class=\"timeline-attachment\"><a href=\"${url}\" target=\"_blank\" rel=\"noopener\"><img src=\"${url}\" alt=\"${nome}\" class=\"timeline-attachment-image\"/></a></div>\n    </div>\n  </div>\n</li>`;
                         items.push(anexoItem);
                     }
                 } catch (e) { console.warn('Erro ao adicionar fallback de anexo ao timeline:', e); }
