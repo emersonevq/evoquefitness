@@ -1156,7 +1156,18 @@ async function openModal(chamado) {
                     const whoBadge = `<span class="sender-badge ${senderType==='Suporte' ? 'badge-suporte' : senderType==='Solicitante' ? 'badge-solicitante' : 'badge-sistema'}">${senderType}</span>`;
                     const whoName = `<span class="sender-name">${ev.usuario_nome || 'Sistema'}</span>`;
                     const when = ev.criado_em ? `<span class="timestamp">${ev.criado_em}</span>` : '';
-                    const anexoHtml = ev.anexo ? ` <a href="${ev.anexo.url}" target="_blank" rel="noopener">${fileNameFrom(ev.anexo.url, ev.anexo.nome)}</a>` : '';
+                    let anexoHtml = '';
+                    if (ev.anexo && ev.anexo.url) {
+                        const mime = ev.anexo.mime_type || '';
+                        const url = ev.anexo.url;
+                        const nomeAnexo = ev.anexo.nome || fileNameFrom(ev.anexo.url, ev.anexo.nome);
+                        const isImage = mime.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp)$/i.test(url || nomeAnexo);
+                        if (isImage) {
+                            anexoHtml = ` <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nomeAnexo}" class="timeline-attachment-image"/></a></div>`;
+                        } else {
+                            anexoHtml = ` <a href="${url}" target="_blank" rel="noopener">${nomeAnexo}</a>`;
+                        }
+                    }
 
                     let extra = '';
                     if (ev.tipo === 'ticket_sent' && ev.metadados) {
