@@ -736,7 +736,35 @@ function renderChamadosPage(page) {
             'cancelado': 'fa-times-circle'
         }[statusClass] || 'fa-circle';
 
-        const anexosHtml = '';
+        let anexosHtml = '';
+        try {
+            if (Array.isArray(chamado.anexos) && chamado.anexos.length > 0) {
+                const first = chamado.anexos[0];
+                const url = first.url || first.url_publica || '';
+                const nome = first.nome || (url ? fileNameFrom(url) : 'Anexo');
+                const isImage = (first.mime_type && first.mime_type.startsWith('image/')) || /\.(jpg|jpeg|png|gif|webp)$/i.test(url || nome);
+                if (isImage && url) {
+                    const remaining = chamado.anexos.length - 1;
+                    anexosHtml = `
+                        <div class="card-attachments">
+                            <a href="${url}" target="_blank" rel="noopener noreferrer">
+                                <img src="${url}" alt="${nome}" class="card-attachment-thumb" />
+                            </a>
+                            ${remaining > 0 ? `<span class="attachment-count">+${remaining}</span>` : ''}
+                        </div>`;
+                } else if (url) {
+                    anexosHtml = `
+                        <div class="card-attachments">
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="attachment-link">
+                                <i class="fas fa-paperclip"></i> ${nome}
+                            </a>
+                        </div>`;
+                }
+            }
+        } catch (e) {
+            console.warn('Erro ao montar anexosHtml no card:', e);
+            anexosHtml = '';
+        }
 
         card.innerHTML = `
     <div class="card-header">
