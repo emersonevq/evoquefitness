@@ -1179,7 +1179,7 @@ async function openModal(chamado) {
                     }
 
                     const bodyInner = (ev.tipo === 'attachment_received' || ev.tipo === 'attachment_sent')
-                        ? `<div><div><strong>Descrição do chamado:</strong></div><div><strong>Enviou um anexo:</strong></div>${anexoHtml || ''}</div>`
+                        ? `<div><div><strong>Descrição do chamado:</strong></div>${chamado.descricao ? '<div class="text-wrap">' + (chamado.descricao || '').replace(/\n/g,'<br>') + '</div>' : ''}<div><strong>Enviou um anexo:</strong></div>${anexoHtml || ''}</div>`
                         : `<span>${label}${anexoHtml}${extra ? '<div class=\"mt-1\">'+extra+'</div>' : ''}</span>`;
 
                     items.push(`
