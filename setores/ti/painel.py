@@ -3372,40 +3372,54 @@ Equipe de Suporte TI - Evoque Fitness
                     from werkzeug.utils import secure_filename
                     from security.security_config import SecurityConfig
                     from database import AnexoArquivo, ChamadoTimelineEvent
+
+                    try:
+                        keys = list(request.files.keys())
+                        logger.info(f"Ticket upload debug - request.files keys: {keys}")
+                        logger.info(f"Ticket upload debug - arquivos count: {len(arquivos) if arquivos is not None else 0}")
+                    except Exception:
+                        logger.info("Ticket upload debug - could not enumerate request.files keys")
+
                     for arquivo in arquivos:
-                        if not arquivo or arquivo.filename == '':
-                            continue
-                        filename = secure_filename(arquivo.filename)
-                        ext = os.path.splitext(filename)[1].lower()
-                        if SecurityConfig.UPLOAD_EXTENSIONS and ext not in SecurityConfig.UPLOAD_EXTENSIONS:
-                            continue
+                        try:
+                            if not arquivo or arquivo.filename == '':
+                                logger.info("Ticket upload debug - skipping empty file")
+                                continue
+                            filename = secure_filename(arquivo.filename)
+                            ext = os.path.splitext(filename)[1].lower()
+                            if SecurityConfig.UPLOAD_EXTENSIONS and ext not in SecurityConfig.UPLOAD_EXTENSIONS:
+                                logger.info(f"Ticket upload debug - extension not allowed: {filename}")
+                                continue
 
-                        # Ler conteúdo em memória e salvar no banco
-                        data = arquivo.read()
-                        tamanho = len(data) if data is not None else None
+                            # Ler conteúdo em memória e salvar no banco
+                            data = arquivo.read()
+                            tamanho = len(data) if data is not None else None
+                            logger.info(f"Ticket upload debug - read file {filename} size={tamanho}")
 
-                        anexo = AnexoArquivo(
-                            historico_ticket_id=historico.id,
-                            chamado_id=chamado.id,
-                            nome_original=arquivo.filename,
-                            caminho_arquivo=None,
-                            arquivo_blob=data,
-                            mime_type=arquivo.mimetype,
-                            tamanho_bytes=tamanho,
-                            usuario_id=current_user.id
-                        )
-                        db.session.add(anexo)
-                        db.session.flush()  # obter ID do anexo
+                            anexo = AnexoArquivo(
+                                historico_ticket_id=historico.id,
+                                chamado_id=chamado.id,
+                                nome_original=arquivo.filename,
+                                caminho_arquivo=None,
+                                arquivo_blob=data,
+                                mime_type=arquivo.mimetype,
+                                tamanho_bytes=tamanho,
+                                usuario_id=current_user.id
+                            )
+                            db.session.add(anexo)
+                            db.session.flush()  # obter ID do anexo
 
-                        # Timeline: anexo enviado pelo suporte
-                        evento_anexo = ChamadoTimelineEvent(
-                            chamado_id=chamado.id,
-                            usuario_id=getattr(current_user, 'id', None),
-                            tipo='attachment_sent',
-                            descricao=f'Anexo enviado: {arquivo.filename}',
-                            anexo_id=anexo.id
-                        )
-                        db.session.add(evento_anexo)
+                            # Timeline: anexo enviado pelo suporte
+                            evento_anexo = ChamadoTimelineEvent(
+                                chamado_id=chamado.id,
+                                usuario_id=getattr(current_user, 'id', None),
+                                tipo='attachment_sent',
+                                descricao=f'Anexo enviado: {arquivo.filename}',
+                                anexo_id=anexo.id
+                            )
+                            db.session.add(evento_anexo)
+                        except Exception as e:
+                            logger.error(f"Erro ao processar anexo do ticket: {str(e)}")
                     db.session.commit()
             except Exception as e:
                 logger.error(f"Erro ao salvar anexos do ticket: {str(e)}")
@@ -4832,7 +4846,7 @@ def estatisticas_logs_acesso():
 def analise_problemas():
     """Análise estatística de problemas reportados"""
     try:
-        # Problemas mais frequentes (últimos 3 meses)
+        # Problemas mais frequentes (��ltimos 3 meses)
         tres_meses_atras = get_brazil_time() - timedelta(days=90)
         problemas_frequentes = db.session.query(
             Chamado.problema,
