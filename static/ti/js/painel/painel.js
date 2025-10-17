@@ -384,7 +384,7 @@ async function loadChamados() {
 
         // Montar URL com parâmetros de performance: light e limit
         const url = new URL('/ti/painel/api/chamados', window.location.origin);
-        url.searchParams.set('light', '1');
+        url.searchParams.set('light', '0');
         url.searchParams.set('limit', '200');
         if (currentFilter && currentFilter !== 'all') {
             url.searchParams.set('status', currentFilter);
@@ -736,6 +736,28 @@ function renderChamadosPage(page) {
             'cancelado': 'fa-times-circle'
         }[statusClass] || 'fa-circle';
 
+        const anexosHtml = (Array.isArray(chamado.anexos) && chamado.anexos.length > 0) ? `
+        <div class="attachments-section">
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 12px;">
+                <div style="font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 8px;">
+                    <i class="fas fa-paperclip" style="color: #00a6d6; margin-right: 4px;"></i>
+                    Histórico - Anexos (${chamado.anexos.length})
+                </div>
+                <ul class="attachments-list">
+                    ${chamado.anexos.map(ax => {
+                        const tamanhoText = ax.tamanho_kb ? ` (${ax.tamanho_kb} KB)` : '';
+                        const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(ax.nome);
+                        return `<li title="${ax.nome}">
+                            <i class="fas ${isImage ? 'fa-image' : 'fa-file'}" style="color: #00a6d6; min-width: 16px;"></i>
+                            <a href="${ax.url}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; word-break: break-word;">
+                                ${ax.nome}${tamanhoText}
+                            </a>
+                        </li>`;
+                    }).join('')}
+                </ul>
+            </div>
+        </div>` : '';
+
         card.innerHTML = `
     <div class="card-header">
         <h3>${chamado.codigo}</h3>
@@ -774,6 +796,7 @@ function renderChamadosPage(page) {
                 </button>
             `}
         </div>
+        ${anexosHtml}
     </div>
     <div class="card-footer">
         <select id="status-${chamado.id}">
@@ -2525,7 +2548,7 @@ function inicializarSistemaPainel() {
 
         // 6. Set up test function for debugging navigation
         window.testNavigation = function(sectionId) {
-            console.log('=== TESTE DE NAVEGAÇÃO ===');
+            console.log('=== TESTE DE NAVEGAÇ��O ===');
             console.log('Tentando navegar para:', sectionId);
             const targetSection = document.getElementById(sectionId);
             if (targetSection) {
@@ -2713,7 +2736,7 @@ function sectionExists(id) {
 // Global functions for debugging and manual control
 window.debugPainel = {
     activateSection: function(id) {
-        console.log('Ativação manual da seção:', id);
+        console.log('Ativação manual da seç��o:', id);
         activateSection(id);
     },
     listSections: function() {
@@ -4041,7 +4064,7 @@ function inicializarModalGrupos() {
         btnSalvarGrupo.addEventListener('click', criarGrupo);
     }
 
-    // Adicionar botões de seleção de unidades
+    // Adicionar bot��es de seleção de unidades
     adicionarBotoesSelecaoUnidades();
 }
 
