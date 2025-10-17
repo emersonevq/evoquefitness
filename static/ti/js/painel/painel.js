@@ -1148,10 +1148,8 @@ async function openModal(chamado) {
         }
 
         try {
-            let eventos = timelineCache.get(chamado.id)?.events;
-            if (!eventos) {
-                eventos = await prefetchTimeline(chamado.id) || [];
-            }
+            const cached = timelineCache.get(chamado.id) || {};
+            let eventos = await prefetchTimeline(chamado.id) || cached.events || [];
             if (Array.isArray(eventos)) {
 
                 // Ordenar por data (mais antigo -> mais recente)
@@ -3650,7 +3648,7 @@ async function filtrarListaUsuarios(termoBusca, page = 1) {
 
     // Prevent multiple simultaneous requests
     if (isSearching) {
-        console.log('Busca já em andamento, aguardando...');
+        console.log('Busca j�� em andamento, aguardando...');
         return;
     }
 
