@@ -736,35 +736,8 @@ function renderChamadosPage(page) {
             'cancelado': 'fa-times-circle'
         }[statusClass] || 'fa-circle';
 
+        // Não exibir anexos diretamente no card — anexos serão exibidos apenas na aba Histórico do modal
         let anexosHtml = '';
-        try {
-            if (Array.isArray(chamado.anexos) && chamado.anexos.length > 0) {
-                const first = chamado.anexos[0];
-                const url = first.url || first.url_publica || (first.id ? `/ti/api/anexos/${first.id}/download` : '');
-                const nome = first.nome || (url ? fileNameFrom(url) : 'Anexo');
-                const isImage = (first.mime_type && first.mime_type.startsWith('image/')) || /\.(jpg|jpeg|png|gif|webp)$/i.test(url || nome);
-                if (isImage && url) {
-                    const remaining = chamado.anexos.length - 1;
-                    anexosHtml = `
-                        <div class="card-attachments">
-                            <a href="${url}" target="_blank" rel="noopener noreferrer">
-                                <img src="${url}" alt="${nome}" class="card-attachment-thumb" />
-                            </a>
-                            ${remaining > 0 ? `<span class="attachment-count">+${remaining}</span>` : ''}
-                        </div>`;
-                } else if (url) {
-                    anexosHtml = `
-                        <div class="card-attachments">
-                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="attachment-link">
-                                <i class="fas fa-paperclip"></i> ${nome}
-                            </a>
-                        </div>`;
-                }
-            }
-        } catch (e) {
-            console.warn('Erro ao montar anexosHtml no card:', e);
-            anexosHtml = '';
-        }
 
         card.innerHTML = `
     <div class="card-header">
@@ -5166,7 +5139,7 @@ function criarBackup() {
 
 function executarManutencao() {
     if (window.advancedNotificationSystem) {
-        window.advancedNotificationSystem.showInfo('Manutenç��o', 'Iniciando processo de manutenção...');
+        window.advancedNotificationSystem.showInfo('Manutenç����o', 'Iniciando processo de manutenção...');
     }
 }
 
@@ -5261,7 +5234,7 @@ function debugSistemaPainel() {
         console.log('--- TESTE DE NAVEGAÇÃO ---');
         try {
             if (typeof activateSection === 'function') {
-                console.log('Testando ativaç��o da seção visao-geral...');
+                console.log('Testando ativaç���o da seção visao-geral...');
                 activateSection('visao-geral');
                 console.log('✓ Navegação funcionando');
             } else {
