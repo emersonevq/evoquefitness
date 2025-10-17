@@ -402,14 +402,13 @@ def abrir_chamado():
                 except Exception as e:
                     current_app.logger.warning(f"Falha ao registrar timeline de criação: {str(e)}")
 
-                # Processar anexos enviados
+                # Processar anexos enviados - armazenar conteúdo no banco (blob) em vez de filesystem
                 try:
                     from werkzeug.utils import secure_filename
                     from security.security_config import SecurityConfig
                     arquivos = request.files.getlist('anexos') or request.files.getlist('anexos[]')
                     if arquivos:
-                        base_dir = os.path.join('static', 'uploads', 'chamados', codigo_gerado)
-                        os.makedirs(base_dir, exist_ok=True)
+                        from database import AnexoArquivo, ChamadoTimelineEvent
                         for arquivo in arquivos:
                             if not arquivo or arquivo.filename == '':
                                 continue
@@ -417,15 +416,16 @@ def abrir_chamado():
                             ext = os.path.splitext(filename)[1].lower()
                             if SecurityConfig.UPLOAD_EXTENSIONS and ext not in SecurityConfig.UPLOAD_EXTENSIONS:
                                 continue
-                            caminho = os.path.join(base_dir, filename)
-                            arquivo.save(caminho)
-                            tamanho = os.path.getsize(caminho) if os.path.exists(caminho) else None
 
-                            from database import AnexoArquivo, ChamadoTimelineEvent
+                            # Ler conteúdo em memória e salvar no banco
+                            data = arquivo.read()
+                            tamanho = len(data) if data is not None else None
+
                             anexo = AnexoArquivo(
                                 chamado_id=novo_chamado.id,
                                 nome_original=arquivo.filename,
-                                caminho_arquivo=caminho.replace('\\', '/'),
+                                caminho_arquivo=None,
+                                arquivo_blob=data,
                                 mime_type=arquivo.mimetype,
                                 tamanho_bytes=tamanho,
                                 usuario_id=current_user.id
