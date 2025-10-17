@@ -555,6 +555,18 @@
 
             const formData = new FormData(form);
 
+            // Garantir que os arquivos do input #anexos sejam anexados explicitamente
+            try {
+                const anexoInput = document.getElementById('anexos');
+                if (anexoInput && anexoInput.files && anexoInput.files.length) {
+                    for (let i = 0; i < anexoInput.files.length; i++) {
+                        formData.append('anexos', anexoInput.files[i]);
+                    }
+                }
+            } catch (e) {
+                console.warn('Erro ao anexar arquivos ao FormData:', e);
+            }
+
             const modal = new bootstrap.Modal(document.getElementById("modal"));
             modal.show();
 
