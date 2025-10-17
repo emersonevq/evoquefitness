@@ -1482,6 +1482,19 @@ select option:checked {
   text-decoration: underline;
 }
 
+#modalChamado .timeline-attachment {
+  margin-top: 8px;
+}
+
+#modalChamado .timeline-attachment-image {
+  max-width: 220px;
+  max-height: 180px;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  object-fit: cover;
+}
+
 .modal-footer {
     padding: var(--spacing-md);
     background: var(--dark-color);
