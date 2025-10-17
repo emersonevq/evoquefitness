@@ -1197,6 +1197,21 @@ async function openModal(chamado) {
             console.warn('Falha ao carregar timeline:', e);
         }
 
+        // Se nenhum evento da timeline contém anexo, mas chamado.anexos existe, adicionar como fallback
+        const hasEventWithAnexo = items.some(it => /timeline-attachment|fa-paperclip/.test(it));
+        if (!hasEventWithAnexo && Array.isArray(chamado.anexos) && chamado.anexos.length > 0) {
+            chamado.anexos.forEach(ax => {
+                try {
+                    const url = ax.url || (ax.id ? `/ti/api/anexos/${ax.id}/download` : null);
+                    const nome = ax.nome || fileNameFrom(url || '');
+                    if (url) {
+                        const anexoItem = `\n<li class="timeline-item from-solicitante">\n  <div class="timeline-header">\n    <span class="sender-badge badge-solicitante">Solicitante</span>\n    <span class="sender-name">${chamado.solicitante || 'Solicitante'}</span>\n    <span class="spacer"></span>\n    <span class="timestamp">${ax.data_upload || chamado.data_abertura || ''}</span>\n  </div>\n  <div class="timeline-body">\n    <i class="fas fa-paperclip history-icon"></i>\n    <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nome}" class="timeline-attachment-image"/></a></div>\n  </div>\n</li>`;
+                        items.push(anexoItem);
+                    }
+                } catch (e) { console.warn('Erro ao adicionar fallback de anexo ao timeline:', e); }
+            });
+        }
+
         // Fallback simples caso a API não retorne eventos
         if (items.length === 0) {
             const fallback = [];
