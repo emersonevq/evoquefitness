@@ -740,7 +740,7 @@ function renderChamadosPage(page) {
         try {
             if (Array.isArray(chamado.anexos) && chamado.anexos.length > 0) {
                 const first = chamado.anexos[0];
-                const url = first.url || first.url_publica || '';
+                const url = first.url || first.url_publica || (first.id ? `/ti/api/anexos/${first.id}/download` : '');
                 const nome = first.nome || (url ? fileNameFrom(url) : 'Anexo');
                 const isImage = (first.mime_type && first.mime_type.startsWith('image/')) || /\.(jpg|jpeg|png|gif|webp)$/i.test(url || nome);
                 if (isImage && url) {
