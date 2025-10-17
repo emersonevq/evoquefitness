@@ -384,7 +384,7 @@ async function loadChamados() {
 
         // Montar URL com parâmetros de performance: light e limit
         const url = new URL('/ti/painel/api/chamados', window.location.origin);
-        url.searchParams.set('light', '1');
+        url.searchParams.set('light', '0');
         url.searchParams.set('limit', '200');
         if (currentFilter && currentFilter !== 'all') {
             url.searchParams.set('status', currentFilter);
@@ -2525,7 +2525,7 @@ function inicializarSistemaPainel() {
 
         // 6. Set up test function for debugging navigation
         window.testNavigation = function(sectionId) {
-            console.log('=== TESTE DE NAVEGAÇÃO ===');
+            console.log('=== TESTE DE NAVEGAÇ��O ===');
             console.log('Tentando navegar para:', sectionId);
             const targetSection = document.getElementById(sectionId);
             if (targetSection) {
@@ -2713,7 +2713,7 @@ function sectionExists(id) {
 // Global functions for debugging and manual control
 window.debugPainel = {
     activateSection: function(id) {
-        console.log('Ativação manual da seção:', id);
+        console.log('Ativação manual da seç��o:', id);
         activateSection(id);
     },
     listSections: function() {
