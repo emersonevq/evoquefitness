@@ -51,7 +51,9 @@ def obter_timeline_chamado(id):
                     anexo_info = {
                         'id': anexo.id,
                         'nome': anexo.nome_original,
-                        'url': anexo.url_publica() if hasattr(anexo, 'url_publica') else ('/' + anexo.caminho_arquivo if anexo.caminho_arquivo else None)
+                        'url': anexo.url_publica() if hasattr(anexo, 'url_publica') else ('/' + anexo.caminho_arquivo if anexo.caminho_arquivo else None),
+                        'mime_type': getattr(anexo, 'mime_type', None),
+                        'tamanho_bytes': getattr(anexo, 'tamanho_bytes', None)
                     }
 
             autor_id = ev.usuario_id
