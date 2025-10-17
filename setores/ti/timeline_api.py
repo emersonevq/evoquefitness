@@ -137,3 +137,33 @@ def obter_timeline_chamado(id):
         return resp
     except Exception as e:
         return error_response('Erro interno no servidor')
+
+
+@timeline_bp.route('/api/anexos/<int:anexo_id>/download', methods=['GET'])
+@login_required
+def download_anexo(anexo_id):
+    try:
+        anexo = AnexoArquivo.query.get_or_404(anexo_id)
+        # Preferir blob em DB
+        if anexo.arquivo_blob:
+            from io import BytesIO
+            buf = BytesIO(anexo.arquivo_blob)
+            return send_file(buf, mimetype=anexo.mime_type or 'application/octet-stream', as_attachment=True, download_name=anexo.nome_original)
+        # Fallback para caminho_arquivo (compatibilidade retroativa)
+        if anexo.caminho_arquivo:
+            # caminho_arquivo pode ser um caminho relativo que começa com 'static/'
+            path = anexo.caminho_arquivo
+            if path.startswith('static/'):
+                # servir via flask.send_from_directory
+                from flask import send_from_directory
+                rel = os.path.relpath(path, 'static')
+                dirpart = os.path.join('static', os.path.dirname(rel))
+                filename = os.path.basename(path)
+                return send_from_directory(dirpart, filename, mimetype=anexo.mime_type or 'application/octet-stream', as_attachment=True)
+            else:
+                # caminho público
+                return redirect(anexo.caminho_arquivo)
+        return error_response('Arquivo não encontrado', 404)
+    except Exception as e:
+        current_app.logger.error(f"Erro ao baixar anexo {anexo_id}: {str(e)}")
+        return error_response('Erro ao baixar anexo', 500)
