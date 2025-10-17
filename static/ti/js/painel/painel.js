@@ -1183,15 +1183,17 @@ async function openModal(chamado) {
                     const whoName = `<span class="sender-name">${ev.usuario_nome || 'Sistema'}</span>`;
                     const when = ev.criado_em ? `<span class="timestamp">${ev.criado_em}</span>` : '';
                     let anexoHtml = '';
-                    if (ev.anexo && ev.anexo.url) {
+                    if (ev.anexo) {
                         const mime = ev.anexo.mime_type || '';
-                        const url = ev.anexo.url;
+                        const url = ev.anexo.url || (ev.anexo.id ? `/ti/api/anexos/${ev.anexo.id}/download` : null);
                         const nomeAnexo = ev.anexo.nome || fileNameFrom(ev.anexo.url, ev.anexo.nome);
                         const isImage = mime.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp)$/i.test(url || nomeAnexo);
-                        if (isImage) {
-                            anexoHtml = ` <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nomeAnexo}" class="timeline-attachment-image"/></a></div>`;
-                        } else {
-                            anexoHtml = ` <a href="${url}" target="_blank" rel="noopener">${nomeAnexo}</a>`;
+                        if (url) {
+                            if (isImage) {
+                                anexoHtml = ` <div class="timeline-attachment"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${nomeAnexo}" class="timeline-attachment-image"/></a></div>`;
+                            } else {
+                                anexoHtml = ` <a href="${url}" target="_blank" rel="noopener">${nomeAnexo}</a>`;
+                            }
                         }
                     }
 
@@ -3648,7 +3650,7 @@ async function filtrarListaUsuarios(termoBusca, page = 1) {
 
     // Prevent multiple simultaneous requests
     if (isSearching) {
-        console.log('Busca j�� em andamento, aguardando...');
+        console.log('Busca já em andamento, aguardando...');
         return;
     }
 
