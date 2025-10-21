@@ -282,7 +282,7 @@ function activateSection(id) {
         console.log('Seções disponíveis:', Array.from(allSections).map(s => s.id));
 
         // Tentar ativar seção padrão como fallback
-        console.log('Tentando ativar seção padrão: visao-geral');
+        console.log('Tentando ativar se��ão padrão: visao-geral');
         const defaultSection = document.getElementById('visao-geral');
         if (defaultSection) {
             defaultSection.classList.add('active');
@@ -1595,6 +1595,14 @@ const inputIdUnidade = document.getElementById('inputIdUnidade');
 const inputNomeUnidade = document.getElementById('inputNomeUnidade');
 const errorAddUnidade = document.getElementById('errorAddUnidade');
 
+// Modal Confirmar Exclusão (genérico)
+const modalConfirmarExclusao = document.getElementById('modalConfirmarExclusao');
+const modalConfirmarExclusaoClose = document.getElementById('modalConfirmarExclusaoClose');
+const btnConfirmarExclusao = document.getElementById('btnConfirmarExclusao');
+const btnCancelarExclusao = document.getElementById('btnCancelarExclusao');
+const textoConfirmacaoExclusao = document.getElementById('textoConfirmacaoExclusao');
+let unidadeParaExcluir = null;
+
 function openAddUnidadeModal() {
     inputIdUnidade.value = '';
     inputNomeUnidade.value = '';
@@ -1653,35 +1661,17 @@ async function renderListarUnidades() {
             lista.appendChild(row);
         });
 
-        // Adiciona event listeners aos botões de remover
+        // Adiciona event listeners aos botões de remover com modal de confirmação
         document.querySelectorAll('.btn-remover-unidade').forEach(btn => {
-            btn.addEventListener('click', async () => {
+            btn.addEventListener('click', () => {
                 const id = btn.dataset.id;
                 const unidadeNome = btn.closest('tr').querySelector('td:nth-child(2)').textContent;
-                
-                if (confirm(`Tem certeza que deseja remover a unidade "${unidadeNome}"?`)) {
-                    try {
-                        const response = await fetch(`/ti/painel/api/unidades/${id}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (response.ok) {
-                            if (window.advancedNotificationSystem) {
-                                window.advancedNotificationSystem.showSuccess('Unidade Removida', 'Unidade removida com sucesso!');
-                            }
-                            await renderListarUnidades();
-                        } else {
-                            const errorData = await response.json();
-                            if (window.advancedNotificationSystem) {
-                                window.advancedNotificationSystem.showError('Erro', errorData.error || 'Erro ao remover unidade');
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Erro ao remover unidade:', error);
-                        if (window.advancedNotificationSystem) {
-                            window.advancedNotificationSystem.showError('Erro', 'Erro ao remover unidade');
-                        }
-                    }
+                unidadeParaExcluir = { id, nome: unidadeNome };
+                if (textoConfirmacaoExclusao) {
+                    textoConfirmacaoExclusao.textContent = `Tem certeza que deseja excluir a unidade "${unidadeNome}" permanentemente?`;
+                }
+                if (modalConfirmarExclusao) {
+                    modalConfirmarExclusao.classList.add('active');
                 }
             });
         });
@@ -1697,6 +1687,42 @@ async function renderListarUnidades() {
 btnOpenAddUnitModal.addEventListener('click', openAddUnidadeModal);
 modalAddUnidadeClose.addEventListener('click', closeAddUnidadeModal);
 btnCancelarUnidade.addEventListener('click', closeAddUnidadeModal);
+
+// Eventos do modal de confirmação de exclusão
+modalConfirmarExclusaoClose?.addEventListener('click', () => {
+    modalConfirmarExclusao.classList.remove('active');
+    unidadeParaExcluir = null;
+});
+
+btnCancelarExclusao?.addEventListener('click', () => {
+    modalConfirmarExclusao.classList.remove('active');
+    unidadeParaExcluir = null;
+});
+
+btnConfirmarExclusao?.addEventListener('click', async () => {
+    if (!unidadeParaExcluir) return;
+    try {
+        const response = await fetch(`/ti/painel/api/unidades/${unidadeParaExcluir.id}`, { method: 'DELETE' });
+        if (response.ok) {
+            if (window.advancedNotificationSystem) {
+                window.advancedNotificationSystem.showSuccess('Unidade Removida', 'Unidade removida com sucesso!');
+            }
+            modalConfirmarExclusao.classList.remove('active');
+            unidadeParaExcluir = null;
+            await renderListarUnidades();
+        } else {
+            const errorData = await response.json();
+            if (window.advancedNotificationSystem) {
+                window.advancedNotificationSystem.showError('Erro', errorData.error || 'Erro ao remover unidade');
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao remover unidade:', error);
+        if (window.advancedNotificationSystem) {
+            window.advancedNotificationSystem.showError('Erro', 'Erro ao remover unidade');
+        }
+    }
+});
 
 // Event listener para o botão de salvar unidade
 btnSalvarUnidade.addEventListener('click', async () => {

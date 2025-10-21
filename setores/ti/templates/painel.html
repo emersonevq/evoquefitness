@@ -2262,6 +2262,23 @@
     </div>
   </div>
 
+  <!-- Modal Confirmar Exclusão -->
+  <div class="modal" id="modalConfirmarExclusao" role="dialog" aria-modal="true" aria-labelledby="modalConfirmarExclusaoTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalConfirmarExclusaoTitle">Confirmar exclusão</h3>
+        <button class="modal-close" aria-label="Fechar modal" id="modalConfirmarExclusaoClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="textoConfirmacaoExclusao">Tem certeza que deseja excluir?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+        <button class="btn btn-danger" id="btnConfirmarExclusao"><i class="fas fa-trash"></i> Excluir</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Credenciais do Usuário -->
   <div class="modal" id="modalCredenciais" role="dialog" aria-modal="true" aria-labelledby="modalCredenciaisTitle">
     <div class="modal-content">
@@ -3788,7 +3805,7 @@ async function debugChamados() {
         }
 
     } catch (error) {
-        console.error('�� Erro geral no debug:', error);
+        console.error('���� Erro geral no debug:', error);
         if (window.advancedNotificationSystem) {
             window.advancedNotificationSystem.showError(
                 'Erro Debug',
