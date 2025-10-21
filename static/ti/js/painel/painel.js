@@ -145,6 +145,12 @@ function initializeNavigation() {
 
             // Update URL hash
             window.location.hash = targetId;
+
+            // Close sidebar on mobile to reveal content
+            if (window.innerWidth <= 1024) {
+                const sb = document.getElementById('sidebar');
+                if (sb) sb.classList.remove('active');
+            }
         });
     });
 
@@ -976,6 +982,12 @@ function initializeSubmenuListeners() {
             this.classList.add('active');
             const parentSubmenuToggle = this.closest('.submenu').previousElementSibling;
             if (parentSubmenuToggle) parentSubmenuToggle.classList.add('active');
+
+            // Close sidebar on mobile to reveal content
+            if (window.innerWidth <= 1024) {
+                const sb = document.getElementById('sidebar');
+                if (sb) sb.classList.remove('active');
+            }
         });
     });
 }
