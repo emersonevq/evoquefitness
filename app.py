@@ -193,7 +193,7 @@ with app.app_context():
                     admin_user.nivel_acesso = 'Administrador'
                     admin_user.setores = ['TI']
                     admin_user.bloqueado = False
-                    admin_user.set_password('admin123')  # Resetar senha para garantir
+                    # Senha do admin preservada; não redefinir automaticamente
                     db.session.commit()
                     print("✅ Configurações do admin atualizadas")
 
@@ -631,7 +631,7 @@ def debug_sla():
             if sla_info['sla_status'] == 'Violado':
                 resultado.append(f"<p style='color: red;'><strong>⚠️ PROBLEMA:</strong> ")
                 if chamado.data_conclusao:
-                    resultado.append(f"Tempo útil de resolução ({sla_info['tempo_resolucao_uteis']}h) > SLA ({sla_info['sla_limite']}h)")
+                    resultado.append(f"Tempo útil de resolu��ão ({sla_info['tempo_resolucao_uteis']}h) > SLA ({sla_info['sla_limite']}h)")
                 else:
                     resultado.append(f"DATA DE CONCLUSÃO FALTANDO - usando tempo até agora!")
                 resultado.append("</p>")
