@@ -2105,7 +2105,7 @@ select option:checked {
 
 @media (max-width: 1024px) {
   :root {
-    --sidebar-width: 0px;
+    --sidebar-width: 240px;
   }
   
   .sidebar {
