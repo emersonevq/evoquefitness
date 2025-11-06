@@ -129,12 +129,9 @@ class SLAMetricas {
         // Tempo médio de resposta (em horas - já descontando pausas)
         const tempoMedioResposta = document.getElementById('tempoMedioResposta');
         if (tempoMedioResposta) {
-            // Tentar várias chaves possíveis (compatibilidade com diferentes versões de API)
-            const tempo = this.metricas.tempo_medio_resposta ||
-                         this.metricas.tempo_medio_primeira_resposta ||
-                         0;
+            const tempo = this.metricas.tempo_medio_resposta || 0;
             console.log('Tempo médio resposta (horas):', tempo);
-            console.log('Campos disponíveis em metricas:', Object.keys(this.metricas));
+            console.log('Todos os campos das métricas:', this.metricas);
             tempoMedioResposta.textContent = this.formatarTempo(tempo);
         }
 
