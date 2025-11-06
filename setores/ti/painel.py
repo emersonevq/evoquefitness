@@ -1122,7 +1122,7 @@ def atualizar_chamado_agente(chamado_id):
 
                 # Registrar evento de alteração de status
                 try:
-                    from database import ChamadoTimelineEvent
+                    from database import ChamadoTimelineEvent, HistoricoStatus
                     evento_status = ChamadoTimelineEvent(
                         chamado_id=chamado.id,
                         usuario_id=current_user.id,
@@ -1132,19 +1132,48 @@ def atualizar_chamado_agente(chamado_id):
                         status_novo=novo_status
                     )
                     db.session.add(evento_status)
+
+                    # Registrar histórico de status para rastrear períodos de pausa
+                    # Fechar período anterior se existir
+                    if status_anterior:
+                        historico_anterior = HistoricoStatus.query.filter_by(
+                            chamado_id=chamado.id,
+                            status=status_anterior,
+                            data_fim=None
+                        ).first()
+                        if historico_anterior:
+                            historico_anterior.data_fim = get_brazil_time().replace(tzinfo=None)
+
+                    # Criar novo período de status
+                    novo_historico = HistoricoStatus(
+                        chamado_id=chamado.id,
+                        status=novo_status,
+                        data_inicio=get_brazil_time().replace(tzinfo=None),
+                        usuario_id=current_user.id
+                    )
+                    db.session.add(novo_historico)
                 except Exception as e:
                     logger.warning(f"Falha ao registrar timeline de status: {str(e)}")
 
                 # Atualizar campos de SLA baseado na mudança de status
                 agora_brazil = get_brazil_time()
 
-                # Se estava "Aberto" e mudou para outro status, registrar primeira resposta
-                if status_anterior == 'Aberto' and novo_status != 'Aberto' and not chamado.data_primeira_resposta:
+                # Se estava "Aberto" e mudou para um status de TRABALHO (não "Aguardando"), registrar primeira resposta
+                statuses_trabalho = ['Concluido', 'Cancelado']  # Adicione outros statuses de trabalho se houver
+                if status_anterior == 'Aberto' and novo_status in statuses_trabalho and not chamado.data_primeira_resposta:
                     chamado.data_primeira_resposta = agora_brazil.replace(tzinfo=None)
 
                 # Se mudou para "Concluido" ou "Cancelado", registrar conclusão
-                if novo_status in ['Concluido', 'Cancelado'] and not chamado.data_conclusao:
-                    chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
+                if novo_status in ['Concluido', 'Cancelado']:
+                    if not chamado.data_conclusao:
+                        chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
+                    # Registrar informações adicionais de conclusão
+                    if novo_status == 'Concluido':
+                        chamado.concluido_por_id = current_user.id
+                        chamado.concluido_em = agora_brazil.replace(tzinfo=None)
+                    elif novo_status == 'Cancelado':
+                        chamado.cancelado_por_id = current_user.id
+                        chamado.cancelado_em = agora_brazil.replace(tzinfo=None)
 
         # Adicionar observações se fornecidas
         observacoes = data.get('observacoes', '')
