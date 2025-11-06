@@ -253,3 +253,54 @@ def reorder_medias():
         if current_app.debug:
             return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
         return jsonify({'error': 'Erro interno'}), 500
+
+# DEBUG: endpoint auxiliar para diagnosticar problemas com mídia / banco
+@media_bp.route('/debug', methods=['GET'])
+@login_required
+def debug_media():
+    try:
+        # Permissão reduzida: apenas administradores/gestores/agentes
+        if not (current_user.tem_permissao('Administrador') or current_user.eh_agente_suporte_ativo() or current_user.tem_permissao_gerenciar_usuarios()):
+            return jsonify({'error': 'Acesso negado'}), 403
+
+        info = {'ok': True}
+        try:
+            info['media_count'] = Media.query.count()
+        except Exception as e:
+            info['media_count_error'] = str(e)
+            try:
+                info['media_count_trace'] = traceback.format_exc()
+            except Exception:
+                pass
+
+        try:
+            m = Media.query.first()
+            if m:
+                info['first'] = {'id': m.id, 'titulo': m.titulo, 'tipo': str(m.tipo), 'status': m.status, 'tamanho_bytes': m.tamanho_bytes}
+            else:
+                info['first'] = None
+        except Exception as e:
+            info['first_error'] = str(e)
+            try:
+                info['first_trace'] = traceback.format_exc()
+            except Exception:
+                pass
+
+        # DB engine info (non-sensitive)
+        try:
+            engine = getattr(db, 'engine', None)
+            if engine:
+                info['db_engine'] = str(engine.url)
+        except Exception:
+            pass
+
+        return jsonify(info)
+    except Exception as e:
+        current_app.logger.error(f'Erro no debug_media: {e}')
+        try:
+            current_app.logger.error(traceback.format_exc())
+        except Exception:
+            pass
+        if current_app.debug:
+            return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
+        return jsonify({'error': 'Erro interno'}), 500
