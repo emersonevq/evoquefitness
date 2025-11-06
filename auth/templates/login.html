@@ -32,6 +32,7 @@
       <div class="media-panel" aria-hidden="false">
         {% if media_items %}
           {% for m in media_items %}
+            {% if loop.first %}
             <div class="media-item" role="group" aria-label="Mídia {{ m.titulo }}">
               {% if m.tipo == 'video' %}
                 <video controls>
@@ -44,7 +45,7 @@
             </div>
             <div class="media-title">{{ m.titulo }}</div>
             <p style="color:rgba(255,255,255,0.8);text-align:center">{{ m.descricao }}</p>
-            {% break %} {# Mostrar apenas o primeiro item por enquanto #}
+            {% endif %}
           {% endfor %}
         {% else %}
           <div class="media-item">
