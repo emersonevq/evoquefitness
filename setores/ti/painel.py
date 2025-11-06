@@ -2179,7 +2179,7 @@ def listar_chamados():
         from database import ChamadoAgente, AgenteSuporte, User
         from sqlalchemy.orm import selectinload
 
-        # Parâmetros de otimização
+        # Parâmetros de otimizaç��o
         status_param = (request.args.get('status') or '').strip()
         limit = request.args.get('limit', type=int) or 200
         limit = max(5, min(limit, 1000))
@@ -4208,7 +4208,7 @@ def atualizar_status_setor_usuario():
         novo_status = data['status']
         
         # Validar status
-        status_validos = ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']
+        status_validos = ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']
         if novo_status not in status_validos:
             return error_response('Status inválido', 400)
         
