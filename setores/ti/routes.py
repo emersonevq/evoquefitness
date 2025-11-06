@@ -268,6 +268,14 @@ def painel():
     if not current_user.tem_permissao('Administrador'):
         flash('Você não tem permissão para acessar o painel administrativo.', 'danger')
         return redirect(url_for('ti.index'))
+    # Garantir que exista um token CSRF na sessão para formulários POST
+    try:
+        from security.csrf_protection import CSRFProtection
+        csrf = CSRFProtection()
+        csrf.generate_csrf_token()
+    except Exception:
+        current_app.logger.warning('Não foi possível gerar CSRF token automaticamente')
+
     return render_template('painel.html')
 
 @ti_bp.route('/painel-agente')
@@ -713,6 +721,11 @@ def internal_error(error):
 
 from .painel import painel_bp
 ti_bp.register_blueprint(painel_bp, url_prefix='/painel')
+
+# Módulo de mídia para painel de login (fotos/vídeos armazenados no banco)
+from .media import media_bp
+# Registrar endpoints de mídia em /ti/media
+ti_bp.register_blueprint(media_bp, url_prefix='/media')
 
 # Registrar blueprints de agentes, grupos, auditoria e rotas avançadas
 from .agentes import agentes_bp

@@ -77,7 +77,8 @@ class Config:
     
     # Configurações de upload
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads/')
-    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16777216))  # 16MB
+    # Sem limite imposto pelo Flask; aceitar arquivos de qualquer tamanho.
+    MAX_CONTENT_LENGTH = None
     
     # Configurações de timezone
     TIMEZONE = os.environ.get('TIMEZONE', 'America/Sao_Paulo')
@@ -182,7 +183,8 @@ class DevelopmentMySQLConfig:
 
     # Configurações de upload
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads/')
-    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16777216))  # 16MB
+    # Sem limite imposto pelo Flask; aceitar arquivos de qualquer tamanho.
+    MAX_CONTENT_LENGTH = None
 
     # Configurações de timezone
     TIMEZONE = os.environ.get('TIMEZONE', 'America/Sao_Paulo')
@@ -224,7 +226,8 @@ class DevelopmentSQLiteConfig:
 
     # Configurações de upload
     UPLOAD_FOLDER = 'uploads/'
-    MAX_CONTENT_LENGTH = 16777216  # 16MB
+    # Sem limite imposto pelo Flask em ambiente de desenvolvimento
+    MAX_CONTENT_LENGTH = None
 
     # Configurações de timezone
     TIMEZONE = 'America/Sao_Paulo'

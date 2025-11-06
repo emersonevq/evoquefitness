@@ -309,6 +309,32 @@ class AnexoArquivo(db.Model):
     def __repr__(self):
         return f'<AnexoArquivo {self.nome_original} ({self.tamanho_bytes} bytes)>'
 
+class Media(db.Model):
+    __tablename__ = 'media'
+
+    id = db.Column(db.Integer, primary_key=True)
+    tipo = db.Column(db.Enum('evento', 'foto', 'video', name='media_tipo'), nullable=False)
+    titulo = db.Column(db.String(255), nullable=False)
+    descricao = db.Column(db.Text, nullable=True)
+    url = db.Column(db.String(500), nullable=True)
+    arquivo_blob = db.Column(db.LargeBinary, nullable=True)
+    mime_type = db.Column(db.String(100), nullable=True)
+    tamanho_bytes = db.Column(db.Integer, nullable=True)
+    ordem = db.Column(db.Integer, default=0, index=True)
+    data_criacao = db.Column(db.DateTime, default=lambda: get_brazil_time().replace(tzinfo=None))
+    status = db.Column(db.Enum('ativo', 'inativo', name='media_status'), default='ativo')
+
+    def public_url(self):
+        """Retorna URL pública para acessar a mídia (download ou URL externa)"""
+        if self.arquivo_blob:
+            return f"/ti/media/download/{self.id}"
+        if self.url:
+            return self.url
+        return None
+
+    def __repr__(self):
+        return f"<Media {self.titulo} ({self.tipo})>"
+
 class HistoricoTicket(db.Model):
     __tablename__ = 'historicos_tickets'
     __table_args__ = (
@@ -402,7 +428,7 @@ class HistoricoStatus(db.Model):
         return None
 
     def get_duracao_minutos(self):
-        """Retorna a duração do período em minutos"""
+        """Retorna a duraç��o do período em minutos"""
         if self.data_fim:
             delta = self.data_fim - self.data_inicio
             return delta.total_seconds() / 60
@@ -933,7 +959,7 @@ class GrupoUnidade(db.Model):
     # Relacionamentos
     unidade = db.relationship('Unidade', backref='grupos_participante')
 
-    # Índice composto para evitar duplicatas
+    # ��ndice composto para evitar duplicatas
     __table_args__ = (db.UniqueConstraint('grupo_id', 'unidade_id', name='uk_grupo_unidade'),)
 
     def __repr__(self):
@@ -1295,11 +1321,52 @@ def init_app(app):
                     print(f"Chamado {chamado.codigo} vinculado ao usuário {usuario.nome}")
             
             db.session.commit()
-            
+
         except Exception as e:
             print(f"Erro na migração: {str(e)}")
             db.session.rollback()
-        
+
+        # Garantir colunas necessárias na tabela media (arquivo_blob, mime_type, tamanho_bytes)
+        try:
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            if 'media' in inspector.get_table_names():
+                media_cols = [c['name'] for c in inspector.get_columns('media')]
+
+                # Adiciona arquivo_blob se não existir
+                if 'arquivo_blob' not in media_cols:
+                    try:
+                        db.engine.execute('ALTER TABLE media ADD COLUMN arquivo_blob LONGBLOB')
+                        print('Coluna arquivo_blob adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar arquivo_blob:', _e)
+
+                # Adiciona mime_type se não existir
+                if 'mime_type' not in media_cols:
+                    try:
+                        db.engine.execute("ALTER TABLE media ADD COLUMN mime_type VARCHAR(100)")
+                        print('Coluna mime_type adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar mime_type:', _e)
+
+                # Adiciona tamanho_bytes se não existir
+                if 'tamanho_bytes' not in media_cols:
+                    try:
+                        db.engine.execute('ALTER TABLE media ADD COLUMN tamanho_bytes INTEGER')
+                        print('Coluna tamanho_bytes adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar tamanho_bytes:', _e)
+
+                # Adiciona ordem se não existir
+                if 'ordem' not in media_cols:
+                    try:
+                        db.engine.execute('ALTER TABLE media ADD COLUMN ordem INTEGER DEFAULT 0')
+                        print('Coluna ordem adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar ordem:', _e)
+        except Exception as e:
+            print(f"Erro ao verificar/atualizar colunas da tabela media: {str(e)}")
+
         # Atualizar setores dos usuários
         users = User.query.all()
         for user in users:

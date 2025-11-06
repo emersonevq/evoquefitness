@@ -23,8 +23,9 @@ class SecurityConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-change-in-production'
     
     # Configurações de upload
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
-    UPLOAD_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.doc', '.docx']
+    # Sem limite imposto pelo middleware; aceitar imagens/vídeos de qualquer tamanho.
+    MAX_CONTENT_LENGTH = None
+    UPLOAD_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.tiff', '.heic', '.heif', '.raw', '.png', '.mp4', '.mov', '.avi', '.mkv', '.webm', '.mp3', '.wav', '.pdf', '.doc', '.docx']
     
     # Configurações de logging
     SECURITY_LOG_LEVEL = 'INFO'
