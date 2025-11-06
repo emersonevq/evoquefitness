@@ -51,6 +51,19 @@ class SLAMetricas {
             const metricasData = await metricasResponse.json();
             this.metricas = metricasData.metricas_gerais;
 
+            // Carregar configurações SLA
+            const configResponse = await fetch('/ti/painel/api/sla/configuracoes', {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (configResponse.ok) {
+                const configData = await configResponse.json();
+                this.configuracoes = configData;
+            }
+
             // Carregar chamados detalhados
             const chamadosResponse = await fetch('/ti/painel/api/sla/chamados-detalhados', {
                 credentials: 'same-origin',
@@ -99,6 +112,8 @@ class SLAMetricas {
     atualizarMetricasPrincipais() {
         if (!this.metricas) return;
 
+        console.log('Atualizando métricas principais:', this.metricas);
+
         // Total de chamados
         const totalChamados = document.getElementById('totalChamados');
         if (totalChamados) {
@@ -111,19 +126,41 @@ class SLAMetricas {
             chamadosAbertos.textContent = this.metricas.chamados_abertos || 0;
         }
 
-        // Tempo médio de resposta
+        // Tempo médio de resposta (em horas - já descontando pausas)
         const tempoMedioResposta = document.getElementById('tempoMedioResposta');
         if (tempoMedioResposta) {
-            const tempo = this.metricas.tempo_medio_primeira_resposta || 0;
+            const tempo = this.metricas.tempo_medio_resposta || 0;
+            console.log('Tempo médio resposta (horas):', tempo);
+            console.log('Todos os campos das métricas:', this.metricas);
             tempoMedioResposta.textContent = this.formatarTempo(tempo);
         }
 
-        // Tempo médio de resolução
+        // Tempo médio de resolução (em horas - já descontando pausas)
         const tempoMedioResolucao = document.getElementById('tempoMedioResolucao');
         if (tempoMedioResolucao) {
             const tempo = this.metricas.tempo_medio_resolucao || 0;
+            console.log('Tempo médio resolução (horas):', tempo);
             tempoMedioResolucao.textContent = this.formatarTempo(tempo);
         }
+
+        // Mostrar dados de pausas se disponíveis
+        if (this.metricas.total_horas_pausadas !== undefined) {
+            console.log('⏸️ Dados de PAUSAS detectados:');
+            console.log('   Total horas pausadas:', this.metricas.total_horas_pausadas);
+            console.log('   Chamados com pausa:', this.metricas.chamados_com_pausa);
+            console.log('   Média tempo pausa:', this.metricas.media_tempo_pausa);
+
+            // Criar informações visuais sobre pausas
+            this.criarCardsPausa();
+        } else {
+            console.warn('⚠️ Dados de pausas NÃO ENCONTRADOS nas métricas!');
+            console.log('   Isso pode indicar um problema no cálculo das métricas');
+        }
+    }
+
+    criarCardsPausa() {
+        // Este método pode ser expandido para exibir dados de pausas em cards adicionais
+        console.log('Cards de pausa seriam exibidos aqui quando implementado');
     }
 
     atualizarCardsMetricas() {
@@ -266,9 +303,7 @@ class SLAMetricas {
         }
 
         // Atualizar gráfico semanal
-        if (dadosGrafico.grafico_semanal) {
-            this.atualizarGraficoSemanal(dadosGrafico.grafico_semanal);
-        }
+        this.atualizarGraficoSemanal(dadosGrafico);
     }
 
     atualizarGraficoStatus(statusData) {
@@ -366,14 +401,24 @@ class SLAMetricas {
         });
     }
 
-    atualizarGraficoSemanal() {
+    atualizarGraficoSemanal(dadosGrafico = null) {
         const ctx = document.getElementById('chartSemanal');
         if (!ctx) return;
 
-        // Dados simulados para as últimas 4 semanas
-        const semanas = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
-        const chamadosRecebidos = [12, 19, 15, 23];
-        const chamadosResolvidos = [10, 18, 14, 20];
+        // Usar dados do gráfico semanal se disponíveis, senão usar dados padrão
+        let semanas, chamadosRecebidos, chamadosResolvidos;
+
+        if (dadosGrafico && dadosGrafico.grafico_semanal) {
+            const dados = dadosGrafico.grafico_semanal;
+            semanas = dados.semanas || ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
+            chamadosRecebidos = dados.chamados_recebidos || [0, 0, 0, 0];
+            chamadosResolvidos = dados.chamados_resolvidos || [0, 0, 0, 0];
+        } else {
+            // Dados padrão caso não haja dados disponíveis
+            semanas = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
+            chamadosRecebidos = [0, 0, 0, 0];
+            chamadosResolvidos = [0, 0, 0, 0];
+        }
 
         const data = {
             labels: semanas,
