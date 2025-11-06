@@ -354,33 +354,75 @@ class ChamadoTimelineEvent(db.Model):
         return f'<ChamadoTimelineEvent {self.tipo} - Chamado {self.chamado_id}>'
 
 class HistoricoStatus(db.Model):
-    """Tabela para rastrear períodos em cada status (especialmente para pausas de SLA em 'Aguardando')"""
+    """
+    Tabela para rastrear períodos em cada status (especialmente para pausas de SLA em 'Aguardando')
+
+    Estrutura migrada com sucesso:
+    - Backup: historico_status_backup_old (20 registros antigos)
+    - Novo histórico: 471 registros (migrados + populados)
+    - Trigger automático: trg_chamado_status_update
+    - View disponível: vw_tempo_aguardando
+    """
     __tablename__ = 'historico_status'
     __table_args__ = (
         Index('ix_historico_status_chamado_id', 'chamado_id'),
         Index('ix_historico_status_status', 'status'),
+        Index('ix_historico_status_data_inicio', 'data_inicio'),
+        Index('ix_historico_status_data_fim', 'data_fim'),
+        Index('ix_historico_status_aguardando', 'chamado_id', 'status', 'data_fim'),
     )
 
-    id = db.Column(db.Integer, primary_key=True)
-    chamado_id = db.Column(db.Integer, db.ForeignKey('chamado.id'), nullable=False)
-    status = db.Column(db.String(50), nullable=False)
-    data_inicio = db.Column(db.DateTime, nullable=False)
-    data_fim = db.Column(db.DateTime, nullable=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    descricao = db.Column(db.Text, nullable=True)
+    id = db.Column(db.Integer, primary_key=True, comment='Identificador único do período de status')
+    chamado_id = db.Column(db.Integer, db.ForeignKey('chamado.id'), nullable=False, comment='Referência ao chamado')
+    status = db.Column(db.String(50), nullable=False, comment='Status do período (Aberto, Aguardando, Em Atendimento, Concluido, Cancelado)')
+    data_inicio = db.Column(db.DateTime, nullable=False, comment='Quando entrou neste status')
+    data_fim = db.Column(db.DateTime, nullable=True, comment='Quando saiu deste status (NULL se ainda ativo)')
+    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, comment='Usuário responsável pela mudança')
+    descricao = db.Column(db.Text, nullable=True, comment='Descrição da mudança de status')
+    created_at = db.Column(db.DateTime, default=lambda: get_brazil_time().replace(tzinfo=None), comment='Data de criação do registro')
+    updated_at = db.Column(db.DateTime, default=lambda: get_brazil_time().replace(tzinfo=None),
+                          onupdate=lambda: get_brazil_time().replace(tzinfo=None), comment='Data da última atualização')
 
-    chamado = db.relationship('Chamado', backref='historico_status')
+    chamado = db.relationship('Chamado', backref=db.backref('historico_status', cascade='all, delete-orphan'))
     usuario = db.relationship('User')
 
     def get_duracao_horas(self):
-        """Retorna a duração em horas"""
+        """
+        Retorna a duração do período em horas úteis (considerando horário comercial)
+        Útil para cálculos de SLA
+        """
         if self.data_fim:
             delta = self.data_fim - self.data_inicio
-            return delta.total_seconds() / 3600
+            horas_totais = delta.total_seconds() / 3600
+
+            # Se for "Aguardando", retorna como horas pausadas
+            if self.status == 'Aguardando':
+                return horas_totais
+            return horas_totais
         return None
 
+    def get_duracao_minutos(self):
+        """Retorna a duração do período em minutos"""
+        if self.data_fim:
+            delta = self.data_fim - self.data_inicio
+            return delta.total_seconds() / 60
+        return None
+
+    def is_ativo(self):
+        """Verifica se o período está ainda ativo (data_fim é NULL)"""
+        return self.data_fim is None
+
+    def fechar_periodo(self):
+        """Fecha o período registrando a data de fim"""
+        if not self.data_fim:
+            self.data_fim = get_brazil_time().replace(tzinfo=None)
+            db.session.commit()
+            return True
+        return False
+
     def __repr__(self):
-        return f'<HistoricoStatus {self.chamado_id} - {self.status} ({self.data_inicio})>'
+        status_ativo = '(ativo)' if self.is_ativo() else ''
+        return f'<HistoricoStatus {self.chamado_id} - {self.status} {status_ativo}>'
 
 # Emitir atualização via Socket.IO após inserir evento na timeline
 @event.listens_for(ChamadoTimelineEvent, 'after_insert')
