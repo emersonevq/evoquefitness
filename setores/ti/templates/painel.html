@@ -1986,7 +1986,7 @@
                   <input type="number" class="form-control" id="tempoSessao" value="15" min="5" max="120">
                 </div>
                 <button class="btn btn-primary btn-sm" id="btnSalvarSeguranca">
-                  <i class="fas fa-save"></i> Salvar Configura��ões
+                  <i class="fas fa-save"></i> Salvar Configurações
                 </button>
               </div>
             </div>
@@ -4033,7 +4033,196 @@ document.addEventListener('DOMContentLoaded', function() {
   // Carregar preview inicial apenas quando a seção for mostrada
   // Mas podemos carregar imediatamente para conveniência
   loadMediaPreview();
+  loadMediaList();
 });
+
+// Carregar lista de mídias para gerenciamento
+async function loadMediaList() {
+  try {
+    const container = document.getElementById('mediaList');
+    if (!container) return;
+    container.innerHTML = '<div class="text-muted">Carregando lista...</div>';
+
+    const res = await fetch('/ti/media/list', { credentials: 'same-origin' });
+    if (!res.ok) {
+      container.innerHTML = '<div class="text-danger">Falha ao carregar lista</div>';
+      return;
+    }
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      container.innerHTML = '<div class="text-muted">Nenhuma mídia cadastrada.</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    data.forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'media-list-item p-2 border rounded d-flex align-items-center';
+      item.setAttribute('draggable', 'true');
+      item.dataset.mediaId = m.id;
+      item.style.gap = '12px';
+
+      const thumb = document.createElement('div');
+      thumb.style.width = '120px';
+      thumb.style.flex = '0 0 120px';
+      thumb.style.display = 'flex';
+      thumb.style.alignItems = 'center';
+      thumb.style.justifyContent = 'center';
+
+      if (m.mime_type && m.mime_type.startsWith('video')) {
+        const v = document.createElement('video');
+        v.src = m.public_url;
+        v.style.maxWidth = '100%';
+        v.style.maxHeight = '80px';
+        v.controls = false;
+        thumb.appendChild(v);
+      } else {
+        const img = document.createElement('img');
+        img.src = m.public_url;
+        img.alt = m.titulo || '';
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '80px';
+        thumb.appendChild(img);
+      }
+
+      const meta = document.createElement('div');
+      meta.style.flex = '1';
+
+      const titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.value = m.titulo || '';
+      titleInput.className = 'form-control mb-1';
+
+      const descInput = document.createElement('textarea');
+      descInput.rows = 2;
+      descInput.className = 'form-control mb-1';
+      descInput.value = m.descricao || '';
+
+      const controls = document.createElement('div');
+      controls.style.display = 'flex';
+      controls.style.gap = '8px';
+
+      const statusSelect = document.createElement('select');
+      statusSelect.className = 'form-control form-select';
+      const optAtivo = document.createElement('option'); optAtivo.value='ativo'; optAtivo.text='Ativo';
+      const optInativo = document.createElement('option'); optInativo.value='inativo'; optInativo.text='Inativo';
+      statusSelect.appendChild(optAtivo); statusSelect.appendChild(optInativo);
+      statusSelect.value = m.status || 'ativo';
+      statusSelect.style.width = '120px';
+
+      const btnSave = document.createElement('button');
+      btnSave.className = 'btn btn-primary btn-sm';
+      btnSave.textContent = 'Salvar';
+      btnSave.addEventListener('click', ()=> saveMediaUpdate(m.id, titleInput.value, descInput.value, statusSelect.value));
+
+      const btnDelete = document.createElement('button');
+      btnDelete.className = 'btn btn-danger btn-sm';
+      btnDelete.innerHTML = '<i class="fas fa-trash"></i>';
+      btnDelete.addEventListener('click', ()=> deleteMedia(m.id));
+
+      const dragHandle = document.createElement('span');
+      dragHandle.innerHTML = '<i class="fas fa-grip-vertical"></i>';
+      dragHandle.style.cursor = 'grab';
+      dragHandle.style.padding = '0 8px';
+
+      controls.appendChild(statusSelect);
+      controls.appendChild(btnSave);
+      controls.appendChild(btnDelete);
+
+      meta.appendChild(titleInput);
+      meta.appendChild(descInput);
+      meta.appendChild(controls);
+
+      item.appendChild(dragHandle);
+      item.appendChild(thumb);
+      item.appendChild(meta);
+
+      // Drag events
+      item.addEventListener('dragstart', (e)=>{
+        e.dataTransfer.setData('text/plain', m.id);
+        e.currentTarget.style.opacity = '0.5';
+      });
+      item.addEventListener('dragend', (e)=>{
+        e.currentTarget.style.opacity = '1';
+      });
+      item.addEventListener('dragover', (e)=>{
+        e.preventDefault();
+      });
+      item.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        const draggedId = e.dataTransfer.getData('text/plain');
+        const draggedEl = container.querySelector(`[data-media-id="${draggedId}"]`);
+        const target = e.currentTarget;
+        if (!draggedEl || !target) return;
+        // Insert before target
+        container.insertBefore(draggedEl, target);
+        // Persist new order
+        sendReorder();
+      });
+
+      container.appendChild(item);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar lista de mídias:', error);
+  }
+}
+
+async function sendReorder() {
+  try {
+    const container = document.getElementById('mediaList');
+    if (!container) return;
+    const ids = Array.from(container.children).map(ch => parseInt(ch.dataset.mediaId));
+    const res = await fetch('/ti/media/reorder', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({order: ids})
+    });
+    if (!res.ok) {
+      console.error('Falha ao salvar ordem');
+    }
+  } catch (error) {
+    console.error('Erro ao enviar reorder:', error);
+  }
+}
+
+async function deleteMedia(id) {
+  if (!confirm('Deseja realmente excluir esta mídia?')) return;
+  try {
+    const res = await fetch(`/ti/media/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+    if (!res.ok) {
+      const b = await res.json().catch(()=>({}));
+      alert(b.error || 'Falha ao deletar');
+      return;
+    }
+    alert('Mídia removida');
+    loadMediaList();
+    loadMediaPreview();
+  } catch (error) {
+    console.error('Erro ao deletar mídia:', error);
+  }
+}
+
+async function saveMediaUpdate(id, titulo, descricao, status) {
+  try {
+    const form = new FormData();
+    form.append('titulo', titulo);
+    form.append('descricao', descricao);
+    form.append('status', status);
+
+    const res = await fetch(`/ti/media/update/${id}`, { method: 'POST', body: form, credentials: 'same-origin' });
+    if (!res.ok) {
+      const b = await res.json().catch(()=>({}));
+      alert(b.error || 'Falha ao atualizar');
+      return;
+    }
+    alert('Atualizado com sucesso');
+    loadMediaList();
+    loadMediaPreview();
+  } catch (error) {
+    console.error('Erro ao salvar atualização:', error);
+  }
+}
 </script>
 </body>
 </html>
