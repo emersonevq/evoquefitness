@@ -22,7 +22,7 @@ def render_login(**kwargs):
                 'tipo': m.tipo,
                 'titulo': m.titulo,
                 'descricao': m.descricao,
-                'download_url': url_for('ti_media.download_public', media_id=m.id)
+                'download_url': url_for('ti.ti_media.download_public', media_id=m.id)
             })
     except Exception:
         media_items = []
