@@ -2497,7 +2497,15 @@ def atualizar_status_chamado(id):
         if novo_status in ['Concluido', 'Cancelado'] and not chamado.data_conclusao:
             chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as commit_error:
+            db.session.rollback()
+            logger.error(f"ERRO na transação do banco de dados: {str(commit_error)}")
+            logger.error(f"Tipo do erro: {type(commit_error).__name__}")
+            logger.error(f"Detalhes: {commit_error.detail if hasattr(commit_error, 'detail') else 'N/A'}")
+            logger.error(traceback.format_exc())
+            return error_response(f'Erro ao salvar status no banco de dados: {str(commit_error)[:100]}')
 
         # Montar histórico resumido
         historico_payload = {}
@@ -3717,7 +3725,7 @@ def limpar_historico_violacoes_sla():
 
     except Exception as e:
         db.session.rollback()
-        logger.error(f"Erro ao limpar histórico de violações SLA: {str(e)}")
+        logger.error(f"Erro ao limpar hist��rico de violações SLA: {str(e)}")
         return json_response({
             'success': False,
             'error': 'Erro interno no servidor',
