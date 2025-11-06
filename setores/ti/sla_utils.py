@@ -117,45 +117,46 @@ def eh_horario_comercial(dt: datetime, config_horario: Dict = None) -> bool:
     hora_atual = dt.time()
     return config_horario['inicio'] <= hora_atual <= config_horario['fim']
 
-def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict = None) -> float:
+def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict = None, chamado=None) -> float:
     """
     Calcula horas úteis entre duas datas considerando apenas horário comercial
-    
+    e EXCLUINDO períodos em "Aguardando" (SLA pausado)
+
     Args:
         inicio: Data/hora de início
         fim: Data/hora de fim
         config_horario: Configurações de horário comercial
-    
+        chamado: Objeto do chamado (para buscar períodos de pausa)
+
     Returns:
         Número de horas úteis como float
     """
     if config_horario is None:
         config_horario = carregar_configuracoes_horario_comercial()
-    
+
     # Garantir que as datas estão no timezone correto
     if inicio.tzinfo is None:
         inicio = BRAZIL_TZ.localize(inicio)
     elif inicio.tzinfo != BRAZIL_TZ:
         inicio = inicio.astimezone(BRAZIL_TZ)
-    
+
     if fim.tzinfo is None:
         fim = BRAZIL_TZ.localize(fim)
     elif fim.tzinfo != BRAZIL_TZ:
         fim = fim.astimezone(BRAZIL_TZ)
-    
+
     if inicio >= fim:
         return 0.0
-    
+
+    # Calcular horas úteis totais
     horas_uteis = 0.0
     data_atual = inicio.replace(hour=0, minute=0, second=0, microsecond=0)
-    
+
     while data_atual.date() <= fim.date():
-        # Pular fins de semana e feriados
         if data_atual.weekday() not in config_horario['dias_semana']:
             data_atual += timedelta(days=1)
             continue
-        
-        # Definir início e fim do horário comercial para este dia
+
         inicio_comercial = data_atual.replace(
             hour=config_horario['inicio'].hour,
             minute=config_horario['inicio'].minute
@@ -164,17 +165,113 @@ def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict =
             hour=config_horario['fim'].hour,
             minute=config_horario['fim'].minute
         )
-        
-        # Ajustar para o período efetivo
+
         periodo_inicio = max(inicio, inicio_comercial)
         periodo_fim = min(fim, fim_comercial)
-        
+
         if periodo_inicio < periodo_fim:
             delta = periodo_fim - periodo_inicio
             horas_uteis += delta.total_seconds() / 3600
-        
+
         data_atual += timedelta(days=1)
-    
+
+    # Subtrair períodos em "Aguardando" (SLA pausado)
+    if chamado:
+        horas_aguardando = calcular_horas_aguardando(chamado, inicio, fim, config_horario)
+        horas_uteis = max(0, horas_uteis - horas_aguardando)
+
+    return round(horas_uteis, 2)
+
+def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_horario: Dict = None) -> float:
+    """
+    Calcula o tempo total em que o chamado esteve em "Aguardando" (SLA pausado)
+
+    Args:
+        chamado: Objeto do chamado
+        inicio: Data/hora de início do período de cálculo
+        fim: Data/hora de fim do período de cálculo
+        config_horario: Configurações de horário comercial
+
+    Returns:
+        Horas úteis em período "Aguardando"
+    """
+    from database import HistoricoStatus
+
+    if config_horario is None:
+        config_horario = carregar_configuracoes_horario_comercial()
+
+    try:
+        # Buscar todos os períodos em "Aguardando" para este chamado
+        periodos_aguardando = HistoricoStatus.query.filter(
+            HistoricoStatus.chamado_id == chamado.id,
+            HistoricoStatus.status == 'Aguardando'
+        ).all()
+
+        horas_pausadas = 0.0
+
+        for periodo in periodos_aguardando:
+            # Garantir timezone correto
+            data_inicio_periodo = periodo.data_inicio
+            if data_inicio_periodo.tzinfo is None:
+                data_inicio_periodo = BRAZIL_TZ.localize(data_inicio_periodo)
+            elif data_inicio_periodo.tzinfo != BRAZIL_TZ:
+                data_inicio_periodo = data_inicio_periodo.astimezone(BRAZIL_TZ)
+
+            # Se o período não terminou, usar a data_fim do cálculo
+            data_fim_periodo = periodo.data_fim or fim
+            if data_fim_periodo.tzinfo is None:
+                data_fim_periodo = BRAZIL_TZ.localize(data_fim_periodo)
+            elif data_fim_periodo.tzinfo != BRAZIL_TZ:
+                data_fim_periodo = data_fim_periodo.astimezone(BRAZIL_TZ)
+
+            # Calcular sobreposição com o período do cálculo
+            inicio_efetivo = max(inicio, data_inicio_periodo)
+            fim_efetivo = min(fim, data_fim_periodo)
+
+            if inicio_efetivo < fim_efetivo:
+                # Calcular horas úteis deste período de pausa
+                horas = _calcular_horas_comerciais_simples(inicio_efetivo, fim_efetivo, config_horario)
+                horas_pausadas += horas
+
+        return round(horas_pausadas, 2)
+    except Exception as e:
+        logger.warning(f"Erro ao calcular horas em Aguardando: {str(e)}")
+        return 0.0
+
+def _calcular_horas_comerciais_simples(inicio: datetime, fim: datetime, config_horario: Dict) -> float:
+    """
+    Calcula horas comerciais entre duas datas sem considerar períodos de pausa
+    (Função auxiliar para evitar recursão)
+    """
+    if inicio >= fim:
+        return 0.0
+
+    horas_uteis = 0.0
+    data_atual = inicio.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    while data_atual.date() <= fim.date():
+        if data_atual.weekday() not in config_horario['dias_semana']:
+            data_atual += timedelta(days=1)
+            continue
+
+        inicio_comercial = data_atual.replace(
+            hour=config_horario['inicio'].hour,
+            minute=config_horario['inicio'].minute
+        )
+        fim_comercial = data_atual.replace(
+            hour=config_horario['fim'].hour,
+            minute=config_horario['fim'].minute
+        )
+
+        periodo_inicio = max(inicio, inicio_comercial)
+        periodo_fim = min(fim, fim_comercial)
+
+        if periodo_inicio < periodo_fim:
+            delta = periodo_fim - periodo_inicio
+            horas_uteis += delta.total_seconds() / 3600
+
+        data_atual += timedelta(days=1)
+
     return round(horas_uteis, 2)
 
 def obter_proximo_horario_comercial(dt: datetime, config_horario: Dict = None) -> datetime:
