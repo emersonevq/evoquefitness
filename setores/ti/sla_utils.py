@@ -446,7 +446,7 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     
     agora_brazil = obter_agora_brasilia()
     
-    # Se n��o tem data de abertura, retornar valores padrão
+    # Se n����o tem data de abertura, retornar valores padrão
     if not chamado.data_abertura:
         return {
             'chamado_id': chamado.id,
@@ -669,22 +669,15 @@ def obter_metricas_sla_consolidadas(period_days: int = 30) -> Dict:
         elif sla_info['sla_status'] == 'Em Risco':
             chamados_em_risco += 1
         
-        # Contabilizar tempo de resolução (se disponível)
-        if sla_info.get('tempo_resolucao_uteis') is not None:
+        # Contabilizar tempo de resolução (APENAS para chamados resolvidos/cancelados)
+        if sla_info.get('tempo_resolucao_uteis') is not None and sla_info['tempo_resolucao_uteis'] > 0:
+            # Apenas contar se o chamado foi realmente resolvido (tem tempo_resolucao)
             tempo_total_resolucao += sla_info['tempo_resolucao_uteis']
             count_resolvidos += 1
-        elif sla_info.get('horas_uteis_decorridas') is not None:
-            # Para chamados abertos, usar horas úteis decorridas
-            tempo_total_resolucao += sla_info['horas_uteis_decorridas']
-            count_resolvidos += 1
 
-        # Contabilizar tempo de primeira resposta (se disponível)
-        if sla_info.get('tempo_primeira_resposta_uteis') is not None:
+        # Contabilizar tempo de primeira resposta (APENAS se houver resposta registrada)
+        if sla_info.get('tempo_primeira_resposta_uteis') is not None and sla_info['tempo_primeira_resposta_uteis'] > 0:
             tempo_total_primeira_resposta += sla_info['tempo_primeira_resposta_uteis']
-            count_primeira_resposta += 1
-        elif sla_info.get('horas_uteis_decorridas') is not None:
-            # Para chamados abertos, usar horas úteis decorridas
-            tempo_total_primeira_resposta += sla_info['horas_uteis_decorridas']
             count_primeira_resposta += 1
 
         # Contar chamados abertos
