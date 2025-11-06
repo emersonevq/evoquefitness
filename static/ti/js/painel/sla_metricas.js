@@ -279,9 +279,7 @@ class SLAMetricas {
         }
 
         // Atualizar gráfico semanal
-        if (dadosGrafico.grafico_semanal) {
-            this.atualizarGraficoSemanal(dadosGrafico.grafico_semanal);
-        }
+        this.atualizarGraficoSemanal(dadosGrafico);
     }
 
     atualizarGraficoStatus(statusData) {
