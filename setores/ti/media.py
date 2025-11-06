@@ -8,6 +8,36 @@ from database import db, Media, get_brazil_time
 
 media_bp = Blueprint('ti_media', __name__)
 
+# Diagnóstico público - mostra as URLs e mídias disponíveis (para debug)
+@media_bp.route('/public-debug', methods=['GET'])
+def public_debug():
+    try:
+        medias = Media.query.filter_by(status='ativo').order_by(Media.ordem.desc(), Media.data_criacao.desc()).all()
+        resultado = {
+            'total_count': len(medias),
+            'medias': []
+        }
+        for m in medias:
+            try:
+                url = url_for('ti_media.download_public', media_id=m.id, _external=False)
+            except Exception as e:
+                url = f"ERROR: {str(e)}"
+
+            resultado['medias'].append({
+                'id': m.id,
+                'titulo': m.titulo,
+                'tipo': m.tipo,
+                'status': m.status,
+                'tem_blob': bool(m.arquivo_blob),
+                'tamanho_bytes': m.tamanho_bytes,
+                'download_url': url,
+                'url_externa': m.url
+            })
+        return jsonify(resultado)
+    except Exception as e:
+        current_app.logger.error(f'Erro em public_debug: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
 # Retorna mídias ativas (meta) para exibir no login
 @media_bp.route('/active', methods=['GET'])
 def active_medias():
