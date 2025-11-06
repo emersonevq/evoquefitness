@@ -590,6 +590,75 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
         'percentual_tempo_usado': round(percentual_tempo_usado, 1)
     }
 
+def obter_tempo_aguardando_view(chamado_id: int) -> Dict:
+    """
+    Obtém tempo em "Aguardando" usando a VIEW vw_tempo_aguardando
+    (Mais eficiente para grandes volumes de dados)
+
+    NOTA: Esta VIEW é criada automaticamente no banco de dados com o script
+    de migração e calcula em SQL, não em Python
+
+    Args:
+        chamado_id: ID do chamado
+
+    Returns:
+        Dicionário com dados de tempo aguardando
+        {
+            'chamado_id': int,
+            'codigo': str,
+            'protocolo': str,
+            'total_periodos_aguardando': int,
+            'total_horas_pausadas': float
+        }
+    """
+    try:
+        from sqlalchemy import text
+
+        query = text("""
+            SELECT
+                chamado_id,
+                codigo,
+                protocolo,
+                solicitante,
+                status_atual,
+                prioridade,
+                total_periodos_aguardando,
+                total_horas_pausadas
+            FROM vw_tempo_aguardando
+            WHERE chamado_id = :chamado_id
+        """)
+
+        result = db.session.execute(query, {'chamado_id': chamado_id}).fetchone()
+
+        if result:
+            return {
+                'chamado_id': result[0],
+                'codigo': result[1],
+                'protocolo': result[2],
+                'solicitante': result[3],
+                'status_atual': result[4],
+                'prioridade': result[5],
+                'total_periodos_aguardando': result[6],
+                'total_horas_pausadas': float(result[7])
+            }
+        else:
+            return {
+                'chamado_id': chamado_id,
+                'total_periodos_aguardando': 0,
+                'total_horas_pausadas': 0.0
+            }
+    except Exception as e:
+        logger.warning(f"Erro ao obter tempo aguardando da VIEW: {str(e)}")
+        # Fallback para método direto
+        chamado = Chamado.query.get(chamado_id)
+        if chamado:
+            agora = get_brazil_time()
+            return {
+                'chamado_id': chamado_id,
+                'total_horas_pausadas': calcular_horas_aguardando(chamado, chamado.data_abertura, agora)
+            }
+        return {'chamado_id': chamado_id, 'total_horas_pausadas': 0.0}
+
 def inicializar_historico_status_chamado(chamado):
     """
     Inicializa histórico de status para um chamado que não possui registros
