@@ -19,7 +19,7 @@ def public_debug():
         }
         for m in medias:
             try:
-                url = url_for('ti_media.download_public', media_id=m.id, _external=False)
+                url = url_for('ti.ti_media.download_public', media_id=m.id, _external=False)
             except Exception as e:
                 url = f"ERROR: {str(e)}"
 
