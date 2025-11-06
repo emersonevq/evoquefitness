@@ -541,7 +541,7 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
             
             tempo_resolucao_delta = data_conclusao - data_abertura_brazil
             tempo_resolucao = tempo_resolucao_delta.total_seconds() / 3600
-            tempo_resolucao_uteis = calcular_horas_uteis(data_abertura_brazil, data_conclusao, config_horario)
+            tempo_resolucao_uteis = calcular_horas_uteis(data_abertura_brazil, data_conclusao, config_horario, chamado)
         else:
             tempo_resolucao = horas_decorridas
             tempo_resolucao_uteis = horas_uteis_decorridas
