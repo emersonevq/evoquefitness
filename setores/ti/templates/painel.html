@@ -1227,7 +1227,7 @@
               <select class="form-control" id="filtroTipoAlerta">
                 <option value="">Todos os tipos</option>
                 <option value="sistema">Sistema</option>
-                <option value="seguranca">Segurança</option>
+                <option value="seguranca">Seguran��a</option>
                 <option value="performance">Performance</option>
                 <option value="backup">Backup</option>
               </select>
@@ -2145,6 +2145,7 @@
               </div>
 
               <form id="mediaUploadForm" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token','') }}">
                 <div class="row">
                   <div class="col-md-4 mb-3">
                     <label class="form-label">Tipo</label>
