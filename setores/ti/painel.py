@@ -1557,7 +1557,7 @@ def salvar_configuracoes_sla_api():
 @login_required
 @setor_required('ti')
 def obter_metricas_sla():
-    """Retorna métricas consolidadas de SLA"""
+    """Retorna métricas consolidadas de SLA - com dados de pausas incluídos"""
     try:
         period_days = request.args.get('period_days', 30, type=int)
         if period_days <= 0:
@@ -1565,7 +1565,7 @@ def obter_metricas_sla():
 
         metricas = obter_metricas_sla_consolidadas(period_days)
 
-        # Converter dados para formato esperado pelo frontend
+        # Retornar TODOS os dados (incluindo pausas)
         response_data = {
             'metricas_gerais': {
                 'total_chamados': metricas['total_chamados'],
@@ -1574,7 +1574,16 @@ def obter_metricas_sla():
                 'tempo_medio_resolucao': metricas['tempo_medio_resolucao'],
                 'sla_cumprimento': metricas['percentual_cumprimento'],
                 'sla_violacoes': metricas['chamados_violados'],
-                'chamados_risco': metricas['chamados_em_risco']
+                'chamados_risco': metricas['chamados_em_risco'],
+
+                # Dados de pausas (SLA pausado em "Aguardando")
+                'total_horas_pausadas': metricas.get('total_horas_pausadas', 0),
+                'chamados_com_pausa': metricas.get('chamados_com_pausa', 0),
+                'media_tempo_pausa': metricas.get('media_tempo_pausa', 0),
+
+                # Informações adicionais
+                'chamados_cumpridos': metricas.get('chamados_cumpridos', 0),
+                'period_days': metricas.get('period_days', period_days)
             }
         }
 
@@ -1582,6 +1591,7 @@ def obter_metricas_sla():
 
     except Exception as e:
         logger.error(f"Erro ao obter métricas SLA: {str(e)}")
+        logger.error(traceback.format_exc())
         return error_response('Erro interno no servidor')
 
 @painel_bp.route('/api/sla/chamados', methods=['GET'])
@@ -3974,7 +3984,7 @@ def sincronizar_sla_database():
         client_info = get_client_info(request)
         registrar_log_acao(
             usuario_id=current_user.id,
-            acao='Sincronização SLA Database',
+            acao='Sincroniza��ão SLA Database',
             categoria='sla',
             detalhes=f'Sincronizado com timezone {timezone_alvo}. Configurações: {configuracoes_corrigidas}, Chamados: {chamados_corrigidos}, Feriados: {feriados_adicionados}',
             ip_address=client_info['ip_address'],
