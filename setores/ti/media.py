@@ -27,6 +27,35 @@ def active_medias():
         current_app.logger.error(f'Erro ao listar mídias ativas: {str(e)}')
         return jsonify([]), 500
 
+# Download público da mídia (para tela de login - SEM autenticação necessária)
+@media_bp.route('/public/<int:media_id>', methods=['GET'])
+def download_public(media_id):
+    m = Media.query.get(media_id)
+    if not m:
+        abort(404)
+
+    # Verificar se a mídia está ativa (apenas mídias ativas podem ser acessadas publicamente)
+    if m.status != 'ativo':
+        abort(403)
+
+    # Preferir blob salvo no banco
+    if m.arquivo_blob:
+        try:
+            return send_file(BytesIO(m.arquivo_blob), mimetype=m.mime_type or 'application/octet-stream', as_attachment=False, download_name=m.titulo or f'media_{m.id}')
+        except Exception as e:
+            current_app.logger.error(f'Erro ao enviar blob da mídia pública {m.id}: {e}')
+            try:
+                current_app.logger.error(traceback.format_exc())
+            except Exception:
+                pass
+            abort(500)
+
+    # Se não tiver blob, tentar redirecionar para url externa
+    if m.url:
+        return jsonify({'redirect': m.url}), 302
+
+    abort(404)
+
 # Download da mídia (servir blob armazenado no banco)
 @media_bp.route('/download/<int:media_id>', methods=['GET'])
 def download(media_id):
