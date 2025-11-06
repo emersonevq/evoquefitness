@@ -12,7 +12,7 @@ media_bp = Blueprint('ti_media', __name__)
 @media_bp.route('/active', methods=['GET'])
 def active_medias():
     try:
-        medias = Media.query.filter_by(status='ativo').order_by(Media.data_criacao.desc()).all()
+        medias = Media.query.filter_by(status='ativo').order_by(Media.ordem.desc(), Media.data_criacao.desc()).all()
         resultado = []
         for m in medias:
             resultado.append({
@@ -20,7 +20,7 @@ def active_medias():
                 'tipo': m.tipo,
                 'titulo': m.titulo,
                 'descricao': m.descricao,
-                'download_url': url_for('ti_media.download', media_id=m.id)
+                'download_url': url_for('ti_media.download_public', media_id=m.id)
             })
         return jsonify(resultado)
     except Exception as e:
