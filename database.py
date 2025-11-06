@@ -353,6 +353,35 @@ class ChamadoTimelineEvent(db.Model):
     def __repr__(self):
         return f'<ChamadoTimelineEvent {self.tipo} - Chamado {self.chamado_id}>'
 
+class HistoricoStatus(db.Model):
+    """Tabela para rastrear períodos em cada status (especialmente para pausas de SLA em 'Aguardando')"""
+    __tablename__ = 'historico_status'
+    __table_args__ = (
+        Index('ix_historico_status_chamado_id', 'chamado_id'),
+        Index('ix_historico_status_status', 'status'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    chamado_id = db.Column(db.Integer, db.ForeignKey('chamado.id'), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    data_inicio = db.Column(db.DateTime, nullable=False)
+    data_fim = db.Column(db.DateTime, nullable=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    descricao = db.Column(db.Text, nullable=True)
+
+    chamado = db.relationship('Chamado', backref='historico_status')
+    usuario = db.relationship('User')
+
+    def get_duracao_horas(self):
+        """Retorna a duração em horas"""
+        if self.data_fim:
+            delta = self.data_fim - self.data_inicio
+            return delta.total_seconds() / 3600
+        return None
+
+    def __repr__(self):
+        return f'<HistoricoStatus {self.chamado_id} - {self.status} ({self.data_inicio})>'
+
 # Emitir atualização via Socket.IO após inserir evento na timeline
 @event.listens_for(ChamadoTimelineEvent, 'after_insert')
 def _emit_timeline_update(mapper, connection, target):
@@ -916,7 +945,7 @@ class EmailMassa(db.Model):
         return f'<EmailMassa {self.assunto} - {self.status}>'
 
 class EmailMassaDestinatario(db.Model):
-    """Tabela para destinatários específicos de emails em massa"""
+    """Tabela para destinatários espec��ficos de emails em massa"""
     __tablename__ = 'email_massa_destinatarios'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -1311,7 +1340,7 @@ def init_app(app):
             ano_atual = date.today().year
 
             feriados_brasileiros = [
-                {'nome': 'Confraternização Universal', 'data': f'{ano_atual}-01-01', 'recorrente': True},
+                {'nome': 'Confraterniza��ão Universal', 'data': f'{ano_atual}-01-01', 'recorrente': True},
                 {'nome': 'Tiradentes', 'data': f'{ano_atual}-04-21', 'recorrente': True},
                 {'nome': 'Dia do Trabalhador', 'data': f'{ano_atual}-05-01', 'recorrente': True},
                 {'nome': 'Independência do Brasil', 'data': f'{ano_atual}-09-07', 'recorrente': True},
