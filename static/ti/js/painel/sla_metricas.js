@@ -51,6 +51,19 @@ class SLAMetricas {
             const metricasData = await metricasResponse.json();
             this.metricas = metricasData.metricas_gerais;
 
+            // Carregar configurações SLA
+            const configResponse = await fetch('/ti/painel/api/sla/configuracoes', {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (configResponse.ok) {
+                const configData = await configResponse.json();
+                this.configuracoes = configData;
+            }
+
             // Carregar chamados detalhados
             const chamadosResponse = await fetch('/ti/painel/api/sla/chamados-detalhados', {
                 credentials: 'same-origin',
