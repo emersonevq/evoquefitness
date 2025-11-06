@@ -547,7 +547,7 @@ def forbidden_error(error):
 @login_required
 @setor_required('Administrador')
 def carregar_configuracoes_api():
-    """Carrega as configurações do sistema"""
+    """Carrega as configura��ões do sistema"""
     try:
         config = carregar_configuracoes()
         logger.info(f"Configurações carregadas com sucesso")
@@ -1116,13 +1116,19 @@ def atualizar_chamado_agente(chamado_id):
         # Atualizar status se fornecido
         if 'status' in data:
             novo_status = data['status']
-            if novo_status in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+            if novo_status in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
                 status_anterior = chamado.status
+
+                # ⚠️ IMPORTANTE: O TRIGGER trg_chamado_status_update no banco automaticamente:
+                # 1. Fecha o período anterior em historico_status
+                # 2. Cria novo período com o novo status
+                # Portanto, apenas atualizamos o status aqui
+
                 chamado.status = novo_status
 
-                # Registrar evento de alteração de status
+                # Registrar evento na timeline
                 try:
-                    from database import ChamadoTimelineEvent, HistoricoStatus
+                    from database import ChamadoTimelineEvent
                     evento_status = ChamadoTimelineEvent(
                         chamado_id=chamado.id,
                         usuario_id=current_user.id,
@@ -1132,42 +1138,22 @@ def atualizar_chamado_agente(chamado_id):
                         status_novo=novo_status
                     )
                     db.session.add(evento_status)
-
-                    # Registrar histórico de status para rastrear períodos de pausa
-                    # Fechar período anterior se existir
-                    if status_anterior:
-                        historico_anterior = HistoricoStatus.query.filter_by(
-                            chamado_id=chamado.id,
-                            status=status_anterior,
-                            data_fim=None
-                        ).first()
-                        if historico_anterior:
-                            historico_anterior.data_fim = get_brazil_time().replace(tzinfo=None)
-
-                    # Criar novo período de status
-                    novo_historico = HistoricoStatus(
-                        chamado_id=chamado.id,
-                        status=novo_status,
-                        data_inicio=get_brazil_time().replace(tzinfo=None),
-                        usuario_id=current_user.id
-                    )
-                    db.session.add(novo_historico)
                 except Exception as e:
                     logger.warning(f"Falha ao registrar timeline de status: {str(e)}")
 
-                # Atualizar campos de SLA baseado na mudança de status
+                # Atualizar campos de SLA
                 agora_brazil = get_brazil_time()
 
-                # Se estava "Aberto" e mudou para um status de TRABALHO (não "Aguardando"), registrar primeira resposta
-                statuses_trabalho = ['Concluido', 'Cancelado']  # Adicione outros statuses de trabalho se houver
-                if status_anterior == 'Aberto' and novo_status in statuses_trabalho and not chamado.data_primeira_resposta:
+                # Registrar primeira resposta (quando sai de "Aberto")
+                if status_anterior == 'Aberto' and novo_status != 'Aberto' and not chamado.data_primeira_resposta:
                     chamado.data_primeira_resposta = agora_brazil.replace(tzinfo=None)
 
-                # Se mudou para "Concluido" ou "Cancelado", registrar conclusão
+                # Registrar conclusão (quando fecha)
                 if novo_status in ['Concluido', 'Cancelado']:
                     if not chamado.data_conclusao:
                         chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
-                    # Registrar informações adicionais de conclusão
+
+                    # Registrar informações de conclusão
                     if novo_status == 'Concluido':
                         chamado.concluido_por_id = current_user.id
                         chamado.concluido_em = agora_brazil.replace(tzinfo=None)
