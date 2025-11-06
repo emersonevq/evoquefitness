@@ -148,10 +148,22 @@ class SLAMetricas {
 
         // Mostrar dados de pausas se disponíveis
         if (this.metricas.total_horas_pausadas !== undefined) {
-            console.log('Total horas pausadas:', this.metricas.total_horas_pausadas);
-            console.log('Chamados com pausa:', this.metricas.chamados_com_pausa);
-            console.log('Média tempo pausa:', this.metricas.media_tempo_pausa);
+            console.log('⏸️ Dados de PAUSAS detectados:');
+            console.log('   Total horas pausadas:', this.metricas.total_horas_pausadas);
+            console.log('   Chamados com pausa:', this.metricas.chamados_com_pausa);
+            console.log('   Média tempo pausa:', this.metricas.media_tempo_pausa);
+
+            // Criar informações visuais sobre pausas
+            this.criarCardsPausa();
+        } else {
+            console.warn('⚠️ Dados de pausas NÃO ENCONTRADOS nas métricas!');
+            console.log('   Isso pode indicar um problema no cálculo das métricas');
         }
+    }
+
+    criarCardsPausa() {
+        // Este método pode ser expandido para exibir dados de pausas em cards adicionais
+        console.log('Cards de pausa seriam exibidos aqui quando implementado');
     }
 
     atualizarCardsMetricas() {
