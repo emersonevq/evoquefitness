@@ -1,4 +1,5 @@
 import os
+import traceback
 from flask import Blueprint, request, jsonify, current_app, send_file, abort, url_for
 from werkzeug.utils import secure_filename
 from io import BytesIO
@@ -39,6 +40,10 @@ def download(media_id):
             return send_file(BytesIO(m.arquivo_blob), mimetype=m.mime_type or 'application/octet-stream', as_attachment=False, download_name=m.titulo or f'media_{m.id}')
         except Exception as e:
             current_app.logger.error(f'Erro ao enviar blob da mídia {m.id}: {e}')
+            try:
+                current_app.logger.error(traceback.format_exc())
+            except Exception:
+                pass
             abort(500)
 
     # Se não tiver blob, tentar redirecionar para url externa
@@ -93,7 +98,14 @@ def upload_media():
 
     except Exception as e:
         current_app.logger.error(f'Erro ao enviar mídia: {str(e)}')
+        try:
+            current_app.logger.error(traceback.format_exc())
+        except Exception:
+            pass
         db.session.rollback()
+        # Em modo debug, retornar detalhes para ajudar no diagnóstico
+        if current_app.debug:
+            return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
         return jsonify({'error': 'Erro interno'}), 500
 
 # Lista completa de mídias (CRUD) - para o painel
@@ -124,6 +136,12 @@ def list_medias():
         return jsonify(resultado)
     except Exception as e:
         current_app.logger.error(f'Erro ao listar mídias: {e}')
+        try:
+            current_app.logger.error(traceback.format_exc())
+        except Exception:
+            pass
+        if current_app.debug:
+            return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
         return jsonify({'error': 'Erro interno'}), 500
 
 # Remover mídia
@@ -143,7 +161,13 @@ def delete_media(media_id):
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Erro ao deletar mídia: {e}')
+        try:
+            current_app.logger.error(traceback.format_exc())
+        except Exception:
+            pass
         db.session.rollback()
+        if current_app.debug:
+            return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
         return jsonify({'error': 'Erro interno'}), 500
 
 # Atualizar metadados da mídia
@@ -188,7 +212,13 @@ def update_media(media_id):
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Erro ao atualizar mídia: {e}')
+        try:
+            current_app.logger.error(traceback.format_exc())
+        except Exception:
+            pass
         db.session.rollback()
+        if current_app.debug:
+            return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
         return jsonify({'error': 'Erro interno'}), 500
 
 # Reordenar mídias (espera um JSON {order: [id1,id2,..]})
@@ -215,5 +245,11 @@ def reorder_medias():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Erro ao reordenar mídias: {e}')
+        try:
+            current_app.logger.error(traceback.format_exc())
+        except Exception:
+            pass
         db.session.rollback()
+        if current_app.debug:
+            return jsonify({'error': 'Erro interno', 'details': str(e)}), 500
         return jsonify({'error': 'Erro interno'}), 500
