@@ -27,19 +27,19 @@ FOR EACH ROW
 BEGIN
   -- Apenas executar se status realmente mudou
   IF COALESCE(OLD.status, '') != COALESCE(NEW.status, '') THEN
-    
+
     -- 1) Fechar qualquer período anterior aberto para este chamado
     UPDATE historico_status
-    SET data_fim = NEW.updated_at
+    SET data_fim = NOW()
     WHERE chamado_id = NEW.id
       AND data_fim IS NULL
       AND status != NEW.status;
-    
+
     -- 2) Criar novo período para o novo status (se não existir já)
     IF NOT EXISTS (
-      SELECT 1 FROM historico_status 
-      WHERE chamado_id = NEW.id 
-      AND status = NEW.status 
+      SELECT 1 FROM historico_status
+      WHERE chamado_id = NEW.id
+      AND status = NEW.status
       AND data_fim IS NULL
     ) THEN
       INSERT INTO historico_status
@@ -48,7 +48,7 @@ BEGIN
         (
           NEW.id,
           NEW.status,
-          COALESCE(NEW.updated_at, NOW()),
+          NOW(),
           NULL,
           NULL,
           CONCAT('Mudança automática: ', COALESCE(OLD.status, 'Novo'), ' → ', NEW.status),
