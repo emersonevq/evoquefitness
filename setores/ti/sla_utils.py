@@ -241,7 +241,7 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
 def _calcular_horas_comerciais_simples(inicio: datetime, fim: datetime, config_horario: Dict) -> float:
     """
     Calcula horas comerciais entre duas datas sem considerar períodos de pausa
-    (Função auxiliar para evitar recursão)
+    (Funç��o auxiliar para evitar recursão)
     """
     if inicio >= fim:
         return 0.0
@@ -580,6 +580,51 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
         'prioridade': prioridade,
         'percentual_tempo_usado': round(percentual_tempo_usado, 1)
     }
+
+def inicializar_historico_status_chamado(chamado):
+    """
+    Inicializa histórico de status para um chamado que não possui registros
+    (Útil para migração de dados antigos)
+
+    Args:
+        chamado: Objeto do chamado
+
+    Returns:
+        True se inicializado com sucesso, False caso contrário
+    """
+    from database import HistoricoStatus
+
+    try:
+        # Verificar se já existe histórico
+        tem_historico = HistoricoStatus.query.filter_by(
+            chamado_id=chamado.id
+        ).first()
+
+        if tem_historico:
+            return True
+
+        # Criar registro inicial baseado no status atual
+        historico = HistoricoStatus(
+            chamado_id=chamado.id,
+            status=chamado.status,
+            data_inicio=chamado.data_abertura or get_brazil_time().replace(tzinfo=None),
+            usuario_id=None,
+            descricao='Inicializado automaticamente'
+        )
+
+        # Se o chamado está finalizado, fechar o período
+        if chamado.status in ['Concluido', 'Cancelado']:
+            historico.data_fim = chamado.data_conclusao or get_brazil_time().replace(tzinfo=None)
+
+        db.session.add(historico)
+        db.session.commit()
+
+        logger.info(f"Histórico de status inicializado para chamado {chamado.id}")
+        return True
+    except Exception as e:
+        logger.error(f"Erro ao inicializar histórico de status: {str(e)}")
+        db.session.rollback()
+        return False
 
 def obter_metricas_sla_consolidadas(period_days: int = 30) -> Dict:
     """
