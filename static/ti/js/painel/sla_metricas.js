@@ -112,6 +112,8 @@ class SLAMetricas {
     atualizarMetricasPrincipais() {
         if (!this.metricas) return;
 
+        console.log('Atualizando métricas principais:', this.metricas);
+
         // Total de chamados
         const totalChamados = document.getElementById('totalChamados');
         if (totalChamados) {
@@ -124,18 +126,27 @@ class SLAMetricas {
             chamadosAbertos.textContent = this.metricas.chamados_abertos || 0;
         }
 
-        // Tempo médio de resposta
+        // Tempo médio de resposta (em horas - já descontando pausas)
         const tempoMedioResposta = document.getElementById('tempoMedioResposta');
         if (tempoMedioResposta) {
-            const tempo = this.metricas.tempo_medio_primeira_resposta || 0;
+            const tempo = this.metricas.tempo_medio_resposta || 0;
+            console.log('Tempo médio resposta (horas):', tempo);
             tempoMedioResposta.textContent = this.formatarTempo(tempo);
         }
 
-        // Tempo médio de resolução
+        // Tempo médio de resolução (em horas - já descontando pausas)
         const tempoMedioResolucao = document.getElementById('tempoMedioResolucao');
         if (tempoMedioResolucao) {
             const tempo = this.metricas.tempo_medio_resolucao || 0;
+            console.log('Tempo médio resolução (horas):', tempo);
             tempoMedioResolucao.textContent = this.formatarTempo(tempo);
+        }
+
+        // Mostrar dados de pausas se disponíveis
+        if (this.metricas.total_horas_pausadas !== undefined) {
+            console.log('Total horas pausadas:', this.metricas.total_horas_pausadas);
+            console.log('Chamados com pausa:', this.metricas.chamados_com_pausa);
+            console.log('Média tempo pausa:', this.metricas.media_tempo_pausa);
         }
     }
 
