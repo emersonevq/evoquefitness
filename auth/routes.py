@@ -9,6 +9,26 @@ import random
 from datetime import datetime, timedelta
 from . import auth_bp
 
+# Helper para renderizar a tela de login incluindo mídias ativas (painel)
+def render_login(**kwargs):
+    """Renderiza o template de login passando as mídias ativas para a seção de mídia à esquerda."""
+    try:
+        from database import Media
+        medias = Media.query.filter_by(status='ativo').order_by(Media.data_criacao.desc()).limit(10).all()
+        media_items = []
+        for m in medias:
+            media_items.append({
+                'id': m.id,
+                'tipo': m.tipo,
+                'titulo': m.titulo,
+                'descricao': m.descricao,
+                'download_url': url_for('ti_media.download', media_id=m.id)
+            })
+    except Exception:
+        media_items = []
+    kwargs['media_items'] = media_items
+    return render_template('login.html', **kwargs)
+
 def get_user_redirect_url(user):
     """
     Determina para onde redirecionar o usuário após o login baseado no seu perfil
@@ -90,7 +110,7 @@ def login():
         
         if not usuario or not senha:
             flash('Por favor, preencha todos os campos.', 'danger')
-            return render_template('login.html')
+            return render_login()
         
         user = User.query.filter_by(usuario=usuario).first()
         
@@ -98,10 +118,10 @@ def login():
             if user.bloqueado:
                 flash('Sua conta está bloqueada. Entre em contato com o administrador.', 'danger')
                 current_app.logger.warning(f'Tentativa de login em conta bloqueada: {usuario}')
-                return render_template('login.html')
+                return render_login()
             
             if user.alterar_senha_primeiro_acesso:
-                return render_template('login.html', alterar_senha=True, usuario=user.usuario)
+                return render_login(alterar_senha=True, usuario=user.usuario)
             
             login_user(user, remember=True)
 
@@ -123,7 +143,7 @@ def login():
             current_app.logger.warning(f'Tentativa de login falha: {usuario}')
             flash('Usuário ou senha inválidos', 'danger')
     
-    return render_template('login.html')
+    return render_login()
 
 @auth_bp.route('/first_login', methods=['POST'])
 def first_login():

@@ -714,6 +714,11 @@ def internal_error(error):
 from .painel import painel_bp
 ti_bp.register_blueprint(painel_bp, url_prefix='/painel')
 
+# Módulo de mídia para painel de login (fotos/vídeos armazenados no banco)
+from .media import media_bp
+# Registrar endpoints de mídia em /ti/media
+ti_bp.register_blueprint(media_bp, url_prefix='/media')
+
 # Registrar blueprints de agentes, grupos, auditoria e rotas avançadas
 from .agentes import agentes_bp
 from .grupos import grupos_bp

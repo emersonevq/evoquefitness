@@ -309,6 +309,31 @@ class AnexoArquivo(db.Model):
     def __repr__(self):
         return f'<AnexoArquivo {self.nome_original} ({self.tamanho_bytes} bytes)>'
 
+class Media(db.Model):
+    __tablename__ = 'media'
+
+    id = db.Column(db.Integer, primary_key=True)
+    tipo = db.Column(db.Enum('evento', 'foto', 'video', name='media_tipo'), nullable=False)
+    titulo = db.Column(db.String(255), nullable=False)
+    descricao = db.Column(db.Text, nullable=True)
+    url = db.Column(db.String(500), nullable=True)
+    arquivo_blob = db.Column(db.LargeBinary, nullable=True)
+    mime_type = db.Column(db.String(100), nullable=True)
+    tamanho_bytes = db.Column(db.Integer, nullable=True)
+    data_criacao = db.Column(db.DateTime, default=lambda: get_brazil_time().replace(tzinfo=None))
+    status = db.Column(db.Enum('ativo', 'inativo', name='media_status'), default='ativo')
+
+    def public_url(self):
+        """Retorna URL pública para acessar a mídia (download ou URL externa)"""
+        if self.arquivo_blob:
+            return f"/ti/media/download/{self.id}"
+        if self.url:
+            return self.url
+        return None
+
+    def __repr__(self):
+        return f"<Media {self.titulo} ({self.tipo})>"
+
 class HistoricoTicket(db.Model):
     __tablename__ = 'historicos_tickets'
     __table_args__ = (
@@ -402,7 +427,7 @@ class HistoricoStatus(db.Model):
         return None
 
     def get_duracao_minutos(self):
-        """Retorna a duração do período em minutos"""
+        """Retorna a duraç��o do período em minutos"""
         if self.data_fim:
             delta = self.data_fim - self.data_inicio
             return delta.total_seconds() / 60
@@ -933,7 +958,7 @@ class GrupoUnidade(db.Model):
     # Relacionamentos
     unidade = db.relationship('Unidade', backref='grupos_participante')
 
-    # Índice composto para evitar duplicatas
+    # ��ndice composto para evitar duplicatas
     __table_args__ = (db.UniqueConstraint('grupo_id', 'unidade_id', name='uk_grupo_unidade'),)
 
     def __repr__(self):
