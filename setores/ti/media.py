@@ -8,11 +8,41 @@ from database import db, Media, get_brazil_time
 
 media_bp = Blueprint('ti_media', __name__)
 
+# Diagnóstico público - mostra as URLs e mídias disponíveis (para debug)
+@media_bp.route('/public-debug', methods=['GET'])
+def public_debug():
+    try:
+        medias = Media.query.filter_by(status='ativo').order_by(Media.ordem.desc(), Media.data_criacao.desc()).all()
+        resultado = {
+            'total_count': len(medias),
+            'medias': []
+        }
+        for m in medias:
+            try:
+                url = url_for('ti.ti_media.download_public', media_id=m.id, _external=False)
+            except Exception as e:
+                url = f"ERROR: {str(e)}"
+
+            resultado['medias'].append({
+                'id': m.id,
+                'titulo': m.titulo,
+                'tipo': m.tipo,
+                'status': m.status,
+                'tem_blob': bool(m.arquivo_blob),
+                'tamanho_bytes': m.tamanho_bytes,
+                'download_url': url,
+                'url_externa': m.url
+            })
+        return jsonify(resultado)
+    except Exception as e:
+        current_app.logger.error(f'Erro em public_debug: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
 # Retorna mídias ativas (meta) para exibir no login
 @media_bp.route('/active', methods=['GET'])
 def active_medias():
     try:
-        medias = Media.query.filter_by(status='ativo').order_by(Media.data_criacao.desc()).all()
+        medias = Media.query.filter_by(status='ativo').order_by(Media.ordem.desc(), Media.data_criacao.desc()).all()
         resultado = []
         for m in medias:
             resultado.append({
@@ -20,12 +50,41 @@ def active_medias():
                 'tipo': m.tipo,
                 'titulo': m.titulo,
                 'descricao': m.descricao,
-                'download_url': url_for('ti_media.download', media_id=m.id)
+                'download_url': url_for('ti.ti_media.download_public', media_id=m.id)
             })
         return jsonify(resultado)
     except Exception as e:
         current_app.logger.error(f'Erro ao listar mídias ativas: {str(e)}')
         return jsonify([]), 500
+
+# Download público da mídia (para tela de login - SEM autenticação necessária)
+@media_bp.route('/public/<int:media_id>', methods=['GET'])
+def download_public(media_id):
+    m = Media.query.get(media_id)
+    if not m:
+        abort(404)
+
+    # Verificar se a mídia está ativa (apenas mídias ativas podem ser acessadas publicamente)
+    if m.status != 'ativo':
+        abort(403)
+
+    # Preferir blob salvo no banco
+    if m.arquivo_blob:
+        try:
+            return send_file(BytesIO(m.arquivo_blob), mimetype=m.mime_type or 'application/octet-stream', as_attachment=False, download_name=m.titulo or f'media_{m.id}')
+        except Exception as e:
+            current_app.logger.error(f'Erro ao enviar blob da mídia pública {m.id}: {e}')
+            try:
+                current_app.logger.error(traceback.format_exc())
+            except Exception:
+                pass
+            abort(500)
+
+    # Se não tiver blob, tentar redirecionar para url externa
+    if m.url:
+        return jsonify({'redirect': m.url}), 302
+
+    abort(404)
 
 # Download da mídia (servir blob armazenado no banco)
 @media_bp.route('/download/<int:media_id>', methods=['GET'])

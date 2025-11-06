@@ -325,9 +325,9 @@ class Media(db.Model):
     status = db.Column(db.Enum('ativo', 'inativo', name='media_status'), default='ativo')
 
     def public_url(self):
-        """Retorna URL pública para acessar a mídia (download ou URL externa)"""
+        """Retorna URL pública para acessar a mídia (download ou URL externa) - acessível sem autenticação"""
         if self.arquivo_blob:
-            return f"/ti/media/download/{self.id}"
+            return f"/ti/media/public/{self.id}"
         if self.url:
             return self.url
         return None

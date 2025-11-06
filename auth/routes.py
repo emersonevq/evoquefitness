@@ -14,7 +14,7 @@ def render_login(**kwargs):
     """Renderiza o template de login passando as mídias ativas para a seção de mídia à esquerda."""
     try:
         from database import Media
-        medias = Media.query.filter_by(status='ativo').order_by(Media.data_criacao.desc()).limit(10).all()
+        medias = Media.query.filter_by(status='ativo').order_by(Media.ordem.desc(), Media.data_criacao.desc()).limit(10).all()
         media_items = []
         for m in medias:
             media_items.append({
@@ -22,7 +22,7 @@ def render_login(**kwargs):
                 'tipo': m.tipo,
                 'titulo': m.titulo,
                 'descricao': m.descricao,
-                'download_url': url_for('ti_media.download', media_id=m.id)
+                'download_url': url_for('ti.ti_media.download_public', media_id=m.id)
             })
     except Exception:
         media_items = []
@@ -320,7 +320,7 @@ def esqueci_senha():
         # Invalidar tentativas anteriores não utilizadas
         ResetSenha.query.filter_by(usuario_id=user.id, usado=False).update({'usado': True})
 
-        # Gerar código e token
+        # Gerar c��digo e token
         codigo = gerar_codigo_6_digitos()
         token = gerar_token_seguro()
 
