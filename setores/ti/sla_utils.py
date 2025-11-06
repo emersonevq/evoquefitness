@@ -240,7 +240,8 @@ def calcular_horas_aguardando(chamado, inicio: datetime = None, fim: datetime = 
                 horas = _calcular_horas_comerciais_simples(inicio_efetivo, fim_efetivo, config_horario)
                 horas_pausadas += horas
 
-                logger.debug(f"Período Aguardando: {inicio_efetivo} → {fim_efetivo} = {horas}h")
+                # Debug removido para performance - descomente se necessário
+                # logger.debug(f"Período Aguardando: {inicio_efetivo} → {fim_efetivo} = {horas}h")
 
         return round(horas_pausadas, 2)
     except Exception as e:
@@ -445,7 +446,7 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     
     agora_brazil = obter_agora_brasilia()
     
-    # Se não tem data de abertura, retornar valores padrão
+    # Se n��o tem data de abertura, retornar valores padrão
     if not chamado.data_abertura:
         return {
             'chamado_id': chamado.id,
