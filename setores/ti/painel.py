@@ -2187,7 +2187,7 @@ def listar_chamados():
 
         # Query base
         query = Chamado.query
-        if status_param in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+        if status_param in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
             query = query.filter(Chamado.status == status_param)
 
         # Evitar carregar relacionamentos pesados quando em modo "light"
@@ -2313,7 +2313,7 @@ def obter_estatisticas_chamados():
             logger.info(f"Status {status}: {quantidade} chamados")
 
         # Adicionar status que podem não ter chamados
-        status_possiveis = ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']
+        status_possiveis = ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']
         for status in status_possiveis:
             if status not in stats_dict:
                 stats_dict[status] = 0
@@ -2417,7 +2417,7 @@ def debug_test_usuarios():
             total += stat.quantidade
         
         # Garantir que todos os status est��o presentes
-        status_padrao = ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']
+        status_padrao = ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']
         for status in status_padrao:
             if status not in stats_dict:
                 stats_dict[status] = 0
@@ -2533,7 +2533,7 @@ def atualizar_status_chamado(id):
         except Exception as agente_error:
             logger.warning(f"Erro ao buscar agente: {str(agente_error)}")
 
-        # Emitir evento Socket.IO apenas se a conexão estiver disponível
+        # Emitir evento Socket.IO apenas se a conexão estiver dispon��vel
         try:
             if hasattr(current_app, 'socketio'):
                 current_app.socketio.emit('status_atualizado', {
@@ -4401,7 +4401,7 @@ def criar_agente():
         # Verificar se usuário existe
         usuario = User.query.get(usuario_id)
         if not usuario:
-            return error_response('Usuário não encontrado')
+            return error_response('Usuário n��o encontrado')
 
         # Verificar se já é agente
         agente_existente = AgenteSuporte.query.filter_by(usuario_id=usuario_id).first()
