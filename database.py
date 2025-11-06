@@ -1321,11 +1321,52 @@ def init_app(app):
                     print(f"Chamado {chamado.codigo} vinculado ao usuário {usuario.nome}")
             
             db.session.commit()
-            
+
         except Exception as e:
             print(f"Erro na migração: {str(e)}")
             db.session.rollback()
-        
+
+        # Garantir colunas necessárias na tabela media (arquivo_blob, mime_type, tamanho_bytes)
+        try:
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
+            if 'media' in inspector.get_table_names():
+                media_cols = [c['name'] for c in inspector.get_columns('media')]
+
+                # Adiciona arquivo_blob se não existir
+                if 'arquivo_blob' not in media_cols:
+                    try:
+                        db.engine.execute('ALTER TABLE media ADD COLUMN arquivo_blob LONGBLOB')
+                        print('Coluna arquivo_blob adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar arquivo_blob:', _e)
+
+                # Adiciona mime_type se não existir
+                if 'mime_type' not in media_cols:
+                    try:
+                        db.engine.execute("ALTER TABLE media ADD COLUMN mime_type VARCHAR(100)")
+                        print('Coluna mime_type adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar mime_type:', _e)
+
+                # Adiciona tamanho_bytes se não existir
+                if 'tamanho_bytes' not in media_cols:
+                    try:
+                        db.engine.execute('ALTER TABLE media ADD COLUMN tamanho_bytes INTEGER')
+                        print('Coluna tamanho_bytes adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar tamanho_bytes:', _e)
+
+                # Adiciona ordem se não existir
+                if 'ordem' not in media_cols:
+                    try:
+                        db.engine.execute('ALTER TABLE media ADD COLUMN ordem INTEGER DEFAULT 0')
+                        print('Coluna ordem adicionada à tabela media')
+                    except Exception as _e:
+                        print('Falha ao adicionar ordem:', _e)
+        except Exception as e:
+            print(f"Erro ao verificar/atualizar colunas da tabela media: {str(e)}")
+
         # Atualizar setores dos usuários
         users = User.query.all()
         for user in users:
