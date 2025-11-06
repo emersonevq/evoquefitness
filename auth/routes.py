@@ -158,12 +158,12 @@ def first_login():
     
     if not nova_senha or nova_senha != confirmar_senha:
         flash('As senhas não coincidem', 'danger')
-        return render_template('login.html', alterar_senha=True, usuario=usuario)
+        return render_login(alterar_senha=True, usuario=usuario)
     
     senha_valida, mensagem = validar_senha(nova_senha)
     if not senha_valida:
         flash(mensagem, 'danger')
-        return render_template('login.html', alterar_senha=True, usuario=usuario)
+        return render_login(alterar_senha=True, usuario=usuario)
     
     try:
         user.senha_hash = generate_password_hash(nova_senha)
@@ -178,7 +178,7 @@ def first_login():
         current_app.logger.error(f'Erro ao alterar senha: {str(e)}')
         db.session.rollback()
         flash('Erro ao alterar senha. Tente novamente.', 'danger')
-        return render_template('login.html', alterar_senha=True, usuario=usuario)
+        return render_login(alterar_senha=True, usuario=usuario)
 
 @auth_bp.route('/logout')
 @login_required
