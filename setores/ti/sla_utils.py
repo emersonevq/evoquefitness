@@ -240,7 +240,8 @@ def calcular_horas_aguardando(chamado, inicio: datetime = None, fim: datetime = 
                 horas = _calcular_horas_comerciais_simples(inicio_efetivo, fim_efetivo, config_horario)
                 horas_pausadas += horas
 
-                logger.debug(f"Período Aguardando: {inicio_efetivo} → {fim_efetivo} = {horas}h")
+                # Debug removido para performance - descomente se necessário
+                # logger.debug(f"Período Aguardando: {inicio_efetivo} → {fim_efetivo} = {horas}h")
 
         return round(horas_pausadas, 2)
     except Exception as e:
@@ -285,9 +286,10 @@ def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict =
     if chamado:
         horas_aguardando = calcular_horas_aguardando(chamado, inicio, fim, config_horario)
         horas_uteis_liquidas = max(0, horas_uteis_brutas - horas_aguardando)
-        
-        logger.debug(f"Horas úteis: {horas_uteis_brutas}h brutas - {horas_aguardando}h pausadas = {horas_uteis_liquidas}h líquidas")
-        
+
+        # Debug removido para performance - descomente se necessário
+        # logger.debug(f"Horas úteis: {horas_uteis_brutas}h brutas - {horas_aguardando}h pausadas = {horas_uteis_liquidas}h líquidas")
+
         return round(horas_uteis_liquidas, 2)
     
     return round(horas_uteis_brutas, 2)
@@ -338,7 +340,7 @@ def obter_proximo_horario_comercial(dt: datetime, config_horario: Dict = None) -
             else:
                 return data_teste
         else:
-            # Não é dia útil, ir para próximo dia
+            # Não é dia ��til, ir para próximo dia
             data_teste += timedelta(days=1)
             data_teste = data_teste.replace(
                 hour=config_horario['inicio'].hour,
@@ -444,7 +446,7 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     
     agora_brazil = obter_agora_brasilia()
     
-    # Se não tem data de abertura, retornar valores padrão
+    # Se n��o tem data de abertura, retornar valores padrão
     if not chamado.data_abertura:
         return {
             'chamado_id': chamado.id,

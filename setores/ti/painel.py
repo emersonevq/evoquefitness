@@ -1557,7 +1557,7 @@ def salvar_configuracoes_sla_api():
 @login_required
 @setor_required('ti')
 def obter_metricas_sla():
-    """Retorna métricas consolidadas de SLA"""
+    """Retorna métricas consolidadas de SLA - com dados de pausas incluídos"""
     try:
         period_days = request.args.get('period_days', 30, type=int)
         if period_days <= 0:
@@ -1565,7 +1565,7 @@ def obter_metricas_sla():
 
         metricas = obter_metricas_sla_consolidadas(period_days)
 
-        # Converter dados para formato esperado pelo frontend
+        # Retornar TODOS os dados (incluindo pausas)
         response_data = {
             'metricas_gerais': {
                 'total_chamados': metricas['total_chamados'],
@@ -1574,7 +1574,16 @@ def obter_metricas_sla():
                 'tempo_medio_resolucao': metricas['tempo_medio_resolucao'],
                 'sla_cumprimento': metricas['percentual_cumprimento'],
                 'sla_violacoes': metricas['chamados_violados'],
-                'chamados_risco': metricas['chamados_em_risco']
+                'chamados_risco': metricas['chamados_em_risco'],
+
+                # Dados de pausas (SLA pausado em "Aguardando")
+                'total_horas_pausadas': metricas.get('total_horas_pausadas', 0),
+                'chamados_com_pausa': metricas.get('chamados_com_pausa', 0),
+                'media_tempo_pausa': metricas.get('media_tempo_pausa', 0),
+
+                # Informações adicionais
+                'chamados_cumpridos': metricas.get('chamados_cumpridos', 0),
+                'period_days': metricas.get('period_days', period_days)
             }
         }
 
@@ -1582,6 +1591,7 @@ def obter_metricas_sla():
 
     except Exception as e:
         logger.error(f"Erro ao obter métricas SLA: {str(e)}")
+        logger.error(traceback.format_exc())
         return error_response('Erro interno no servidor')
 
 @painel_bp.route('/api/sla/chamados', methods=['GET'])
@@ -3099,7 +3109,7 @@ def atualizar_usuario(user_id):
                 return error_response('Nome de usuário já está em uso por outro usuário', 400)
             usuario.usuario = data['usuario']
         if 'email' in data:
-            # Verificar se email não está em uso por outro usuário
+            # Verificar se email n��o está em uso por outro usuário
             existing_user = User.query.filter(User.email == data['email'], User.id != user_id).first()
             if existing_user:
                 return error_response('Email já está em uso por outro usuário', 400)
@@ -3559,7 +3569,7 @@ def obter_grafico_semanal():
 @login_required
 @setor_required('ti')
 def obter_chamados_detalhados_sla():
-    """Retorna lista detalhada de chamados com informações de SLA"""
+    """Retorna lista detalhada de chamados com informações de SLA - com dados de pausas"""
     try:
         sla_config = carregar_configuracoes_sla()
         horario_config = carregar_configuracoes_horario_comercial()
@@ -3572,28 +3582,46 @@ def obter_chamados_detalhados_sla():
                 continue
 
             sla_info = calcular_sla_chamado_correto(chamado, sla_config, horario_config)
-            
+
             # Converter data de abertura para timezone do Brasil
             data_abertura_brazil = chamado.get_data_abertura_brazil()
             data_abertura_str = data_abertura_brazil.strftime('%d/%m/%Y %H:%M') if data_abertura_brazil else 'N/A'
-            
+
             chamados_detalhados.append({
                 'id': chamado.id,
                 'codigo': chamado.codigo,
+                'protocolo': getattr(chamado, 'protocolo', ''),
                 'solicitante': chamado.solicitante,
                 'problema': chamado.problema,
                 'status': chamado.status,
                 'data_abertura': data_abertura_str,
-                'horas_decorridas': sla_info['horas_decorridas'],
+                'prioridade': sla_info.get('prioridade', chamado.prioridade),
+
+                # Tempos (já descontam pausas)
+                'horas_totais': sla_info.get('horas_totais', 0),
+                'horas_pausadas': sla_info.get('horas_pausadas', 0),
+                'horas_ativas': sla_info.get('horas_ativas', 0),
+                'horas_decorridas': sla_info.get('horas_decorridas', 0),
+                'horas_uteis_decorridas': sla_info.get('horas_uteis_decorridas', 0),
+
+                # SLA
                 'sla_limite': sla_info['sla_limite'],
                 'sla_status': sla_info['sla_status'],
-                'prioridade': sla_info.get('prioridade', chamado.prioridade),
-                'tempo_primeira_resposta': sla_info['tempo_primeira_resposta'],
-                'tempo_resolucao': sla_info['tempo_resolucao'],
-                'violacao_primeira_resposta': sla_info['violacao_primeira_resposta'],
-                'violacao_resolucao': sla_info['violacao_resolucao']
+                'percentual_tempo_usado': sla_info.get('percentual_tempo_usado', 0),
+
+                # Primeira resposta e resolução
+                'tempo_primeira_resposta': sla_info.get('tempo_primeira_resposta'),
+                'tempo_primeira_resposta_uteis': sla_info.get('tempo_primeira_resposta_uteis'),
+                'tempo_resolucao': sla_info.get('tempo_resolucao'),
+                'tempo_resolucao_uteis': sla_info.get('tempo_resolucao_uteis'),
+                'violacao_primeira_resposta': sla_info.get('violacao_primeira_resposta', False),
+                'violacao_resolucao': sla_info.get('violacao_resolucao', False),
+
+                # Pausas (Aguardando)
+                'sla_pausado_agora': sla_info.get('sla_pausado_agora', False),
+                'total_periodos_aguardando': sla_info.get('total_periodos_aguardando', 0)
             })
-        
+
         return json_response(chamados_detalhados)
 
     except Exception as e:
