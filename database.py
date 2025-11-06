@@ -320,6 +320,7 @@ class Media(db.Model):
     arquivo_blob = db.Column(db.LargeBinary, nullable=True)
     mime_type = db.Column(db.String(100), nullable=True)
     tamanho_bytes = db.Column(db.Integer, nullable=True)
+    ordem = db.Column(db.Integer, default=0, index=True)
     data_criacao = db.Column(db.DateTime, default=lambda: get_brazil_time().replace(tzinfo=None))
     status = db.Column(db.Enum('ativo', 'inativo', name='media_status'), default='ativo')
 
