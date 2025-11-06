@@ -270,7 +270,7 @@
       </div>
     </section>
 
-    <!-- Nova Se��ão SLA & Métricas -->
+    <!-- Nova Se����ão SLA & Métricas -->
     <section id="sla-dashboard" class="content-section" tabindex="0" aria-label="SLA & Métricas">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-chart-line me-2"></i>SLA & M��tricas de Desempenho</h2>
@@ -3037,7 +3037,7 @@
         }
       })
       .catch(error => {
-        console.error('Erro ao salvar configurações:', error);
+        console.error('Erro ao salvar configura��ões:', error);
         if (window.advancedNotificationSystem) {
             window.advancedNotificationSystem.showError(
                 'Erro',
@@ -3898,5 +3898,136 @@ function testarIntegracaoSLA() {
 
   <!-- Sistema de Timeout de Sessão -->
   <script src="{{ url_for('static', filename='ti/js/painel/session_timeout.js') }}"></script>
+<script>
+// Media panel scripts: carregar pré-visualização e enviar mídia
+async function loadMediaPreview() {
+  try {
+    const container = document.getElementById('mediaPreviewContainer');
+    if (!container) return;
+    container.innerHTML = '<div class="text-muted">Carregando pré-visualização...</div>';
+    const res = await fetch('/ti/media/active', { credentials: 'same-origin' });
+    if (!res.ok) {
+      container.innerHTML = '<div class="text-danger">Falha ao carregar mídias</div>';
+      return;
+    }
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="text-muted">Nenhuma mídia ativa</div>';
+      return;
+    }
+    // Mostrar o primeiro item
+    const m = data[0];
+    container.innerHTML = '';
+    const box = document.createElement('div');
+    box.style.width = '100%';
+    box.style.display = 'flex';
+    box.style.flexDirection = 'column';
+    box.style.alignItems = 'center';
+    box.style.gap = '8px';
+
+    if (m.tipo === 'video') {
+      const v = document.createElement('video');
+      v.controls = true;
+      v.style.maxWidth = '100%';
+      v.style.maxHeight = '360px';
+      v.src = m.download_url;
+      box.appendChild(v);
+    } else {
+      const img = document.createElement('img');
+      img.src = m.download_url;
+      img.alt = m.titulo || 'Mídia';
+      img.style.maxWidth = '100%';
+      img.style.borderRadius = '8px';
+      box.appendChild(img);
+    }
+
+    const title = document.createElement('div');
+    title.className = 'media-title';
+    title.textContent = m.titulo || '';
+    box.appendChild(title);
+
+    const desc = document.createElement('div');
+    desc.style.color = 'rgba(255,255,255,0.85)';
+    desc.style.textAlign = 'center';
+    desc.textContent = m.descricao || '';
+    box.appendChild(desc);
+
+    container.appendChild(box);
+  } catch (error) {
+    console.error('Erro ao carregar pré-visualização:', error);
+    const container = document.getElementById('mediaPreviewContainer');
+    if (container) container.innerHTML = '<div class="text-danger">Erro ao carregar pré-visualização</div>';
+  }
+}
+
+async function uploadMedia() {
+  try {
+    const tipo = document.getElementById('mediaTipo').value;
+    const titulo = document.getElementById('mediaTitulo').value.trim();
+    const descricao = document.getElementById('mediaDescricao').value.trim();
+    const status = document.getElementById('mediaStatus').value;
+    const url = document.getElementById('mediaUrl').value.trim();
+    const arquivoInput = document.getElementById('mediaArquivo');
+
+    if (!titulo) { alert('Título obrigatório'); return; }
+    if ((!arquivoInput || arquivoInput.files.length === 0) && !url) { alert('Envie um arquivo ou informe uma URL'); return; }
+
+    const form = document.getElementById('mediaUploadForm');
+    const formData = new FormData(form);
+    // adicionar arquivo manualmente caso exista
+    if (arquivoInput && arquivoInput.files.length > 0) {
+      formData.set('arquivo', arquivoInput.files[0]);
+    }
+
+    // Enviar
+    const btn = document.getElementById('btnUploadMedia');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const res = await fetch('/ti/media/upload', {
+      method: 'POST',
+      body: formData,
+      credentials: 'same-origin'
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Enviar Mídia';
+
+    if (!res.ok) {
+      const body = await res.json().catch(()=>({}));
+      const msg = (body && (body.error || body.message)) || 'Erro ao enviar mídia';
+      alert(msg);
+      return;
+    }
+
+    const data = await res.json();
+    if (data && data.success) {
+      alert('Mídia enviada com sucesso');
+      // limpar formulário
+      document.getElementById('mediaUploadForm').reset();
+      loadMediaPreview();
+    } else {
+      alert('Resposta inesperada ao enviar mídia');
+    }
+  } catch (error) {
+    console.error('Erro no upload de mídia:', error);
+    alert('Erro ao enviar mídia');
+    const btn = document.getElementById('btnUploadMedia');
+    if (btn) { btn.disabled = false; btn.textContent = 'Enviar Mídia'; }
+  }
+}
+
+// Inicializar listeners
+document.addEventListener('DOMContentLoaded', function() {
+  const btnUpload = document.getElementById('btnUploadMedia');
+  const btnRefresh = document.getElementById('btnRefreshMedia');
+  if (btnUpload) btnUpload.addEventListener('click', uploadMedia);
+  if (btnRefresh) btnRefresh.addEventListener('click', loadMediaPreview);
+
+  // Carregar preview inicial apenas quando a seção for mostrada
+  // Mas podemos carregar imediatamente para conveniência
+  loadMediaPreview();
+});
+</script>
 </body>
 </html>
