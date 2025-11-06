@@ -2439,7 +2439,7 @@ def atualizar_status_chamado(id):
         if not data or 'status' not in data:
             return error_response('Status não fornecido.', 400)
         novo_status = data['status'].strip()
-        if novo_status not in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+        if novo_status not in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
             return error_response('Status inválido.', 400)
         chamado = Chamado.query.get(id)
         if not chamado:
@@ -4708,7 +4708,7 @@ def listar_categorias_logs_acoes():
 @login_required
 @setor_required('Administrador')
 def estatisticas_logs_acoes():
-    """Retorna estatísticas dos logs de ações"""
+    """Retorna estatísticas dos logs de aç��es"""
     try:
         from database import LogAcao
 
