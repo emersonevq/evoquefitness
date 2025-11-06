@@ -164,18 +164,64 @@ def atualizar_chamado_agente(chamado_id):
 
         if novo_status and novo_status in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
             chamado.status = novo_status
-            
+
+            # Registrar histórico de status para rastrear períodos de pausa
+            try:
+                from database import HistoricoStatus, ChamadoTimelineEvent
+
+                # Fechar período anterior
+                if status_anterior:
+                    historico_anterior = HistoricoStatus.query.filter_by(
+                        chamado_id=chamado_id,
+                        status=status_anterior,
+                        data_fim=None
+                    ).first()
+                    if historico_anterior:
+                        historico_anterior.data_fim = get_brazil_time().replace(tzinfo=None)
+
+                # Criar novo período de status
+                novo_historico = HistoricoStatus(
+                    chamado_id=chamado_id,
+                    status=novo_status,
+                    data_inicio=get_brazil_time().replace(tzinfo=None),
+                    usuario_id=current_user.id
+                )
+                db.session.add(novo_historico)
+
+                # Registrar evento timeline
+                evento_status = ChamadoTimelineEvent(
+                    chamado_id=chamado_id,
+                    usuario_id=current_user.id,
+                    tipo='status_change',
+                    descricao=f'Status alterado de {status_anterior} para {novo_status}',
+                    status_anterior=status_anterior,
+                    status_novo=novo_status
+                )
+                db.session.add(evento_status)
+            except Exception as e:
+                logger.warning(f"Falha ao registrar histórico de status: {str(e)}")
+
             # Atualizar campos de SLA baseado na mudança de status
             agora_brazil = get_brazil_time()
-            
-            # Se estava "Aberto" e mudou para outro status, registrar primeira resposta
-            if status_anterior == 'Aberto' and novo_status != 'Aberto' and not chamado.data_primeira_resposta:
+
+            # Se estava "Aberto" e mudou para um status de TRABALHO (não "Aguardando"), registrar primeira resposta
+            statuses_trabalho = ['Concluido', 'Cancelado']
+            if status_anterior == 'Aberto' and novo_status in statuses_trabalho and not chamado.data_primeira_resposta:
                 chamado.data_primeira_resposta = agora_brazil.replace(tzinfo=None)
-            
+
             # Se mudou para "Concluido" ou "Cancelado", registrar conclusão
-            if novo_status in ['Concluido', 'Cancelado'] and not chamado.data_conclusao:
-                chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
-                
+            if novo_status in ['Concluido', 'Cancelado']:
+                if not chamado.data_conclusao:
+                    chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
+
+                # Registrar informações de conclusão
+                if novo_status == 'Concluido':
+                    chamado.concluido_por_id = current_user.id
+                    chamado.concluido_em = agora_brazil.replace(tzinfo=None)
+                elif novo_status == 'Cancelado':
+                    chamado.cancelado_por_id = current_user.id
+                    chamado.cancelado_em = agora_brazil.replace(tzinfo=None)
+
                 # Finalizar atribuição
                 chamado_agente = ChamadoAgente.query.filter_by(
                     chamado_id=chamado_id,
@@ -486,7 +532,7 @@ def estatisticas_detalhadas_agente():
         # Verificar se o usuário é um agente
         agente = AgenteSuporte.query.filter_by(usuario_id=current_user.id, ativo=True).first()
         if not agente:
-            return error_response('Usuário não é um agente de suporte', 403)
+            return error_response('Usu��rio não é um agente de suporte', 403)
 
         # Estatísticas do mês atual
         hoje = get_brazil_time().date()
@@ -756,7 +802,7 @@ def atribuir_chamado_para_mim(chamado_id):
         db.session.add(nova_atribuicao)
         db.session.commit()
 
-        # Criar notificação para o agente
+        # Criar notifica��ão para o agente
         criar_notificacao_agente(
             agente_id=agente.id,
             titulo=f"Chamado {chamado.codigo} Atribuído",
