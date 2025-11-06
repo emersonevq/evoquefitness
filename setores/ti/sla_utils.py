@@ -507,7 +507,7 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
         
         tempo_primeira_resposta_delta = data_primeira_resposta - data_abertura_brazil
         tempo_primeira_resposta = tempo_primeira_resposta_delta.total_seconds() / 3600
-        tempo_primeira_resposta_uteis = calcular_horas_uteis(data_abertura_brazil, data_primeira_resposta, config_horario)
+        tempo_primeira_resposta_uteis = calcular_horas_uteis(data_abertura_brazil, data_primeira_resposta, config_horario, chamado)
         
         limite_primeira_resposta = config_sla.get('primeira_resposta', 4)
         violacao_primeira_resposta = tempo_primeira_resposta_uteis > limite_primeira_resposta
