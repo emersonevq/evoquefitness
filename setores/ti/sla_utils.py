@@ -1,11 +1,13 @@
 """
-Utilitários para cálculo correto de SLA considerando horário comercial
+Utilitários para cálculo correto de SLA considerando horário comercial e pausas em Aguardando
+VERSÃO 2.0 - Atualizada com suporte completo a HistoricoStatus
 """
 from datetime import datetime, timedelta, time
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, List
 import pytz
 import json
-from database import get_brazil_time, Configuracao, db
+from database import get_brazil_time, Configuracao, db, HistoricoStatus, Chamado
+from sqlalchemy import text, func
 import logging
 
 logger = logging.getLogger(__name__)
@@ -24,11 +26,15 @@ HORARIO_COMERCIAL = {
 SLA_PADRAO = {
     'primeira_resposta': 4,
     'resolucao_critica': 2,
-    'resolucao_urgente': 2,  # Urgente usa mesmo SLA que Crítica
+    'resolucao_urgente': 2,
     'resolucao_alta': 8,
     'resolucao_normal': 24,
     'resolucao_baixa': 72
 }
+
+def obter_agora_brasilia():
+    """Retorna datetime atual no timezone do Brasil (sem tzinfo)"""
+    return get_brazil_time().replace(tzinfo=None)
 
 def carregar_configuracoes_sla():
     """Carrega configurações de SLA do banco ou retorna padrões"""
@@ -56,7 +62,7 @@ def salvar_configuracoes_sla(config_sla: Dict):
         config_obj = Configuracao.query.filter_by(chave='sla').first()
         if config_obj:
             config_obj.valor = json.dumps(config_sla)
-            config_obj.data_atualizacao = get_brazil_time().replace(tzinfo=None)
+            config_obj.data_atualizacao = obter_agora_brasilia()
         else:
             config_obj = Configuracao(
                 chave='sla',
@@ -117,38 +123,14 @@ def eh_horario_comercial(dt: datetime, config_horario: Dict = None) -> bool:
     hora_atual = dt.time()
     return config_horario['inicio'] <= hora_atual <= config_horario['fim']
 
-def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict = None, chamado=None) -> float:
+def _calcular_horas_comerciais_simples(inicio: datetime, fim: datetime, config_horario: Dict) -> float:
     """
-    Calcula horas úteis entre duas datas considerando apenas horário comercial
-    e EXCLUINDO períodos em "Aguardando" (SLA pausado)
-
-    Args:
-        inicio: Data/hora de início
-        fim: Data/hora de fim
-        config_horario: Configurações de horário comercial
-        chamado: Objeto do chamado (para buscar períodos de pausa)
-
-    Returns:
-        Número de horas úteis como float
+    Calcula horas comerciais entre duas datas sem considerar períodos de pausa
+    (Função auxiliar para evitar recursão)
     """
-    if config_horario is None:
-        config_horario = carregar_configuracoes_horario_comercial()
-
-    # Garantir que as datas estão no timezone correto
-    if inicio.tzinfo is None:
-        inicio = BRAZIL_TZ.localize(inicio)
-    elif inicio.tzinfo != BRAZIL_TZ:
-        inicio = inicio.astimezone(BRAZIL_TZ)
-
-    if fim.tzinfo is None:
-        fim = BRAZIL_TZ.localize(fim)
-    elif fim.tzinfo != BRAZIL_TZ:
-        fim = fim.astimezone(BRAZIL_TZ)
-
     if inicio >= fim:
         return 0.0
 
-    # Calcular horas úteis totais
     horas_uteis = 0.0
     data_atual = inicio.replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -175,39 +157,57 @@ def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict =
 
         data_atual += timedelta(days=1)
 
-    # Subtrair períodos em "Aguardando" (SLA pausado)
-    if chamado:
-        horas_aguardando = calcular_horas_aguardando(chamado, inicio, fim, config_horario)
-        horas_uteis = max(0, horas_uteis - horas_aguardando)
-
     return round(horas_uteis, 2)
 
-def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_horario: Dict = None) -> float:
+def calcular_horas_aguardando(chamado, inicio: datetime = None, fim: datetime = None, config_horario: Dict = None) -> float:
     """
     Calcula o tempo total em que o chamado esteve em "Aguardando" (SLA pausado)
 
-    OTIMIZADO: Agora usa a tabela HistoricoStatus que está sincronizada via TRIGGER
-    no banco de dados
+    OTIMIZADO: Usa a tabela HistoricoStatus sincronizada via TRIGGER
 
     Args:
-        chamado: Objeto do chamado
-        inicio: Data/hora de início do período de cálculo
-        fim: Data/hora de fim do período de cálculo
+        chamado: Objeto do chamado ou ID do chamado
+        inicio: Data/hora de início do período (padrão: data_abertura do chamado)
+        fim: Data/hora de fim do período (padrão: agora ou data_conclusao)
         config_horario: Configurações de horário comercial
 
     Returns:
         Horas úteis em período "Aguardando"
     """
-    from database import HistoricoStatus
-
     if config_horario is None:
         config_horario = carregar_configuracoes_horario_comercial()
 
     try:
-        # Buscar todos os períodos em "Aguardando" para este chamado
-        # A tabela é mantida sincronizada via TRIGGER trg_chamado_status_update
+        # Aceitar tanto objeto Chamado quanto ID
+        if isinstance(chamado, int):
+            chamado_id = chamado
+            chamado_obj = Chamado.query.get(chamado_id)
+            if not chamado_obj:
+                return 0.0
+        else:
+            chamado_id = chamado.id
+            chamado_obj = chamado
+
+        # Definir período de cálculo
+        if inicio is None:
+            inicio = chamado_obj.data_abertura
+        if fim is None:
+            fim = chamado_obj.data_conclusao or obter_agora_brasilia()
+
+        # Garantir timezone correto
+        if inicio.tzinfo is None:
+            inicio = BRAZIL_TZ.localize(inicio)
+        elif inicio.tzinfo != BRAZIL_TZ:
+            inicio = inicio.astimezone(BRAZIL_TZ)
+
+        if fim.tzinfo is None:
+            fim = BRAZIL_TZ.localize(fim)
+        elif fim.tzinfo != BRAZIL_TZ:
+            fim = fim.astimezone(BRAZIL_TZ)
+
+        # Buscar períodos em "Aguardando" da tabela HistoricoStatus
         periodos_aguardando = HistoricoStatus.query.filter(
-            HistoricoStatus.chamado_id == chamado.id,
+            HistoricoStatus.chamado_id == chamado_id,
             HistoricoStatus.status == 'Aguardando'
         ).order_by(HistoricoStatus.data_inicio).all()
 
@@ -224,7 +224,7 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
             elif data_inicio_periodo.tzinfo != BRAZIL_TZ:
                 data_inicio_periodo = data_inicio_periodo.astimezone(BRAZIL_TZ)
 
-            # Se o período não terminou (data_fim IS NULL), usar a data_fim do cálculo
+            # Se o período não terminou (data_fim IS NULL), usar a data fim do cálculo
             data_fim_periodo = periodo.data_fim or fim
             if data_fim_periodo.tzinfo is None:
                 data_fim_periodo = BRAZIL_TZ.localize(data_fim_periodo)
@@ -247,41 +247,50 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
         logger.warning(f"Erro ao calcular horas em Aguardando: {str(e)}")
         return 0.0
 
-def _calcular_horas_comerciais_simples(inicio: datetime, fim: datetime, config_horario: Dict) -> float:
+def calcular_horas_uteis(inicio: datetime, fim: datetime, config_horario: Dict = None, chamado=None) -> float:
     """
-    Calcula horas comerciais entre duas datas sem considerar períodos de pausa
-    (Funç��o auxiliar para evitar recursão)
+    Calcula horas úteis entre duas datas considerando apenas horário comercial
+    e EXCLUINDO períodos em "Aguardando" (SLA pausado)
+
+    Args:
+        inicio: Data/hora de início
+        fim: Data/hora de fim
+        config_horario: Configurações de horário comercial
+        chamado: Objeto do chamado (para buscar períodos de pausa)
+
+    Returns:
+        Número de horas úteis como float (DESCONTANDO pausas)
     """
+    if config_horario is None:
+        config_horario = carregar_configuracoes_horario_comercial()
+
+    # Garantir que as datas estão no timezone correto
+    if inicio.tzinfo is None:
+        inicio = BRAZIL_TZ.localize(inicio)
+    elif inicio.tzinfo != BRAZIL_TZ:
+        inicio = inicio.astimezone(BRAZIL_TZ)
+
+    if fim.tzinfo is None:
+        fim = BRAZIL_TZ.localize(fim)
+    elif fim.tzinfo != BRAZIL_TZ:
+        fim = fim.astimezone(BRAZIL_TZ)
+
     if inicio >= fim:
         return 0.0
 
-    horas_uteis = 0.0
-    data_atual = inicio.replace(hour=0, minute=0, second=0, microsecond=0)
+    # Calcular horas úteis totais (brutas)
+    horas_uteis_brutas = _calcular_horas_comerciais_simples(inicio, fim, config_horario)
 
-    while data_atual.date() <= fim.date():
-        if data_atual.weekday() not in config_horario['dias_semana']:
-            data_atual += timedelta(days=1)
-            continue
-
-        inicio_comercial = data_atual.replace(
-            hour=config_horario['inicio'].hour,
-            minute=config_horario['inicio'].minute
-        )
-        fim_comercial = data_atual.replace(
-            hour=config_horario['fim'].hour,
-            minute=config_horario['fim'].minute
-        )
-
-        periodo_inicio = max(inicio, inicio_comercial)
-        periodo_fim = min(fim, fim_comercial)
-
-        if periodo_inicio < periodo_fim:
-            delta = periodo_fim - periodo_inicio
-            horas_uteis += delta.total_seconds() / 3600
-
-        data_atual += timedelta(days=1)
-
-    return round(horas_uteis, 2)
+    # Subtrair períodos em "Aguardando" (SLA pausado)
+    if chamado:
+        horas_aguardando = calcular_horas_aguardando(chamado, inicio, fim, config_horario)
+        horas_uteis_liquidas = max(0, horas_uteis_brutas - horas_aguardando)
+        
+        logger.debug(f"Horas úteis: {horas_uteis_brutas}h brutas - {horas_aguardando}h pausadas = {horas_uteis_liquidas}h líquidas")
+        
+        return round(horas_uteis_liquidas, 2)
+    
+    return round(horas_uteis_brutas, 2)
 
 def obter_proximo_horario_comercial(dt: datetime, config_horario: Dict = None) -> datetime:
     """
@@ -414,7 +423,10 @@ def calcular_prazo_sla(data_inicio: datetime, horas_sla: float, config_horario: 
 
 def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horario: Dict = None) -> Dict:
     """
-    Calcula informações corretas de SLA para um chamado considerando horário comercial
+    Calcula informações corretas de SLA para um chamado considerando:
+    - Horário comercial (8h-18h, segunda a sexta)
+    - Pausas em status "Aguardando" (descontadas do SLA)
+    - Prioridade do chamado
     
     Args:
         chamado: Objeto do chamado
@@ -430,11 +442,15 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     if config_horario is None:
         config_horario = carregar_configuracoes_horario_comercial()
     
-    agora_brazil = get_brazil_time()
+    agora_brazil = obter_agora_brasilia()
     
     # Se não tem data de abertura, retornar valores padrão
     if not chamado.data_abertura:
         return {
+            'chamado_id': chamado.id,
+            'codigo': chamado.codigo,
+            'horas_totais': 0,
+            'horas_pausadas': 0,
             'horas_decorridas': 0,
             'horas_uteis_decorridas': 0,
             'tempo_primeira_resposta': None,
@@ -447,16 +463,17 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
             'violacao_primeira_resposta': False,
             'violacao_resolucao': False,
             'prioridade': getattr(chamado, 'prioridade', 'Normal'),
-            'percentual_tempo_usado': 0
+            'percentual_tempo_usado': 0,
+            'sla_pausado_agora': False,
+            'total_periodos_aguardando': 0
         }
     
     # Obter data de abertura no timezone do Brasil
-    data_abertura_brazil = chamado.get_data_abertura_brazil()
-    if not data_abertura_brazil:
-        if chamado.data_abertura.tzinfo is None:
-            data_abertura_brazil = BRAZIL_TZ.localize(chamado.data_abertura)
-        else:
-            data_abertura_brazil = chamado.data_abertura.astimezone(BRAZIL_TZ)
+    data_abertura_brazil = chamado.data_abertura
+    if data_abertura_brazil.tzinfo is None:
+        data_abertura_brazil = BRAZIL_TZ.localize(data_abertura_brazil)
+    else:
+        data_abertura_brazil = data_abertura_brazil.astimezone(BRAZIL_TZ)
     
     # Determinar prioridade e SLA correspondente
     prioridade = getattr(chamado, 'prioridade', 'Normal')
@@ -472,47 +489,47 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     # Calcular prazo de expiração do SLA
     sla_prazo_expiracao = calcular_prazo_sla(data_abertura_brazil, sla_limite, config_horario)
     
-    # Calcular tempo decorrido (total e útil)
-    # Para chamados concluídos, usar data de conclusão; para abertos, usar data atual
+    # Determinar data fim para cálculo
     if chamado.status in ['Concluido', 'Cancelado']:
         if chamado.data_conclusao:
-            data_conclusao_brazil = chamado.get_data_conclusao_brazil()
-            if not data_conclusao_brazil:
-                if chamado.data_conclusao.tzinfo is None:
-                    data_conclusao_brazil = BRAZIL_TZ.localize(chamado.data_conclusao)
-                else:
-                    data_conclusao_brazil = chamado.data_conclusao.astimezone(BRAZIL_TZ)
-            data_fim_calculo = data_conclusao_brazil
+            data_fim_calculo = chamado.data_conclusao
+            if data_fim_calculo.tzinfo is None:
+                data_fim_calculo = BRAZIL_TZ.localize(data_fim_calculo)
+            else:
+                data_fim_calculo = data_fim_calculo.astimezone(BRAZIL_TZ)
         else:
-            # Se está concluído mas não tem data_conclusao, usar agora e registrar como erro de dados
-            data_fim_calculo = agora_brazil
+            data_fim_calculo = BRAZIL_TZ.localize(agora_brazil)
             logger.warning(f"Chamado {chamado.id} ({chamado.codigo}) está Concluído/Cancelado mas não tem data_conclusao")
     else:
-        data_fim_calculo = agora_brazil
+        data_fim_calculo = BRAZIL_TZ.localize(agora_brazil)
 
+    # Calcular horas totais (calendário)
     tempo_decorrido = data_fim_calculo - data_abertura_brazil
-    horas_decorridas = tempo_decorrido.total_seconds() / 3600
+    horas_totais = tempo_decorrido.total_seconds() / 3600
+    
+    # Calcular horas pausadas (em Aguardando)
+    horas_pausadas = calcular_horas_aguardando(chamado, data_abertura_brazil, data_fim_calculo, config_horario)
+    
+    # Calcular horas úteis (já descontando pausas via calcular_horas_uteis)
     horas_uteis_decorridas = calcular_horas_uteis(data_abertura_brazil, data_fim_calculo, config_horario, chamado)
     
+    # Horas ativas (totais - pausadas)
+    horas_ativas = max(0, horas_totais - horas_pausadas)
+    
     # Calcular percentual do tempo SLA usado
-    if sla_limite > 0:
-        percentual_tempo_usado = (horas_uteis_decorridas / sla_limite) * 100
-    else:
-        percentual_tempo_usado = 0
+    percentual_tempo_usado = (horas_uteis_decorridas / sla_limite * 100) if sla_limite > 0 else 0
     
     # Calcular tempo de primeira resposta
     tempo_primeira_resposta = None
     tempo_primeira_resposta_uteis = None
     violacao_primeira_resposta = False
     
-    data_primeira_resposta = None
     if chamado.data_primeira_resposta:
-        data_primeira_resposta = chamado.get_data_primeira_resposta_brazil()
-        if not data_primeira_resposta:
-            if chamado.data_primeira_resposta.tzinfo is None:
-                data_primeira_resposta = BRAZIL_TZ.localize(chamado.data_primeira_resposta)
-            else:
-                data_primeira_resposta = chamado.data_primeira_resposta.astimezone(BRAZIL_TZ)
+        data_primeira_resposta = chamado.data_primeira_resposta
+        if data_primeira_resposta.tzinfo is None:
+            data_primeira_resposta = BRAZIL_TZ.localize(data_primeira_resposta)
+        else:
+            data_primeira_resposta = data_primeira_resposta.astimezone(BRAZIL_TZ)
         
         tempo_primeira_resposta_delta = data_primeira_resposta - data_abertura_brazil
         tempo_primeira_resposta = tempo_primeira_resposta_delta.total_seconds() / 3600
@@ -520,16 +537,13 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
         
         limite_primeira_resposta = config_sla.get('primeira_resposta', 4)
         violacao_primeira_resposta = tempo_primeira_resposta_uteis > limite_primeira_resposta
-        
     elif chamado.status != 'Aberto':
-        # Se mudou de status mas não tem data_primeira_resposta, assumir agora
-        tempo_primeira_resposta = horas_decorridas
+        tempo_primeira_resposta = horas_totais
         tempo_primeira_resposta_uteis = horas_uteis_decorridas
         
         limite_primeira_resposta = config_sla.get('primeira_resposta', 4)
         violacao_primeira_resposta = tempo_primeira_resposta_uteis > limite_primeira_resposta
     else:
-        # Ainda está aberto, verificar se já passou do limite de primeira resposta
         limite_primeira_resposta = config_sla.get('primeira_resposta', 4)
         violacao_primeira_resposta = horas_uteis_decorridas > limite_primeira_resposta
     
@@ -539,33 +553,15 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     violacao_resolucao = False
     
     if chamado.status in ['Concluido', 'Cancelado']:
-        data_conclusao = None
-        if chamado.data_conclusao:
-            data_conclusao = chamado.get_data_conclusao_brazil()
-            if not data_conclusao:
-                if chamado.data_conclusao.tzinfo is None:
-                    data_conclusao = BRAZIL_TZ.localize(chamado.data_conclusao)
-                else:
-                    data_conclusao = chamado.data_conclusao.astimezone(BRAZIL_TZ)
-            
-            tempo_resolucao_delta = data_conclusao - data_abertura_brazil
-            tempo_resolucao = tempo_resolucao_delta.total_seconds() / 3600
-            tempo_resolucao_uteis = calcular_horas_uteis(data_abertura_brazil, data_conclusao, config_horario, chamado)
-        else:
-            tempo_resolucao = horas_decorridas
-            tempo_resolucao_uteis = horas_uteis_decorridas
-        
+        tempo_resolucao = horas_totais
+        tempo_resolucao_uteis = horas_uteis_decorridas
         violacao_resolucao = tempo_resolucao_uteis > sla_limite
     else:
-        # Chamado ainda não resolvido
         violacao_resolucao = horas_uteis_decorridas > sla_limite
     
     # Determinar status do SLA
     if chamado.status in ['Concluido', 'Cancelado']:
-        if violacao_resolucao:
-            sla_status = 'Violado'
-        else:
-            sla_status = 'Cumprido'
+        sla_status = 'Cumprido' if not violacao_resolucao else 'Violado'
     else:
         if violacao_resolucao:
             sla_status = 'Violado'
@@ -574,20 +570,137 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
         else:
             sla_status = 'Dentro do Prazo'
     
+    # Contar períodos em Aguardando
+    total_periodos_aguardando = HistoricoStatus.query.filter_by(
+        chamado_id=chamado.id,
+        status='Aguardando'
+    ).count()
+    
+    # Verificar se está pausado agora
+    sla_pausado_agora = chamado.status == 'Aguardando'
+    
     return {
-        'horas_decorridas': round(horas_decorridas, 2),
+        'chamado_id': chamado.id,
+        'codigo': chamado.codigo,
+        'protocolo': getattr(chamado, 'protocolo', None),
+        'status': chamado.status,
+        'prioridade': prioridade,
+        
+        # Tempos calculados
+        'horas_totais': round(horas_totais, 2),
+        'horas_pausadas': round(horas_pausadas, 2),
+        'horas_ativas': round(horas_ativas, 2),
+        'horas_decorridas': round(horas_ativas, 2),  # Para compatibilidade (ativas)
         'horas_uteis_decorridas': round(horas_uteis_decorridas, 2),
-        'tempo_primeira_resposta': round(tempo_primeira_resposta, 2) if tempo_primeira_resposta else None,
-        'tempo_primeira_resposta_uteis': round(tempo_primeira_resposta_uteis, 2) if tempo_primeira_resposta_uteis else None,
-        'tempo_resolucao': round(tempo_resolucao, 2) if tempo_resolucao else None,
-        'tempo_resolucao_uteis': round(tempo_resolucao_uteis, 2) if tempo_resolucao_uteis else None,
+        
+        # SLA
         'sla_limite': sla_limite,
         'sla_prazo_expiracao': sla_prazo_expiracao.strftime('%d/%m/%Y %H:%M:%S') if sla_prazo_expiracao else None,
         'sla_status': sla_status,
+        'percentual_tempo_usado': round(percentual_tempo_usado, 1),
+        
+        # Primeira resposta
+        'tempo_primeira_resposta': round(tempo_primeira_resposta, 2) if tempo_primeira_resposta else None,
+        'tempo_primeira_resposta_uteis': round(tempo_primeira_resposta_uteis, 2) if tempo_primeira_resposta_uteis else None,
         'violacao_primeira_resposta': violacao_primeira_resposta,
+        
+        # Resolução
+        'tempo_resolucao': round(tempo_resolucao, 2) if tempo_resolucao else None,
+        'tempo_resolucao_uteis': round(tempo_resolucao_uteis, 2) if tempo_resolucao_uteis else None,
         'violacao_resolucao': violacao_resolucao,
-        'prioridade': prioridade,
-        'percentual_tempo_usado': round(percentual_tempo_usado, 1)
+        
+        # Pausas
+        'sla_pausado_agora': sla_pausado_agora,
+        'total_periodos_aguardando': total_periodos_aguardando
+    }
+
+def obter_metricas_sla_consolidadas(period_days: int = 30) -> Dict:
+    """
+    Obtém métricas consolidadas de SLA para o período especificado
+    CONSIDERA pausas em "Aguardando" nos cálculos
+    
+    Args:
+        period_days: Número de dias para análise
+    
+    Returns:
+        Dicionário com métricas consolidadas
+    """
+    config_sla = carregar_configuracoes_sla()
+    config_horario = carregar_configuracoes_horario_comercial()
+    
+    # Data de corte
+    agora = obter_agora_brasilia()
+    data_corte = agora - timedelta(days=period_days)
+    
+    # Buscar chamados do período
+    chamados = Chamado.query.filter(
+        Chamado.data_abertura >= data_corte
+    ).all()
+    
+    total_chamados = len(chamados)
+    chamados_cumpridos = 0
+    chamados_violados = 0
+    chamados_em_risco = 0
+    chamados_abertos = 0
+
+    tempo_total_resolucao = 0
+    tempo_total_primeira_resposta = 0
+    count_resolvidos = 0
+    count_primeira_resposta = 0
+    
+    total_horas_pausadas = 0
+    chamados_com_pausa = 0
+    
+    for chamado in chamados:
+        sla_info = calcular_sla_chamado_correto(chamado, config_sla, config_horario)
+        
+        # Contabilizar pausas
+        if sla_info.get('horas_pausadas', 0) > 0:
+            total_horas_pausadas += sla_info['horas_pausadas']
+            chamados_com_pausa += 1
+        
+        # Contabilizar status
+        if sla_info['sla_status'] == 'Cumprido':
+            chamados_cumpridos += 1
+        elif sla_info['sla_status'] == 'Violado':
+            chamados_violados += 1
+        elif sla_info['sla_status'] == 'Em Risco':
+            chamados_em_risco += 1
+        
+        if sla_info['tempo_resolucao_uteis']:
+            tempo_total_resolucao += sla_info['tempo_resolucao_uteis']
+            count_resolvidos += 1
+        
+        if sla_info['tempo_primeira_resposta_uteis']:
+            tempo_total_primeira_resposta += sla_info['tempo_primeira_resposta_uteis']
+            count_primeira_resposta += 1
+
+        # Contar chamados abertos
+        if chamado.status in ['Aberto', 'Aguardando', 'Em Atendimento']:
+            chamados_abertos += 1
+    
+    # Calcular médias
+    tempo_medio_resolucao = (tempo_total_resolucao / count_resolvidos) if count_resolvidos > 0 else 0
+    tempo_medio_primeira_resposta = (tempo_total_primeira_resposta / count_primeira_resposta) if count_primeira_resposta > 0 else 0
+    media_tempo_pausa = (total_horas_pausadas / chamados_com_pausa) if chamados_com_pausa > 0 else 0
+    
+    # Calcular percentual de cumprimento
+    total_finalizados = chamados_cumpridos + chamados_violados
+    percentual_cumprimento = (chamados_cumpridos / total_finalizados * 100) if total_finalizados > 0 else 100
+    
+    return {
+        'total_chamados': total_chamados,
+        'chamados_cumpridos': chamados_cumpridos,
+        'chamados_violados': chamados_violados,
+        'chamados_em_risco': chamados_em_risco,
+        'chamados_abertos': chamados_abertos,
+        'percentual_cumprimento': round(percentual_cumprimento, 1),
+        'tempo_medio_resolucao': round(tempo_medio_resolucao, 2),
+        'tempo_medio_primeira_resposta': round(tempo_medio_primeira_resposta, 2),
+        'total_horas_pausadas': round(total_horas_pausadas, 2),
+        'chamados_com_pausa': chamados_com_pausa,
+        'media_tempo_pausa': round(media_tempo_pausa, 2),
+        'period_days': period_days
     }
 
 def obter_tempo_aguardando_view(chamado_id: int) -> Dict:
@@ -595,25 +708,13 @@ def obter_tempo_aguardando_view(chamado_id: int) -> Dict:
     Obtém tempo em "Aguardando" usando a VIEW vw_tempo_aguardando
     (Mais eficiente para grandes volumes de dados)
 
-    NOTA: Esta VIEW é criada automaticamente no banco de dados com o script
-    de migração e calcula em SQL, não em Python
-
     Args:
         chamado_id: ID do chamado
 
     Returns:
         Dicionário com dados de tempo aguardando
-        {
-            'chamado_id': int,
-            'codigo': str,
-            'protocolo': str,
-            'total_periodos_aguardando': int,
-            'total_horas_pausadas': float
-        }
     """
     try:
-        from sqlalchemy import text
-
         query = text("""
             SELECT
                 chamado_id,
@@ -650,14 +751,10 @@ def obter_tempo_aguardando_view(chamado_id: int) -> Dict:
     except Exception as e:
         logger.warning(f"Erro ao obter tempo aguardando da VIEW: {str(e)}")
         # Fallback para método direto
-        chamado = Chamado.query.get(chamado_id)
-        if chamado:
-            agora = get_brazil_time()
-            return {
-                'chamado_id': chamado_id,
-                'total_horas_pausadas': calcular_horas_aguardando(chamado, chamado.data_abertura, agora)
-            }
-        return {'chamado_id': chamado_id, 'total_horas_pausadas': 0.0}
+        return {
+            'chamado_id': chamado_id,
+            'total_horas_pausadas': calcular_horas_aguardando(chamado_id)
+        }
 
 def inicializar_historico_status_chamado(chamado):
     """
@@ -670,8 +767,6 @@ def inicializar_historico_status_chamado(chamado):
     Returns:
         True se inicializado com sucesso, False caso contrário
     """
-    from database import HistoricoStatus
-
     try:
         # Verificar se já existe histórico
         tem_historico = HistoricoStatus.query.filter_by(
@@ -685,14 +780,14 @@ def inicializar_historico_status_chamado(chamado):
         historico = HistoricoStatus(
             chamado_id=chamado.id,
             status=chamado.status,
-            data_inicio=chamado.data_abertura or get_brazil_time().replace(tzinfo=None),
-            usuario_id=None,
+            data_inicio=chamado.data_abertura or obter_agora_brasilia(),
+            usuario_id=getattr(chamado, 'usuario_id', None),
             descricao='Inicializado automaticamente'
         )
 
         # Se o chamado está finalizado, fechar o período
         if chamado.status in ['Concluido', 'Cancelado']:
-            historico.data_fim = chamado.data_conclusao or get_brazil_time().replace(tzinfo=None)
+            historico.data_fim = chamado.data_conclusao or obter_agora_brasilia()
 
         db.session.add(historico)
         db.session.commit()
@@ -703,82 +798,3 @@ def inicializar_historico_status_chamado(chamado):
         logger.error(f"Erro ao inicializar histórico de status: {str(e)}")
         db.session.rollback()
         return False
-
-def obter_metricas_sla_consolidadas(period_days: int = 30) -> Dict:
-    """
-    Obtém métricas consolidadas de SLA para o período especificado
-    
-    Args:
-        period_days: Número de dias para análise
-    
-    Returns:
-        Dicionário com métricas consolidadas
-    """
-    from database import Chamado
-    from sqlalchemy import func, and_
-    
-    config_sla = carregar_configuracoes_sla()
-    config_horario = carregar_configuracoes_horario_comercial()
-    
-    # Data de corte
-    data_corte = get_brazil_time() - timedelta(days=period_days)
-    
-    # Buscar chamados do período
-    chamados = Chamado.query.filter(
-        Chamado.data_abertura >= data_corte.replace(tzinfo=None)
-    ).all()
-    
-    total_chamados = len(chamados)
-    chamados_cumpridos = 0
-    chamados_violados = 0
-    chamados_em_risco = 0
-    chamados_abertos = 0
-
-    tempo_total_resolucao = 0
-    tempo_total_primeira_resposta = 0
-    count_resolvidos = 0
-    count_primeira_resposta = 0
-    
-    for chamado in chamados:
-        sla_info = calcular_sla_chamado_correto(chamado, config_sla, config_horario)
-        
-        if sla_info['sla_status'] == 'Cumprido':
-            chamados_cumpridos += 1
-        elif sla_info['sla_status'] == 'Violado':
-            chamados_violados += 1
-        elif sla_info['sla_status'] == 'Em Risco':
-            chamados_em_risco += 1
-        
-        if sla_info['tempo_resolucao_uteis']:
-            tempo_total_resolucao += sla_info['tempo_resolucao_uteis']
-            count_resolvidos += 1
-        
-        if sla_info['tempo_primeira_resposta_uteis']:
-            tempo_total_primeira_resposta += sla_info['tempo_primeira_resposta_uteis']
-            count_primeira_resposta += 1
-
-        # Contar chamados abertos
-        if chamado.status in ['Aberto', 'Aguardando']:
-            chamados_abertos += 1
-    
-    # Calcular médias
-    tempo_medio_resolucao = (tempo_total_resolucao / count_resolvidos) if count_resolvidos > 0 else 0
-    tempo_medio_primeira_resposta = (tempo_total_primeira_resposta / count_primeira_resposta) if count_primeira_resposta > 0 else 0
-    
-    # Calcular percentual de cumprimento
-    if total_chamados > 0:
-        percentual_cumprimento = (chamados_cumpridos / total_chamados) * 100
-    else:
-        percentual_cumprimento = 100
-    
-    return {
-        'total_chamados': total_chamados,
-        'chamados_cumpridos': chamados_cumpridos,
-        'chamados_violados': chamados_violados,
-        'chamados_em_risco': chamados_em_risco,
-        'chamados_abertos': chamados_abertos,
-        'percentual_cumprimento': round(percentual_cumprimento, 1),
-        'tempo_medio_resolucao': round(tempo_medio_resolucao, 2),
-        'tempo_medio_primeira_resposta': round(tempo_medio_primeira_resposta, 2),
-        'period_days': period_days
-    }
