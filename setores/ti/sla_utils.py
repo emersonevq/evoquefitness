@@ -186,6 +186,9 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
     """
     Calcula o tempo total em que o chamado esteve em "Aguardando" (SLA pausado)
 
+    OTIMIZADO: Agora usa a tabela HistoricoStatus que está sincronizada via TRIGGER
+    no banco de dados
+
     Args:
         chamado: Objeto do chamado
         inicio: Data/hora de início do período de cálculo
@@ -202,10 +205,14 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
 
     try:
         # Buscar todos os períodos em "Aguardando" para este chamado
+        # A tabela é mantida sincronizada via TRIGGER trg_chamado_status_update
         periodos_aguardando = HistoricoStatus.query.filter(
             HistoricoStatus.chamado_id == chamado.id,
             HistoricoStatus.status == 'Aguardando'
-        ).all()
+        ).order_by(HistoricoStatus.data_inicio).all()
+
+        if not periodos_aguardando:
+            return 0.0
 
         horas_pausadas = 0.0
 
@@ -217,7 +224,7 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
             elif data_inicio_periodo.tzinfo != BRAZIL_TZ:
                 data_inicio_periodo = data_inicio_periodo.astimezone(BRAZIL_TZ)
 
-            # Se o período não terminou, usar a data_fim do cálculo
+            # Se o período não terminou (data_fim IS NULL), usar a data_fim do cálculo
             data_fim_periodo = periodo.data_fim or fim
             if data_fim_periodo.tzinfo is None:
                 data_fim_periodo = BRAZIL_TZ.localize(data_fim_periodo)
@@ -229,9 +236,11 @@ def calcular_horas_aguardando(chamado, inicio: datetime, fim: datetime, config_h
             fim_efetivo = min(fim, data_fim_periodo)
 
             if inicio_efetivo < fim_efetivo:
-                # Calcular horas úteis deste período de pausa
+                # Calcular horas úteis (comerciais) deste período de pausa
                 horas = _calcular_horas_comerciais_simples(inicio_efetivo, fim_efetivo, config_horario)
                 horas_pausadas += horas
+
+                logger.debug(f"Período Aguardando: {inicio_efetivo} → {fim_efetivo} = {horas}h")
 
         return round(horas_pausadas, 2)
     except Exception as e:
