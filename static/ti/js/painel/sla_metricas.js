@@ -379,14 +379,24 @@ class SLAMetricas {
         });
     }
 
-    atualizarGraficoSemanal() {
+    atualizarGraficoSemanal(dadosGrafico = null) {
         const ctx = document.getElementById('chartSemanal');
         if (!ctx) return;
 
-        // Dados simulados para as últimas 4 semanas
-        const semanas = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
-        const chamadosRecebidos = [12, 19, 15, 23];
-        const chamadosResolvidos = [10, 18, 14, 20];
+        // Usar dados do gráfico semanal se disponíveis, senão usar dados padrão
+        let semanas, chamadosRecebidos, chamadosResolvidos;
+
+        if (dadosGrafico && dadosGrafico.grafico_semanal) {
+            const dados = dadosGrafico.grafico_semanal;
+            semanas = dados.semanas || ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
+            chamadosRecebidos = dados.chamados_recebidos || [0, 0, 0, 0];
+            chamadosResolvidos = dados.chamados_resolvidos || [0, 0, 0, 0];
+        } else {
+            // Dados padrão caso não haja dados disponíveis
+            semanas = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
+            chamadosRecebidos = [0, 0, 0, 0];
+            chamadosResolvidos = [0, 0, 0, 0];
+        }
 
         const data = {
             labels: semanas,
