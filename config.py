@@ -226,7 +226,8 @@ class DevelopmentSQLiteConfig:
 
     # Configurações de upload
     UPLOAD_FOLDER = 'uploads/'
-    MAX_CONTENT_LENGTH = 16777216  # 16MB
+    # Sem limite imposto pelo Flask em ambiente de desenvolvimento
+    MAX_CONTENT_LENGTH = None
 
     # Configurações de timezone
     TIMEZONE = 'America/Sao_Paulo'
