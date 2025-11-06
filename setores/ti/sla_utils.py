@@ -465,20 +465,25 @@ def calcular_sla_chamado_correto(chamado, config_sla: Dict = None, config_horari
     
     # Calcular tempo decorrido (total e útil)
     # Para chamados concluídos, usar data de conclusão; para abertos, usar data atual
-    if chamado.status in ['Concluido', 'Cancelado'] and chamado.data_conclusao:
-        data_conclusao_brazil = chamado.get_data_conclusao_brazil()
-        if not data_conclusao_brazil:
-            if chamado.data_conclusao.tzinfo is None:
-                data_conclusao_brazil = BRAZIL_TZ.localize(chamado.data_conclusao)
-            else:
-                data_conclusao_brazil = chamado.data_conclusao.astimezone(BRAZIL_TZ)
-        data_fim_calculo = data_conclusao_brazil
+    if chamado.status in ['Concluido', 'Cancelado']:
+        if chamado.data_conclusao:
+            data_conclusao_brazil = chamado.get_data_conclusao_brazil()
+            if not data_conclusao_brazil:
+                if chamado.data_conclusao.tzinfo is None:
+                    data_conclusao_brazil = BRAZIL_TZ.localize(chamado.data_conclusao)
+                else:
+                    data_conclusao_brazil = chamado.data_conclusao.astimezone(BRAZIL_TZ)
+            data_fim_calculo = data_conclusao_brazil
+        else:
+            # Se está concluído mas não tem data_conclusao, usar agora e registrar como erro de dados
+            data_fim_calculo = agora_brazil
+            logger.warning(f"Chamado {chamado.id} ({chamado.codigo}) está Concluído/Cancelado mas não tem data_conclusao")
     else:
         data_fim_calculo = agora_brazil
 
     tempo_decorrido = data_fim_calculo - data_abertura_brazil
     horas_decorridas = tempo_decorrido.total_seconds() / 3600
-    horas_uteis_decorridas = calcular_horas_uteis(data_abertura_brazil, data_fim_calculo, config_horario)
+    horas_uteis_decorridas = calcular_horas_uteis(data_abertura_brazil, data_fim_calculo, config_horario, chamado)
     
     # Calcular percentual do tempo SLA usado
     if sla_limite > 0:
