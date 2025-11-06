@@ -162,20 +162,49 @@ def atualizar_chamado_agente(chamado_id):
         novo_status = data.get('status')
         observacoes = data.get('observacoes', '')
 
-        if novo_status and novo_status in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+        if novo_status and novo_status in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
+            # ⚠️ IMPORTANTE: O TRIGGER trg_chamado_status_update no banco automaticamente:
+            # 1. Fecha o período anterior em historico_status
+            # 2. Cria novo período com o novo status
+            # Portanto, apenas atualizamos o status aqui
+
             chamado.status = novo_status
-            
-            # Atualizar campos de SLA baseado na mudança de status
+
+            # Registrar evento na timeline
+            try:
+                from database import ChamadoTimelineEvent
+                evento_status = ChamadoTimelineEvent(
+                    chamado_id=chamado_id,
+                    usuario_id=current_user.id,
+                    tipo='status_change',
+                    descricao=f'Status alterado de {status_anterior} para {novo_status}',
+                    status_anterior=status_anterior,
+                    status_novo=novo_status
+                )
+                db.session.add(evento_status)
+            except Exception as e:
+                logger.warning(f"Falha ao registrar timeline: {str(e)}")
+
+            # Atualizar campos de SLA
             agora_brazil = get_brazil_time()
-            
-            # Se estava "Aberto" e mudou para outro status, registrar primeira resposta
+
+            # Registrar primeira resposta (quando sai de "Aberto")
             if status_anterior == 'Aberto' and novo_status != 'Aberto' and not chamado.data_primeira_resposta:
                 chamado.data_primeira_resposta = agora_brazil.replace(tzinfo=None)
-            
-            # Se mudou para "Concluido" ou "Cancelado", registrar conclusão
-            if novo_status in ['Concluido', 'Cancelado'] and not chamado.data_conclusao:
-                chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
-                
+
+            # Registrar conclusão (quando fecha)
+            if novo_status in ['Concluido', 'Cancelado']:
+                if not chamado.data_conclusao:
+                    chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
+
+                # Registrar informações de conclusão
+                if novo_status == 'Concluido':
+                    chamado.concluido_por_id = current_user.id
+                    chamado.concluido_em = agora_brazil.replace(tzinfo=None)
+                elif novo_status == 'Cancelado':
+                    chamado.cancelado_por_id = current_user.id
+                    chamado.cancelado_em = agora_brazil.replace(tzinfo=None)
+
                 # Finalizar atribuição
                 chamado_agente = ChamadoAgente.query.filter_by(
                     chamado_id=chamado_id,

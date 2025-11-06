@@ -547,7 +547,7 @@ def forbidden_error(error):
 @login_required
 @setor_required('Administrador')
 def carregar_configuracoes_api():
-    """Carrega as configurações do sistema"""
+    """Carrega as configura��ões do sistema"""
     try:
         config = carregar_configuracoes()
         logger.info(f"Configurações carregadas com sucesso")
@@ -1116,11 +1116,17 @@ def atualizar_chamado_agente(chamado_id):
         # Atualizar status se fornecido
         if 'status' in data:
             novo_status = data['status']
-            if novo_status in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+            if novo_status in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
                 status_anterior = chamado.status
+
+                # ⚠️ IMPORTANTE: O TRIGGER trg_chamado_status_update no banco automaticamente:
+                # 1. Fecha o período anterior em historico_status
+                # 2. Cria novo período com o novo status
+                # Portanto, apenas atualizamos o status aqui
+
                 chamado.status = novo_status
 
-                # Registrar evento de alteração de status
+                # Registrar evento na timeline
                 try:
                     from database import ChamadoTimelineEvent
                     evento_status = ChamadoTimelineEvent(
@@ -1135,16 +1141,25 @@ def atualizar_chamado_agente(chamado_id):
                 except Exception as e:
                     logger.warning(f"Falha ao registrar timeline de status: {str(e)}")
 
-                # Atualizar campos de SLA baseado na mudança de status
+                # Atualizar campos de SLA
                 agora_brazil = get_brazil_time()
 
-                # Se estava "Aberto" e mudou para outro status, registrar primeira resposta
+                # Registrar primeira resposta (quando sai de "Aberto")
                 if status_anterior == 'Aberto' and novo_status != 'Aberto' and not chamado.data_primeira_resposta:
                     chamado.data_primeira_resposta = agora_brazil.replace(tzinfo=None)
 
-                # Se mudou para "Concluido" ou "Cancelado", registrar conclusão
-                if novo_status in ['Concluido', 'Cancelado'] and not chamado.data_conclusao:
-                    chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
+                # Registrar conclusão (quando fecha)
+                if novo_status in ['Concluido', 'Cancelado']:
+                    if not chamado.data_conclusao:
+                        chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
+
+                    # Registrar informações de conclusão
+                    if novo_status == 'Concluido':
+                        chamado.concluido_por_id = current_user.id
+                        chamado.concluido_em = agora_brazil.replace(tzinfo=None)
+                    elif novo_status == 'Cancelado':
+                        chamado.cancelado_por_id = current_user.id
+                        chamado.cancelado_em = agora_brazil.replace(tzinfo=None)
 
         # Adicionar observações se fornecidas
         observacoes = data.get('observacoes', '')
