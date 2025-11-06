@@ -162,33 +162,17 @@ def atualizar_chamado_agente(chamado_id):
         novo_status = data.get('status')
         observacoes = data.get('observacoes', '')
 
-        if novo_status and novo_status in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+        if novo_status and novo_status in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
+            # ⚠️ IMPORTANTE: O TRIGGER trg_chamado_status_update no banco automaticamente:
+            # 1. Fecha o período anterior em historico_status
+            # 2. Cria novo período com o novo status
+            # Portanto, apenas atualizamos o status aqui
+
             chamado.status = novo_status
 
-            # Registrar histórico de status para rastrear períodos de pausa
+            # Registrar evento na timeline
             try:
-                from database import HistoricoStatus, ChamadoTimelineEvent
-
-                # Fechar período anterior
-                if status_anterior:
-                    historico_anterior = HistoricoStatus.query.filter_by(
-                        chamado_id=chamado_id,
-                        status=status_anterior,
-                        data_fim=None
-                    ).first()
-                    if historico_anterior:
-                        historico_anterior.data_fim = get_brazil_time().replace(tzinfo=None)
-
-                # Criar novo período de status
-                novo_historico = HistoricoStatus(
-                    chamado_id=chamado_id,
-                    status=novo_status,
-                    data_inicio=get_brazil_time().replace(tzinfo=None),
-                    usuario_id=current_user.id
-                )
-                db.session.add(novo_historico)
-
-                # Registrar evento timeline
+                from database import ChamadoTimelineEvent
                 evento_status = ChamadoTimelineEvent(
                     chamado_id=chamado_id,
                     usuario_id=current_user.id,
@@ -199,17 +183,16 @@ def atualizar_chamado_agente(chamado_id):
                 )
                 db.session.add(evento_status)
             except Exception as e:
-                logger.warning(f"Falha ao registrar histórico de status: {str(e)}")
+                logger.warning(f"Falha ao registrar timeline: {str(e)}")
 
-            # Atualizar campos de SLA baseado na mudança de status
+            # Atualizar campos de SLA
             agora_brazil = get_brazil_time()
 
-            # Se estava "Aberto" e mudou para um status de TRABALHO (não "Aguardando"), registrar primeira resposta
-            statuses_trabalho = ['Concluido', 'Cancelado']
-            if status_anterior == 'Aberto' and novo_status in statuses_trabalho and not chamado.data_primeira_resposta:
+            # Registrar primeira resposta (quando sai de "Aberto")
+            if status_anterior == 'Aberto' and novo_status != 'Aberto' and not chamado.data_primeira_resposta:
                 chamado.data_primeira_resposta = agora_brazil.replace(tzinfo=None)
 
-            # Se mudou para "Concluido" ou "Cancelado", registrar conclusão
+            # Registrar conclusão (quando fecha)
             if novo_status in ['Concluido', 'Cancelado']:
                 if not chamado.data_conclusao:
                     chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
@@ -532,7 +515,7 @@ def estatisticas_detalhadas_agente():
         # Verificar se o usuário é um agente
         agente = AgenteSuporte.query.filter_by(usuario_id=current_user.id, ativo=True).first()
         if not agente:
-            return error_response('Usu��rio não é um agente de suporte', 403)
+            return error_response('Usuário não é um agente de suporte', 403)
 
         # Estatísticas do mês atual
         hoje = get_brazil_time().date()
@@ -802,7 +785,7 @@ def atribuir_chamado_para_mim(chamado_id):
         db.session.add(nova_atribuicao)
         db.session.commit()
 
-        # Criar notifica��ão para o agente
+        # Criar notificação para o agente
         criar_notificacao_agente(
             agente_id=agente.id,
             titulo=f"Chamado {chamado.codigo} Atribuído",
