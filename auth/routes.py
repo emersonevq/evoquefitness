@@ -317,6 +317,20 @@ def esqueci_senha():
                 'message': 'Esta conta está bloqueada. Entre em contato com o administrador.'
             }), 400
 
+        # Implementar rate limiting: verificar se o usuário solicitou código há menos de 1 minuto
+        ultimo_reset = ResetSenha.query.filter_by(usuario_id=user.id, usado=False).order_by(
+            ResetSenha.data_criacao.desc()
+        ).first()
+
+        if ultimo_reset:
+            tempo_decorrido = (get_brazil_time().replace(tzinfo=None) - ultimo_reset.data_criacao).total_seconds()
+            if tempo_decorrido < 60:  # Menos de 1 minuto
+                tempo_espera = int(60 - tempo_decorrido)
+                return jsonify({
+                    'success': False,
+                    'message': f'Aguarde {tempo_espera} segundos antes de solicitar um novo código.'
+                }), 429
+
         # Invalidar tentativas anteriores não utilizadas
         ResetSenha.query.filter_by(usuario_id=user.id, usado=False).update({'usado': True})
 
