@@ -2179,7 +2179,7 @@ def listar_chamados():
         from database import ChamadoAgente, AgenteSuporte, User
         from sqlalchemy.orm import selectinload
 
-        # Parâmetros de otimização
+        # Parâmetros de otimizaç��o
         status_param = (request.args.get('status') or '').strip()
         limit = request.args.get('limit', type=int) or 200
         limit = max(5, min(limit, 1000))
@@ -2187,7 +2187,7 @@ def listar_chamados():
 
         # Query base
         query = Chamado.query
-        if status_param in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+        if status_param in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
             query = query.filter(Chamado.status == status_param)
 
         # Evitar carregar relacionamentos pesados quando em modo "light"
@@ -2313,7 +2313,7 @@ def obter_estatisticas_chamados():
             logger.info(f"Status {status}: {quantidade} chamados")
 
         # Adicionar status que podem não ter chamados
-        status_possiveis = ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']
+        status_possiveis = ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']
         for status in status_possiveis:
             if status not in stats_dict:
                 stats_dict[status] = 0
@@ -2417,7 +2417,7 @@ def debug_test_usuarios():
             total += stat.quantidade
         
         # Garantir que todos os status est��o presentes
-        status_padrao = ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']
+        status_padrao = ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']
         for status in status_padrao:
             if status not in stats_dict:
                 stats_dict[status] = 0
@@ -2439,7 +2439,7 @@ def atualizar_status_chamado(id):
         if not data or 'status' not in data:
             return error_response('Status não fornecido.', 400)
         novo_status = data['status'].strip()
-        if novo_status not in ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']:
+        if novo_status not in ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']:
             return error_response('Status inválido.', 400)
         chamado = Chamado.query.get(id)
         if not chamado:
@@ -2497,7 +2497,15 @@ def atualizar_status_chamado(id):
         if novo_status in ['Concluido', 'Cancelado'] and not chamado.data_conclusao:
             chamado.data_conclusao = agora_brazil.replace(tzinfo=None)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as commit_error:
+            db.session.rollback()
+            logger.error(f"ERRO na transação do banco de dados: {str(commit_error)}")
+            logger.error(f"Tipo do erro: {type(commit_error).__name__}")
+            logger.error(f"Detalhes: {commit_error.detail if hasattr(commit_error, 'detail') else 'N/A'}")
+            logger.error(traceback.format_exc())
+            return error_response(f'Erro ao salvar status no banco de dados: {str(commit_error)[:100]}')
 
         # Montar histórico resumido
         historico_payload = {}
@@ -2533,7 +2541,7 @@ def atualizar_status_chamado(id):
         except Exception as agente_error:
             logger.warning(f"Erro ao buscar agente: {str(agente_error)}")
 
-        # Emitir evento Socket.IO apenas se a conexão estiver disponível
+        # Emitir evento Socket.IO apenas se a conexão estiver dispon��vel
         try:
             if hasattr(current_app, 'socketio'):
                 current_app.socketio.emit('status_atualizado', {
@@ -3717,7 +3725,7 @@ def limpar_historico_violacoes_sla():
 
     except Exception as e:
         db.session.rollback()
-        logger.error(f"Erro ao limpar histórico de violações SLA: {str(e)}")
+        logger.error(f"Erro ao limpar hist��rico de violações SLA: {str(e)}")
         return json_response({
             'success': False,
             'error': 'Erro interno no servidor',
@@ -4208,7 +4216,7 @@ def atualizar_status_setor_usuario():
         novo_status = data['status']
         
         # Validar status
-        status_validos = ['Aberto', 'Aguardando', 'Concluido', 'Cancelado']
+        status_validos = ['Aberto', 'Aguardando', 'Em Atendimento', 'Concluido', 'Cancelado']
         if novo_status not in status_validos:
             return error_response('Status inválido', 400)
         
@@ -4401,7 +4409,7 @@ def criar_agente():
         # Verificar se usuário existe
         usuario = User.query.get(usuario_id)
         if not usuario:
-            return error_response('Usuário não encontrado')
+            return error_response('Usuário n��o encontrado')
 
         # Verificar se já é agente
         agente_existente = AgenteSuporte.query.filter_by(usuario_id=usuario_id).first()
@@ -4708,7 +4716,7 @@ def listar_categorias_logs_acoes():
 @login_required
 @setor_required('Administrador')
 def estatisticas_logs_acoes():
-    """Retorna estatísticas dos logs de ações"""
+    """Retorna estatísticas dos logs de aç��es"""
     try:
         from database import LogAcao
 

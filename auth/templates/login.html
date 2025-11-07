@@ -1,41 +1,510 @@
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Evoque Fitness</title>
+  <title>Login - Portal de TI</title>
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
-    :root{--primary-color:#FF6200;--secondary-color:#1C2526;--accent-color:#FF914D;--dark-color:#2A2F30;--light-color:#F8F9FA;--text-color:#212529;--scale-factor:0.85}
-    html,body{height:100%;margin:0;padding:0;font-size:calc(1rem*var(--scale-factor))}
-    body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,var(--primary-color) 0%,var(--secondary-color) 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--light-color);padding:0}
-    .login-container{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
-    .auth-card{background-color:var(--dark-color);border-radius:calc(12px*var(--scale-factor));box-shadow:0 calc(5px*var(--scale-factor)) calc(15px*var(--scale-factor)) rgba(0,0,0,0.2);overflow:hidden;display:flex;width:90%;max-width:1100px;height:80vh}
-    .media-panel{flex:1;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:20px;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
-    .login-panel{flex:1.2;padding:30px;display:flex;flex-direction:column;justify-content:center}
-    .media-item{width:100%;max-height:60vh;display:flex;align-items:center;justify-content:center}
-    .media-item img, .media-item video{max-width:100%;max-height:60vh;border-radius:8px}
-    .media-title{font-weight:600;margin-top:8px;color:var(--light-color)}
-    .form-label{color:rgba(255,255,255,0.95);font-weight:500}
-    .form-control{background-color:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--light-color);padding:12px}
-    .btn-primary{background-color:var(--primary-color);border:none}
-    @media(max-width:991px){.media-panel{display:none}.auth-card{flex-direction:column;height:auto}}
+    :root {
+      --primary-color: #FF6200;
+      --secondary-color: #1C2526;
+      --accent-color: #FF914D;
+      --dark-color: #151C1E;
+      --light-color: #F8F9FA;
+      --text-color: #212529;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .bg-shape {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+      filter: blur(80px);
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .shape-1 {
+      width: 40vw;
+      height: 40vw;
+      top: -20vw;
+      left: -10vw;
+    }
+
+    .shape-2 {
+      width: 25vw;
+      height: 25vw;
+      bottom: -10vw;
+      right: -10vw;
+    }
+
+    .shape-3 {
+      width: 15vw;
+      height: 15vw;
+      bottom: 20%;
+      left: 20%;
+    }
+
+    .login-container {
+      width: 100%;
+      height: 100%;
+      background: white;
+      overflow: hidden;
+      display: flex;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 10;
+    }
+
+    .media-panel {
+      position: relative;
+      flex: 1.2;
+      background-color: var(--dark-color);
+      overflow: hidden;
+    }
+
+    .media-carousel-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .media-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+    }
+
+    .media-slide.active {
+      opacity: 1;
+    }
+
+    .media-slide video,
+    .media-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10%;
+      background: linear-gradient(135deg, 
+                  rgba(0, 0, 0, 0.7) 0%,
+                  rgba(0, 0, 0, 0.4) 50%,
+                  rgba(255, 98, 0, 0.3) 100%);
+      z-index: 2;
+    }
+
+    .media-content {
+      color: white;
+    }
+
+    .brand-logo {
+      max-width: 130px;
+      margin-bottom: 5%;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+    }
+
+    .brand-logo-header {
+      max-height: 100px;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+    }
+
+    .media-description {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      line-height: 1.6;
+      max-width: 90%;
+    }
+
+    .media-footer {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .media-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .media-dot:hover {
+      background-color: rgba(255, 255, 255, 0.8);
+      transform: scale(1.2);
+    }
+
+    .media-dot.active {
+      background-color: var(--primary-color);
+      width: 12px;
+      height: 12px;
+    }
+
+    .login-panel {
+      flex: 0.8;
+      padding: 8% 5%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: white;
+      overflow-y: auto;
+    }
+
+    .login-header {
+      margin-bottom: 8%;
+    }
+
+    .login-title {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+    }
+
+    .login-subtitle {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .input-group {
+      margin-bottom: 6%;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      color: #555;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 15px 20px;
+      border: none;
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.2);
+      background-color: #fff;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 40px;
+      background: none;
+      border: none;
+      color: #777;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .password-toggle:hover {
+      color: var(--primary-color);
+    }
+
+    .remember-forgot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6%;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .remember-checkbox {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      border: 2px solid #ddd;
+      background-color: white;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .remember-checkbox:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .remember-checkbox:checked::after {
+      content: "✓";
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .forgot-link {
+      color: var(--primary-color);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 10px 15px -3px rgba(255, 98, 0, 0.2);
+    }
+
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 20px -3px rgba(255, 98, 0, 0.3);
+    }
+
+    .login-button:active {
+      transform: translateY(0);
+    }
+
+    .alert {
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 6%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .alert::before {
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      font-size: 1.2rem;
+    }
+
+    .alert-danger {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+      border-left: 4px solid #dc3545;
+    }
+
+    .alert-danger::before {
+      content: "\f071";
+    }
+
+    .alert-success {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+      border-left: 4px solid #28a745;
+    }
+
+    .alert-success::before {
+      content: "\f00c";
+    }
+
+    /* Desktop and Tablet */
+    @media (max-width: 1024px) {
+      .media-panel {
+        flex: 1;
+      }
+      
+      .login-panel {
+        flex: 1;
+        padding: 6% 5%;
+      }
+    }
+
+    /* Tablet */
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+      }
+      
+      .media-panel {
+        display: flex;
+        height: 45%;
+        flex: none;
+      }
+      
+      .login-panel {
+        height: 55%;
+        padding: 5%;
+        flex: none;
+      }
+
+      .login-title {
+        font-size: 1.5rem;
+      }
+
+      .brand-logo-header {
+        max-height: 80px;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+      }
+
+      .bg-shape {
+        display: none;
+      }
+
+      .login-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      
+      .media-panel {
+        display: none;
+      }
+      
+      .login-panel {
+        height: auto;
+        min-height: 100vh;
+        padding: 20px;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-radius: 16px;
+        margin: 0;
+      }
+
+      .login-header {
+        margin-bottom: 5%;
+      }
+
+      .login-title {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+      }
+
+      .login-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+      }
+
+      .input-group {
+        margin-bottom: 5%;
+      }
+
+      .form-input {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+      }
+
+      .form-label {
+        font-size: 0.85rem;
+      }
+
+      .remember-forgot {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 5%;
+      }
+
+      .login-button {
+        padding: 13px;
+        font-size: 0.95rem;
+      }
+
+      .alert {
+        margin-bottom: 5%;
+        font-size: 0.9rem;
+      }
+
+      .brand-logo-header {
+        max-height: 70px;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Background shapes -->
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+  <div class="bg-shape shape-3"></div>
+
   <div class="login-container">
-    <div class="auth-card">
-      <div class="media-panel" aria-hidden="false">
+    <!-- Media Panel -->
+    <div class="media-panel">
+      <div class="media-carousel-container">
+        <!-- Carousel Slides -->
         {% if media_items %}
           {% for m in media_items %}
-            {% if loop.first %}
-            <div class="media-item" role="group" aria-label="Mídia {{ m.titulo }}">
+            <div class="media-slide {% if loop.first %}active{% endif %}" data-index="{{ loop.index0 }}">
               {% if m.tipo == 'video' %}
-                <video controls>
+                <video muted loop>
                   <source src="{{ m.download_url }}" type="video/mp4">
                   Seu navegador não suporta o elemento de vídeo.
                 </video>
@@ -43,69 +512,795 @@
                 <img src="{{ m.download_url }}" alt="{{ m.titulo }}">
               {% endif %}
             </div>
-            <div class="media-title">{{ m.titulo }}</div>
-            <p style="color:rgba(255,255,255,0.8);text-align:center">{{ m.descricao }}</p>
-            {% endif %}
           {% endfor %}
         {% else %}
-          <div class="media-item">
-            <img src="https://via.placeholder.com/600x400?text=Evoque+Fitness" alt="Evoque">
+          <div class="media-slide active" data-index="0">
+            <img src="https://via.placeholder.com/600x600?text=Portal+de+TI" alt="Portal de TI">
           </div>
         {% endif %}
       </div>
 
-      <div class="login-panel">
-        <div style="text-align:center;margin-bottom:18px">
-          <img src="/static/logo.png" alt="Logo" style="max-height:70px">
+      <!-- Media Content Overlay -->
+      <div class="media-overlay">
+        <div class="media-content">
+          <p class="media-description">
+            {% if media_items %}
+              {% for m in media_items %}
+                {% if loop.first %}
+                  <span class="media-text" data-index="{{ loop.index0 }}">{{ m.descricao }}</span>
+                {% else %}
+                  <span class="media-text" data-index="{{ loop.index0 }}" style="display:none;">{{ m.descricao }}</span>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <span class="media-text" data-index="0">Seja bem-vindo ao Portal de TI. Acompanhe seus chamados, reporte problemas e obtenha suporte técnico de forma rápida e eficiente.</span>
+            {% endif %}
+          </p>
         </div>
-
-        <h3>Entrar no Sistema</h3>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ 'danger' if category == 'danger' else category }}">{{ message }}</div>
+        
+        <div class="media-footer">
+          {% if media_items %}
+            {% for m in media_items %}
+              <div class="media-dot {% if loop.first %}active{% endif %}" data-index="{{ loop.index0 }}"></div>
             {% endfor %}
+          {% else %}
+            <div class="media-dot active" data-index="0"></div>
           {% endif %}
-        {% endwith %}
+        </div>
+      </div>
+    </div>
 
+    <!-- Login Panel -->
+    <div class="login-panel">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <img src="https://cdn.builder.io/api/v1/image/assets%2Fc77211bcc2cb40d1a3b010c4a978e0c5%2Fd3a8b3498d6442fca65ee1c6f2e89310?format=webp&width=800" alt="Evoque Academia" class="brand-logo-header" onerror="this.src='/static/logo.png'" style="max-height: 100px;">
+      </div>
+      <div class="login-header">
         {% if alterar_senha %}
-          <form method="post" action="{{ url_for('auth.first_login') }}">
-            <input type="hidden" name="usuario" value="{{ usuario }}">
-            <div class="mb-3">
-              <label class="form-label">Nova senha</label>
-              <input type="password" name="nova_senha" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Confirmar senha</label>
-              <input type="password" name="confirmar_senha" class="form-control" required>
-            </div>
-            <button class="btn btn-primary">Alterar senha</button>
-          </form>
+          <h2 class="login-title">Criar nova senha</h2>
+          <p class="login-subtitle">Por favor, defina uma nova senha para sua conta</p>
         {% else %}
-          <form method="post" action="{{ url_for('auth.login') }}">
-            <div class="mb-3">
-              <label class="form-label">Usuário</label>
-              <input type="text" name="usuario" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Senha</label>
-              <input type="password" name="senha" class="form-control" required>
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" name="lembrar" class="form-check-input" id="lembrar">
-              <label class="form-check-label" for="lembrar">Lembrar-me</label>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <button type="submit" class="btn btn-primary">Entrar</button>
-              <a href="#" class="text-white" onclick="alert('Recuperação de senha implementada via e-mail');return false;">Esqueci minha senha</a>
-            </div>
-          </form>
+          <h2 class="login-title">Portal de TI</h2>
+          <p class="login-subtitle">Gerencie seus chamados e solicitações de suporte</p>
         {% endif %}
-
       </div>
 
+      <!-- Alertas -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Formulário de Alteração de Senha -->
+      {% if alterar_senha %}
+        <form method="post" action="{{ url_for('auth.first_login') }}">
+          <input type="hidden" name="usuario" value="{{ usuario }}">
+          
+          <div class="input-group">
+            <label class="form-label">Nova Senha</label>
+            <input type="password" id="novaSenha" name="nova_senha" class="form-input" placeholder="Digite sua nova senha" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('novaSenha')">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+
+          <div class="input-group">
+            <label class="form-label">Confirmar Senha</label>
+            <input type="password" id="confirmarSenha" name="confirmar_senha" class="form-input" placeholder="Confirme sua nova senha" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('confirmarSenha')">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+
+          <button type="submit" class="login-button">Alterar Senha</button>
+        </form>
+
+      <!-- Formulário de Login -->
+      {% else %}
+        <form method="post" action="{{ url_for('auth.login') }}">
+          <div class="input-group">
+            <label class="form-label">Usuário ou E-mail</label>
+            <input type="text" name="usuario" class="form-input" placeholder="Digite seu usuário ou e-mail" required>
+          </div>
+
+          <div class="input-group">
+            <label class="form-label">Senha</label>
+            <input type="password" id="senha" name="senha" class="form-input" placeholder="Digite sua senha" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('senha')">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+
+          <div class="remember-forgot">
+            <label class="remember-me">
+              <input type="checkbox" name="lembrar" class="remember-checkbox" id="lembrar">
+              <span>Lembrar-me</span>
+            </label>
+            <a href="#" class="forgot-link" onclick="openRecoveryModal(); return false;">
+              Esqueci minha senha
+            </a>
+          </div>
+
+          <button type="submit" class="login-button">Entrar</button>
+        </form>
+      {% endif %}
     </div>
   </div>
+
+  <!-- Modal: Solicitar Código de Recuperação -->
+  <div id="recoveryModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Recuperar Senha</h2>
+        <button class="modal-close" onclick="closeRecoveryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Digite seu usuário ou e-mail para receber um código de recuperação</p>
+        <input type="text" id="recoveryInput" class="form-input" placeholder="Usuário ou E-mail" autocomplete="off">
+        <div id="recoveryError" class="error-message" style="display: none;"></div>
+        <div id="recoverySuccess" class="success-message" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeRecoveryModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="requestRecoveryCode()" id="sendCodeBtn">Enviar Código</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Validar Código -->
+  <div id="codeModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Digite o Código</h2>
+        <button class="modal-close" onclick="closeCodeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Enviamos um código de 6 dígitos para seu e-mail. Digite o código abaixo:</p>
+        <input type="text" id="codeInput" class="form-input code-input" placeholder="000000" maxlength="6" autocomplete="off" inputmode="numeric">
+        <div id="codeError" class="error-message" style="display: none;"></div>
+        <div id="codeSuccess" class="success-message" style="display: none;"></div>
+        <p class="resend-info">
+          <span id="resendTimer" style="display: none;">Pode reenviar em <span id="timerSeconds">60</span>s</span>
+          <button id="resendBtn" class="resend-link" onclick="resendCode()" style="display: none;">Reenviar código</button>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeCodeModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="validateCode()" id="validateCodeBtn">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Redefinir Senha -->
+  <div id="resetPasswordModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Criar Nova Senha</h2>
+        <button class="modal-close" onclick="closeResetPasswordModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Crie uma nova senha para sua conta</p>
+        <div class="input-group">
+          <label class="form-label">Nova Senha</label>
+          <input type="password" id="newPassword" class="form-input" placeholder="Digite sua nova senha" autocomplete="off">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword')">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div class="input-group">
+          <label class="form-label">Confirmar Senha</label>
+          <input type="password" id="confirmPassword" class="form-input" placeholder="Confirme sua nova senha" autocomplete="off">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword')">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div id="passwordError" class="error-message" style="display: none;"></div>
+        <div id="passwordSuccess" class="success-message" style="display: none;"></div>
+        <p class="password-requirements">
+          <small>A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas e números</small>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeResetPasswordModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="resetPassword()" id="resetPasswordBtn">Redefinir Senha</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 450px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-description {
+      margin: 0 0 20px;
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid #e0e0e0;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .modal-btn-primary {
+      background-color: #FF6200;
+      color: white;
+    }
+
+    .modal-btn-primary:hover {
+      background-color: #E55700;
+      transform: translateY(-2px);
+    }
+
+    .modal-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .modal-btn-primary:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .modal-btn-secondary {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .modal-btn-secondary:hover {
+      background-color: #e0e0e0;
+    }
+
+    .code-input {
+      text-align: center;
+      letter-spacing: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .error-message {
+      background-color: rgba(220, 53, 69, 0.1);
+      border-left: 4px solid #dc3545;
+      color: #dc3545;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+
+    .success-message {
+      background-color: rgba(40, 167, 69, 0.1);
+      border-left: 4px solid #28a745;
+      color: #28a745;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+
+    .resend-info {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .resend-link {
+      background: none;
+      border: none;
+      color: #FF6200;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+
+    .resend-link:hover {
+      color: #E55700;
+    }
+
+    .password-requirements {
+      margin: 12px 0 0;
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 576px) {
+      .modal-content {
+        width: 95%;
+        border-radius: 12px;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .modal-header {
+        padding: 16px;
+      }
+
+      .modal-footer {
+        flex-direction: column;
+      }
+
+      .modal-btn {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <script>
+    let recoveryToken = null;
+    let resendCountdown = 0;
+    let resendCountdownInterval = null;
+
+    // Toggle password visibility
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = event.currentTarget.querySelector('i');
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Toggle password visibility for recovery
+    function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = event.currentTarget.querySelector('i');
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Modal Functions
+    function openRecoveryModal() {
+      document.getElementById('recoveryModal').classList.add('active');
+      document.getElementById('recoveryInput').focus();
+    }
+
+    function closeRecoveryModal() {
+      document.getElementById('recoveryModal').classList.remove('active');
+      document.getElementById('recoveryInput').value = '';
+      document.getElementById('recoveryError').style.display = 'none';
+      document.getElementById('recoverySuccess').style.display = 'none';
+    }
+
+    function closeCodeModal() {
+      document.getElementById('codeModal').classList.remove('active');
+      document.getElementById('codeInput').value = '';
+      document.getElementById('codeError').style.display = 'none';
+      document.getElementById('codeSuccess').style.display = 'none';
+      clearResendCountdown();
+    }
+
+    function closeResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.remove('active');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+      document.getElementById('passwordError').style.display = 'none';
+      document.getElementById('passwordSuccess').style.display = 'none';
+    }
+
+    // Request recovery code
+    async function requestRecoveryCode() {
+      const usuarioEmail = document.getElementById('recoveryInput').value.trim();
+      const errorDiv = document.getElementById('recoveryError');
+      const successDiv = document.getElementById('recoverySuccess');
+      const sendBtn = document.getElementById('sendCodeBtn');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!usuarioEmail) {
+        errorDiv.textContent = 'Por favor, digite seu usuário ou e-mail.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Enviando...';
+
+      try {
+        const response = await fetch('/auth/esqueci-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ usuario_email: usuarioEmail })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          recoveryToken = data.token;
+          successDiv.textContent = 'Código enviado! Verifique seu e-mail.';
+          successDiv.style.display = 'block';
+
+          setTimeout(() => {
+            closeRecoveryModal();
+            openCodeModal();
+            startResendCountdown();
+          }, 1500);
+        } else if (response.status === 429) {
+          // Rate limiting
+          errorDiv.textContent = data.message || 'Você solicitou código recentemente. Aguarde antes de tentar novamente.';
+          errorDiv.style.display = 'block';
+
+          // Extrair segundos da mensagem ou usar 60 como padrão
+          const match = data.message?.match(/(\d+)/);
+          if (match && match[1]) {
+            startRateLimitCountdown(parseInt(match[1]));
+          }
+        } else {
+          errorDiv.textContent = data.message || 'Erro ao solicitar código.';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        errorDiv.textContent = 'Erro ao conectar com o servidor.';
+        errorDiv.style.display = 'block';
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Enviar Código';
+      }
+    }
+
+    // Validate recovery code
+    async function validateCode() {
+      const codigo = document.getElementById('codeInput').value.trim();
+      const errorDiv = document.getElementById('codeError');
+      const successDiv = document.getElementById('codeSuccess');
+      const validateBtn = document.getElementById('validateCodeBtn');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!codigo || codigo.length !== 6) {
+        errorDiv.textContent = 'Digite um código válido de 6 dígitos.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      validateBtn.disabled = true;
+      validateBtn.textContent = 'Confirmando...';
+
+      try {
+        const response = await fetch('/auth/validar-codigo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            codigo: codigo,
+            token: recoveryToken
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          successDiv.textContent = 'Código válido! Crie sua nova senha.';
+          successDiv.style.display = 'block';
+
+          setTimeout(() => {
+            closeCodeModal();
+            openResetPasswordModal();
+          }, 1500);
+        } else {
+          errorDiv.textContent = data.message || 'Código inválido ou expirado.';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        errorDiv.textContent = 'Erro ao validar código.';
+        errorDiv.style.display = 'block';
+      } finally {
+        validateBtn.disabled = false;
+        validateBtn.textContent = 'Confirmar';
+      }
+    }
+
+    // Resend code
+    async function resendCode() {
+      const usuarioEmail = document.getElementById('recoveryInput').value.trim();
+
+      if (!usuarioEmail) {
+        return;
+      }
+
+      await requestRecoveryCode();
+    }
+
+    // Countdown for resend
+    function startResendCountdown() {
+      resendCountdown = 60;
+      const timerSpan = document.getElementById('resendTimer');
+      const resendBtn = document.getElementById('resendBtn');
+      const timerSeconds = document.getElementById('timerSeconds');
+
+      timerSpan.style.display = 'inline';
+      resendBtn.style.display = 'none';
+
+      resendCountdownInterval = setInterval(() => {
+        resendCountdown--;
+        timerSeconds.textContent = resendCountdown;
+
+        if (resendCountdown <= 0) {
+          clearResendCountdown();
+          resendBtn.style.display = 'inline';
+          timerSpan.style.display = 'none';
+        }
+      }, 1000);
+    }
+
+    function clearResendCountdown() {
+      if (resendCountdownInterval) {
+        clearInterval(resendCountdownInterval);
+        resendCountdownInterval = null;
+      }
+    }
+
+    // Reset password
+    async function resetPassword() {
+      const novaSenha = document.getElementById('newPassword').value;
+      const confirmarSenha = document.getElementById('confirmPassword').value;
+      const errorDiv = document.getElementById('passwordError');
+      const successDiv = document.getElementById('passwordSuccess');
+      const resetBtn = document.getElementById('resetPasswordBtn');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!novaSenha || !confirmarSenha) {
+        errorDiv.textContent = 'Por favor, preencha ambos os campos.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (novaSenha !== confirmarSenha) {
+        errorDiv.textContent = 'As senhas não coincidem.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (novaSenha.length < 8) {
+        errorDiv.textContent = 'A senha deve ter no mínimo 8 caracteres.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      resetBtn.disabled = true;
+      resetBtn.textContent = 'Redefinindo...';
+
+      try {
+        const response = await fetch('/auth/redefinir-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nova_senha: novaSenha,
+            confirmar_senha: confirmarSenha,
+            token: recoveryToken
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          successDiv.textContent = 'Senha redefinida com sucesso! Redirecionando para login...';
+          successDiv.style.display = 'block';
+
+          setTimeout(() => {
+            closeResetPasswordModal();
+            window.location.reload();
+          }, 2000);
+        } else {
+          errorDiv.textContent = data.message || 'Erro ao redefinir senha.';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        errorDiv.textContent = 'Erro ao conectar com o servidor.';
+        errorDiv.style.display = 'block';
+      } finally {
+        resetBtn.disabled = false;
+        resetBtn.textContent = 'Redefinir Senha';
+      }
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+      const modals = ['recoveryModal', 'codeModal', 'resetPasswordModal'];
+
+      modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        const modalContent = modal.querySelector('.modal-content');
+
+        if (event.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+
+    // Allow Enter key to submit in modals
+    document.getElementById('recoveryInput')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') requestRecoveryCode();
+    });
+
+    document.getElementById('codeInput')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') validateCode();
+    });
+
+    document.getElementById('newPassword')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') document.getElementById('confirmPassword').focus();
+    });
+
+    document.getElementById('confirmPassword')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') resetPassword();
+    });
+
+    // Carousel functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const dots = document.querySelectorAll('.media-dot');
+      const slides = document.querySelectorAll('.media-slide');
+      const mediaTexts = document.querySelectorAll('.media-text');
+      
+      function showSlide(index) {
+        // Remove active class from all slides and dots
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        mediaTexts.forEach(text => text.style.display = 'none');
+        
+        // Add active class to current slide and dot
+        if (slides[index]) slides[index].classList.add('active');
+        if (dots[index]) dots[index].classList.add('active');
+        if (mediaTexts[index]) mediaTexts[index].style.display = 'inline';
+        
+        // Play video if it exists
+        const video = slides[index]?.querySelector('video');
+        if (video) {
+          video.play().catch(err => console.log('Auto-play prevented:', err));
+        }
+      }
+      
+      // Add click event listeners to dots
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          showSlide(index);
+        });
+      });
+
+      // Auto-advance slides every 5 seconds
+      let currentIndex = 0;
+      setInterval(() => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        showSlide(currentIndex);
+      }, 5000);
+
+      // Initial setup
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      if (urlParams.has('logout')) {
+        // Mostrar toast ou mensagem de sucesso
+        console.log('Você foi desconectado com sucesso');
+      }
+      
+      if (urlParams.has('blocked')) {
+        // Mostrar toast ou mensagem
+        console.log('Sua conta está bloqueada. Entre em contato com o administrador.');
+      }
+      
+      if (urlParams.has('expired')) {
+        // Mostrar toast ou mensagem
+        console.log('Sua sessão expirou. Por favor, faça login novamente.');
+      }
+    });
+  </script>
 </body>
 </html>
