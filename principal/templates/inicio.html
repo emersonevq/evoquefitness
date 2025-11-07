@@ -494,16 +494,110 @@
       font-size: 0.75rem; /* Redução de 25% */
     }
     /* Dark theme overrides */
-    [data-theme="dark"] body { background-color: var(--secondary-color); color: var(--light-color); }
-    [data-theme="dark"] .navbar { background-color: rgba(28,37,38,0.95) !important; border-bottom: 1.5px solid var(--primary-color); }
-    [data-theme="dark"] .nav-link { color: var(--light-color) !important; }
-    [data-theme="dark"] .hero-section { background: var(--secondary-color); }
-    [data-theme="dark"] .section-title { color: #fff; }
-    [data-theme="dark"] .sectors-section { background-color: var(--secondary-color); }
-    [data-theme="dark"] .sector-card { background-color: var(--dark-color); border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-    [data-theme="dark"] .sector-card h5 { color: #fff; }
-    [data-theme="dark"] .sector-card p { color: rgba(255,255,255,0.8); }
-    [data-theme="dark"] .footer { background-color: var(--dark-color); border-top: 1.5px solid var(--primary-color); color: #fff; }
+    [data-theme="dark"] {
+      --secondary-color: #1a1f20;
+      --text-color: #ffffff;
+      --text-light: #b0b8bb;
+      --border-color: #2d3536;
+    }
+
+    [data-theme="dark"] body {
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] .navbar {
+      background-color: rgba(28, 37, 38, 0.98) !important;
+      border-bottom: 2px solid var(--primary-color);
+    }
+
+    [data-theme="dark"] .navbar-brand,
+    [data-theme="dark"] .nav-link {
+      color: var(--text-color) !important;
+    }
+
+    [data-theme="dark"] .nav-link:hover,
+    [data-theme="dark"] .nav-link.active {
+      background-color: var(--primary-color);
+      color: white !important;
+    }
+
+    [data-theme="dark"] .dropdown-menu {
+      background-color: #2a3132;
+      border: 1px solid var(--primary-color);
+    }
+
+    [data-theme="dark"] .dropdown-item {
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] .dropdown-item:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    [data-theme="dark"] .hero-section {
+      background: var(--secondary-color);
+    }
+
+    [data-theme="dark"] .hero-section h1 {
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .hero-section .lead {
+      color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .section-title {
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .sectors-section {
+      background-color: var(--secondary-color);
+    }
+
+    [data-theme="dark"] .sector-card {
+      background-color: #252b2c;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .sector-card:hover {
+      background-color: #2d3536;
+    }
+
+    [data-theme="dark"] .sector-card h5 {
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .sector-card p {
+      color: #b0b8bb;
+    }
+
+    [data-theme="dark"] .card-icon {
+      color: var(--primary-color);
+    }
+
+    [data-theme="dark"] .footer {
+      background-color: #252b2c;
+      border-top: 2px solid var(--primary-color);
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] .social-icons a {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] .social-icons a:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    [data-theme="dark"] .admin-panel-card,
+    [data-theme="dark"] .agent-panel-card {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    }
   </style>
   <script>
     (function(){
