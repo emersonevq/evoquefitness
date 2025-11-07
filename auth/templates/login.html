@@ -921,10 +921,15 @@
   </style>
 
   <script>
+    let recoveryToken = null;
+    let resendCountdown = 0;
+    let resendCountdownInterval = null;
+
+    // Toggle password visibility
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
       const icon = event.currentTarget.querySelector('i');
-      
+
       if (input.type === "password") {
         input.type = "text";
         icon.classList.remove('fa-eye');
@@ -935,6 +940,300 @@
         icon.classList.add('fa-eye');
       }
     }
+
+    // Toggle password visibility for recovery
+    function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = event.currentTarget.querySelector('i');
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Modal Functions
+    function openRecoveryModal() {
+      document.getElementById('recoveryModal').classList.add('active');
+      document.getElementById('recoveryInput').focus();
+    }
+
+    function closeRecoveryModal() {
+      document.getElementById('recoveryModal').classList.remove('active');
+      document.getElementById('recoveryInput').value = '';
+      document.getElementById('recoveryError').style.display = 'none';
+      document.getElementById('recoverySuccess').style.display = 'none';
+    }
+
+    function closeCodeModal() {
+      document.getElementById('codeModal').classList.remove('active');
+      document.getElementById('codeInput').value = '';
+      document.getElementById('codeError').style.display = 'none';
+      document.getElementById('codeSuccess').style.display = 'none';
+      clearResendCountdown();
+    }
+
+    function closeResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.remove('active');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+      document.getElementById('passwordError').style.display = 'none';
+      document.getElementById('passwordSuccess').style.display = 'none';
+    }
+
+    // Request recovery code
+    async function requestRecoveryCode() {
+      const usuarioEmail = document.getElementById('recoveryInput').value.trim();
+      const errorDiv = document.getElementById('recoveryError');
+      const successDiv = document.getElementById('recoverySuccess');
+      const sendBtn = document.getElementById('sendCodeBtn');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!usuarioEmail) {
+        errorDiv.textContent = 'Por favor, digite seu usuário ou e-mail.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Enviando...';
+
+      try {
+        const response = await fetch('/auth/esqueci-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ usuario_email: usuarioEmail })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          recoveryToken = data.token;
+          successDiv.textContent = 'Código enviado! Verifique seu e-mail.';
+          successDiv.style.display = 'block';
+
+          setTimeout(() => {
+            closeRecoveryModal();
+            openCodeModal();
+            startResendCountdown();
+          }, 1500);
+        } else {
+          errorDiv.textContent = data.message || 'Erro ao solicitar código.';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        errorDiv.textContent = 'Erro ao conectar com o servidor.';
+        errorDiv.style.display = 'block';
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Enviar Código';
+      }
+    }
+
+    // Validate recovery code
+    async function validateCode() {
+      const codigo = document.getElementById('codeInput').value.trim();
+      const errorDiv = document.getElementById('codeError');
+      const successDiv = document.getElementById('codeSuccess');
+      const validateBtn = document.getElementById('validateCodeBtn');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!codigo || codigo.length !== 6) {
+        errorDiv.textContent = 'Digite um código válido de 6 dígitos.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      validateBtn.disabled = true;
+      validateBtn.textContent = 'Confirmando...';
+
+      try {
+        const response = await fetch('/auth/validar-codigo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            codigo: codigo,
+            token: recoveryToken
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          successDiv.textContent = 'Código válido! Crie sua nova senha.';
+          successDiv.style.display = 'block';
+
+          setTimeout(() => {
+            closeCodeModal();
+            openResetPasswordModal();
+          }, 1500);
+        } else {
+          errorDiv.textContent = data.message || 'Código inválido ou expirado.';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        errorDiv.textContent = 'Erro ao validar código.';
+        errorDiv.style.display = 'block';
+      } finally {
+        validateBtn.disabled = false;
+        validateBtn.textContent = 'Confirmar';
+      }
+    }
+
+    // Resend code
+    async function resendCode() {
+      const usuarioEmail = document.getElementById('recoveryInput').value.trim();
+
+      if (!usuarioEmail) {
+        return;
+      }
+
+      await requestRecoveryCode();
+    }
+
+    // Countdown for resend
+    function startResendCountdown() {
+      resendCountdown = 60;
+      const timerSpan = document.getElementById('resendTimer');
+      const resendBtn = document.getElementById('resendBtn');
+      const timerSeconds = document.getElementById('timerSeconds');
+
+      timerSpan.style.display = 'inline';
+      resendBtn.style.display = 'none';
+
+      resendCountdownInterval = setInterval(() => {
+        resendCountdown--;
+        timerSeconds.textContent = resendCountdown;
+
+        if (resendCountdown <= 0) {
+          clearResendCountdown();
+          resendBtn.style.display = 'inline';
+          timerSpan.style.display = 'none';
+        }
+      }, 1000);
+    }
+
+    function clearResendCountdown() {
+      if (resendCountdownInterval) {
+        clearInterval(resendCountdownInterval);
+        resendCountdownInterval = null;
+      }
+    }
+
+    // Reset password
+    async function resetPassword() {
+      const novaSenha = document.getElementById('newPassword').value;
+      const confirmarSenha = document.getElementById('confirmPassword').value;
+      const errorDiv = document.getElementById('passwordError');
+      const successDiv = document.getElementById('passwordSuccess');
+      const resetBtn = document.getElementById('resetPasswordBtn');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!novaSenha || !confirmarSenha) {
+        errorDiv.textContent = 'Por favor, preencha ambos os campos.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (novaSenha !== confirmarSenha) {
+        errorDiv.textContent = 'As senhas não coincidem.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (novaSenha.length < 8) {
+        errorDiv.textContent = 'A senha deve ter no mínimo 8 caracteres.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      resetBtn.disabled = true;
+      resetBtn.textContent = 'Redefinindo...';
+
+      try {
+        const response = await fetch('/auth/redefinir-senha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nova_senha: novaSenha,
+            confirmar_senha: confirmarSenha,
+            token: recoveryToken
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          successDiv.textContent = 'Senha redefinida com sucesso! Redirecionando para login...';
+          successDiv.style.display = 'block';
+
+          setTimeout(() => {
+            closeResetPasswordModal();
+            window.location.reload();
+          }, 2000);
+        } else {
+          errorDiv.textContent = data.message || 'Erro ao redefinir senha.';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        errorDiv.textContent = 'Erro ao conectar com o servidor.';
+        errorDiv.style.display = 'block';
+      } finally {
+        resetBtn.disabled = false;
+        resetBtn.textContent = 'Redefinir Senha';
+      }
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+      const modals = ['recoveryModal', 'codeModal', 'resetPasswordModal'];
+
+      modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        const modalContent = modal.querySelector('.modal-content');
+
+        if (event.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+
+    // Allow Enter key to submit in modals
+    document.getElementById('recoveryInput')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') requestRecoveryCode();
+    });
+
+    document.getElementById('codeInput')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') validateCode();
+    });
+
+    document.getElementById('newPassword')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') document.getElementById('confirmPassword').focus();
+    });
+
+    document.getElementById('confirmPassword')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') resetPassword();
+    });
 
     // Carousel functionality
     document.addEventListener('DOMContentLoaded', function() {
