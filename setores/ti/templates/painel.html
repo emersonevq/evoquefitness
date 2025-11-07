@@ -17,56 +17,17 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/painel.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/enviar_ticket.css') }}">
-  <style>
-    .attachments-section { margin-top: 10px; }
-    .attachments-list { list-style: none; padding: 0; margin: 0; }
-    .attachments-list li { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
-    .attachments-list a { color: var(--primary-color); text-decoration: underline; }
-    .history-section { margin-top: 10px; }
-    .history-list { list-style: none; padding: 0; margin: 0; }
-    .history-list li { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
-    .history-icon { color: var(--primary-color); }
-
-    /* Timeline improvements */
-    .history-list .timeline-item {
-      display: block;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 8px;
-      padding: 10px 12px;
-      border-left: 3px solid transparent;
-    }
-    .history-list .timeline-item + .timeline-item { margin-top: 8px; }
-    .history-list .timeline-item.from-suporte { border-left-color: var(--primary-color); }
-    .history-list .timeline-item.from-solicitante { border-left-color: var(--accent-color); }
-    .history-list .timeline-item.from-sistema { border-left-color: rgba(255,255,255,0.25); }
-
-    .timeline-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .timeline-header .spacer { flex: 1; }
-    .sender-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; }
-    .badge-suporte { background: var(--primary-color); color: #fff; }
-    .badge-solicitante { background: var(--accent-color); color: #1C2526; }
-    .badge-sistema { background: rgba(255,255,255,0.2); color: var(--light-color); }
-    .sender-name { opacity: 0.95; }
-    .timestamp { color: rgba(255,255,255,0.65); font-size: 0.85rem; }
-
-    .timeline-body { display: flex; gap: 8px; align-items: flex-start; word-break: break-word; }
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-      }
-      50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-      }
-    }
-  </style>
+  <script>
+    (function(){
+      try {
+        var preferred = localStorage.getItem('theme');
+        var theme = preferred === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch(e) { document.documentElement.setAttribute('data-theme','light'); }
+    })();
+  </script>
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
   <!-- Botão para alternar sidebar em mobile -->
   <button class="sidebar-toggle" id="sidebarToggle" aria-label="Alternar menu">
@@ -1301,7 +1262,7 @@
         <div class="col-md-6">
           <div class="card">
             <div class="card-header">
-              <h5 class="card-title mb-0"><i class="fas fa-tools me-2"></i>Manutenção do Sistema</h5>
+              <h5 class="card-title mb-0"><i class="fas fa-tools me-2"></i>Manuten��ão do Sistema</h5>
             </div>
             <div class="card-body">
               <div class="d-grid gap-2">
@@ -3467,7 +3428,7 @@
       console.log('Executando backup do banco de dados...');
       // Implementar lógica de backup
       if (window.advancedNotificationSystem) {
-        window.advancedNotificationSystem.showInfo('Backup', 'Backup iniciado! Você será notificado quando estiver concluído.');
+        window.advancedNotificationSystem.showInfo('Backup', 'Backup iniciado! Você ser�� notificado quando estiver concluído.');
       }
     }
 

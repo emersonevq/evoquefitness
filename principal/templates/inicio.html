@@ -24,16 +24,16 @@
     
     body {
       font-family: 'Montserrat', sans-serif;
-      background-color: var(--secondary-color);
-      color: var(--light-color);
+      background-color: #FFFFFF;
+      color: var(--text-color);
       line-height: 1.6;
       font-size: 0.75rem; /* Redução de 25% */
     }
     
     /* Navbar */
     .navbar {
-      background-color: rgba(28, 37, 38, 0.95) !important;
-      border-bottom: 1.5px solid var(--primary-color); /* Redução de 25% */
+      background-color: #FFFFFF !important;
+      border-bottom: 1px solid #e0e0e0;
       padding: 11.25px 0; /* Redução de 25% */
       transition: all 0.3s ease;
     }
@@ -53,7 +53,7 @@
     }
     
     .nav-link {
-      color: var(--light-color) !important;
+      color: var(--text-color) !important;
       font-weight: 500;
       margin: 0 6px; /* Redução de 25% */
       padding: 6px 12px !important; /* Redução de 25% */
@@ -75,12 +75,12 @@
     /* Hero Section */
     .hero-section {
       position: relative;
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      background: #FFFFFF;
       padding: 90px 0 75px; /* Redução de 25% */
       text-align: center;
       overflow: hidden;
-      margin-top: -61.5px; /* Redução de 25% */
-      padding-top: 150px; /* Redução de 25% */
+      margin-top: 0;
+      padding-top: 120px; /* Redução de 25% */
     }
     
     .hero-section::before {
@@ -93,8 +93,8 @@
       background: url('https://img.freepik.com/premium-vector/green-white-seamless-honeycomb-pattern_713536-278.jpg');
       background-size: 112.5px; /* Redução de 25% */
       background-repeat: repeat;
-      opacity: 0.1;
-      filter: hue-rotate(40deg) saturate(2) brightness(0.8);
+      opacity: 0.05;
+      filter: hue-rotate(40deg) saturate(1.2) brightness(1);
     }
     
     .hero-content {
@@ -105,10 +105,26 @@
     .hero-section h1 {
       font-weight: 700;
       font-size: 2.625rem; /* Redução de 25% */
-      color: white;
-      text-shadow: 1.5px 1.5px 4.5px rgba(0, 0, 0, 0.5); /* Redução de 25% */
+      color: var(--text-color);
+      text-shadow: none;
       margin-bottom: 15px; /* Redução de 25% */
       letter-spacing: -0.375px; /* Redução de 25% */
+      position: relative;
+      z-index: 2;
+    }
+    /* Large orange band behind the title */
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      left: -10vw;
+      right: -10vw;
+      top: 50%;
+      transform: translateY(-50%);
+      height: clamp(140px, 32vh, 280px);
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      border-radius: 999px;
+      box-shadow: 0 20px 60px rgba(255, 98, 0, 0.35);
+      z-index: 1;
     }
     
     .hero-section .lead {
@@ -147,12 +163,12 @@
     /* Sector Cards */
     .sectors-section {
       padding: 60px 0; /* Redução de 25% */
-      background-color: var(--secondary-color);
+      background-color: #FFFFFF;
     }
     
     .section-title {
       font-weight: 700;
-      color: white;
+      color: var(--text-color);
       margin-bottom: 37.5px; /* Redução de 25% */
       position: relative;
       display: inline-block;
@@ -171,13 +187,13 @@
     }
     
     .sector-card {
-      background-color: var(--dark-color);
-      border: none;
+      background-color: #FFFFFF;
+      border: 1px solid #eeeeee;
       border-radius: 9px; /* Redução de 25% */
       transition: all 0.4s ease;
       height: 100%;
       overflow: hidden;
-      box-shadow: 0 3.75px 11.25px rgba(0, 0, 0, 0.1); /* Redução de 25% */
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
       position: relative;
     }
     
@@ -216,23 +232,23 @@
     }
     
     .sector-card h5 {
-      color: white;
+      color: var(--text-color);
       font-weight: 600;
       margin-bottom: 11.25px; /* Redução de 25% */
       font-size: 0.9375rem; /* Redução de 25% */
     }
     
     .sector-card p {
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(0, 0, 0, 0.65);
       font-size: 0.7125rem; /* Redução de 25% */
       margin-bottom: 0;
     }
     
     /* Footer */
     .footer {
-      background-color: var(--dark-color);
-      border-top: 1.5px solid var(--primary-color); /* Redução de 25% */
-      color: white;
+      background-color: #FFFFFF;
+      border-top: 1px solid #e0e0e0;
+      color: var(--text-color);
       padding: 22.5px 0; /* Redução de 25% */
       text-align: center;
       font-size: 0.75rem; /* Redução de 25% */
@@ -248,8 +264,8 @@
       justify-content: center;
       width: 30px; /* Redução de 25% */
       height: 30px; /* Redução de 25% */
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
+      background-color: rgba(0, 0, 0, 0.06);
+      color: var(--text-color);
       border-radius: 50%;
       margin: 0 6px; /* Redução de 25% */
       transition: all 0.3s ease;
@@ -476,7 +492,27 @@
     .dropdown-menu {
       font-size: 0.75rem; /* Redução de 25% */
     }
+    /* Dark theme overrides */
+    [data-theme="dark"] body { background-color: var(--secondary-color); color: var(--light-color); }
+    [data-theme="dark"] .navbar { background-color: rgba(28,37,38,0.95) !important; border-bottom: 1.5px solid var(--primary-color); }
+    [data-theme="dark"] .nav-link { color: var(--light-color) !important; }
+    [data-theme="dark"] .hero-section { background: var(--secondary-color); }
+    [data-theme="dark"] .section-title { color: #fff; }
+    [data-theme="dark"] .sectors-section { background-color: var(--secondary-color); }
+    [data-theme="dark"] .sector-card { background-color: var(--dark-color); border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    [data-theme="dark"] .sector-card h5 { color: #fff; }
+    [data-theme="dark"] .sector-card p { color: rgba(255,255,255,0.8); }
+    [data-theme="dark"] .footer { background-color: var(--dark-color); border-top: 1.5px solid var(--primary-color); color: #fff; }
   </style>
+  <script>
+    (function(){
+      try {
+        var preferred = localStorage.getItem('theme');
+        var theme = preferred === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch(e) { document.documentElement.setAttribute('data-theme','light'); }
+    })();
+  </script>
 </head>
 <body>
   <!-- Cabeçalho -->
@@ -490,6 +526,9 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <button id="themeToggle" class="nav-link btn btn-link p-0" type="button" title="Alternar tema">Tema</button>
+          </li>
           <li class="nav-item">
             <a class="nav-link active" href="/">Início</a>
           </li>
@@ -718,8 +757,16 @@
 
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <script>
+    // Theme toggle
+    (function(){
+      var btn = document.getElementById('themeToggle');
+      function setTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); }
+      function current(){ return document.documentElement.getAttribute('data-theme') || 'light'; }
+      btn && btn.addEventListener('click', function(){ setTheme(current()==='dark'?'light':'dark'); });
+    })();
+
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
       const navbar = document.querySelector('.navbar');

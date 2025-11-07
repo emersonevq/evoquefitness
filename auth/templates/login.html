@@ -925,6 +925,13 @@
     let resendCountdown = 0;
     let resendCountdownInterval = null;
 
+    {% if abrir_modal_senha and reset_token %}
+    document.addEventListener('DOMContentLoaded', function() {
+      recoveryToken = "{{ reset_token }}";
+      openResetPasswordModal();
+    });
+    {% endif %}
+
     // Toggle password visibility
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
@@ -984,6 +991,16 @@
       document.getElementById('confirmPassword').value = '';
       document.getElementById('passwordError').style.display = 'none';
       document.getElementById('passwordSuccess').style.display = 'none';
+    }
+
+    function openCodeModal() {
+      document.getElementById('codeModal').classList.add('active');
+      document.getElementById('codeInput').focus();
+    }
+
+    function openResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.add('active');
+      document.getElementById('newPassword').focus();
     }
 
     // Request recovery code
