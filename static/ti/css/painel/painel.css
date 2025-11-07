@@ -1773,6 +1773,28 @@ textarea:focus {
   }
 }
 
+/* Scrollbar Styling */
+.advanced-notification-panel::-webkit-scrollbar,
+.notification-panel-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.advanced-notification-panel::-webkit-scrollbar-track,
+.notification-panel-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.advanced-notification-panel::-webkit-scrollbar-thumb,
+.notification-panel-body::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.advanced-notification-panel::-webkit-scrollbar-thumb:hover,
+.notification-panel-body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .cards-grid {
@@ -1817,6 +1839,48 @@ textarea:focus {
 
   .sidebar {
     width: 100%;
+  }
+
+  .advanced-notification-container {
+    right: var(--space-2);
+    max-width: calc(100vw - var(--space-4));
+  }
+
+  .advanced-notification-panel {
+    width: 100%;
+    right: -100%;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    top: calc(var(--navbar-h) + 50px);
+    height: auto;
+    max-height: 50vh;
+  }
+
+  .advanced-toast {
+    max-width: calc(100vw - var(--space-4));
+  }
+}
+
+@media (max-width: 480px) {
+  .advanced-notification-container {
+    right: var(--space-2);
+    max-width: calc(100vw - var(--space-4));
+  }
+
+  .advanced-toast {
+    max-width: calc(100vw - var(--space-4));
+  }
+
+  .toast-title {
+    font-size: 0.85rem;
+  }
+
+  .toast-message {
+    font-size: 0.8rem;
+  }
+
+  .notification-panel-header h3 {
+    font-size: 1rem;
   }
 }
 
