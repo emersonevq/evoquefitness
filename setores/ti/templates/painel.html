@@ -117,7 +117,7 @@
           <ul class="submenu" id="submenu-sistema" aria-label="submenu sistema" role="menu">
             <li role="none"><a href="#alertas-sistema" role="menuitem" tabindex="-1"><i class="fas fa-exclamation-triangle"></i><span>Alertas do Sistema</span></a></li>
             <li role="none"><a href="#backup-manutencao" role="menuitem" tabindex="-1"><i class="fas fa-database"></i><span>Backup & Manutenção</span></a></li>
-            <li role="none"><a href="#configuracoes-avancadas" role="menuitem" tabindex="-1"><i class="fas fa-cog"></i><span>Configuraç��es Avançadas</span></a></li>
+            <li role="none"><a href="#configuracoes-avancadas" role="menuitem" tabindex="-1"><i class="fas fa-cog"></i><span>Configurações Avançadas</span></a></li>
             <li role="none"><a href="#dashboard-avancado" role="menuitem" tabindex="-1"><i class="fas fa-chart-pie"></i><span>Dashboard Avançado</span></a></li>
           </ul>
         </li>
@@ -148,6 +148,11 @@
       
       <div class="collapse navbar-collapse" id="navbarPanel">
         <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <button id="themeTogglePainel" class="nav-link-panel btn btn-link p-0" type="button" title="Alternar tema">
+              <i class="fas fa-moon me-1"></i>Tema
+            </button>
+          </li>
           <li class="nav-item">
             <a class="nav-link-panel" href="#" id="btnNotificacoes">
               <i class="fas fa-bell me-1"></i> 
@@ -232,10 +237,10 @@
       </div>
     </section>
 
-    <!-- Nova Se����ão SLA & Métricas -->
+    <!-- Nova Seção SLA & Métricas -->
     <section id="sla-dashboard" class="content-section" tabindex="0" aria-label="SLA & Métricas">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-chart-line me-2"></i>SLA & M��tricas de Desempenho</h2>
+        <h2><i class="fas fa-chart-line me-2"></i>SLA & Métricas de Desempenho</h2>
         <button class="btn btn-primary" id="btnAtualizarSLA">
           <i class="fas fa-sync-alt me-1"></i>Atualizar
         </button>
@@ -724,7 +729,7 @@
     </section>
 
     <!-- Permissões -->
-    <section id="permissoes" class="content-section" tabindex="0" aria-label="Gerenciar Permiss��es">
+    <section id="permissoes" class="content-section" tabindex="0" aria-label="Gerenciar Permissões">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gerenciar Permissões</h2>
         <div class="input-group" style="max-width: 300px;">
@@ -735,7 +740,7 @@
         </div>
       </div>
       <div class="cards-grid" id="usuariosGrid">
-        <!-- Os usu��rios serão carregados aqui dinamicamente -->
+        <!-- Os usuários serão carregados aqui dinamicamente -->
       </div>
       <div class="pagination" id="usuariosPagination"></div>
     </section>
@@ -1021,7 +1026,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-chart-bar me-2"></i>Análise de Problemas Futuros</h2>
         <button class="btn btn-primary" id="btnAtualizarAnalise">
-          <i class="fas fa-sync-alt me-1"></i>Atualizar Análise
+          <i class="fas fa-sync-alt me-1"></i>Atualizar An��lise
         </button>
       </div>
 
@@ -2315,7 +2320,7 @@
     </div>
   </div>
 
-  <!-- Modal Editar Usuário -->
+  <!-- Modal Editar Usu��rio -->
   <div class="modal" id="modalEditarUsuario" role="dialog" aria-modal="true" aria-labelledby="modalEditarUsuarioTitle">
     <div class="modal-content">
       <div class="modal-header">
@@ -2934,7 +2939,7 @@
 
                 window.advancedNotificationSystem.showSuccess(
                     'Configurações Salvas',
-                    'Configurações de notificações salvas com sucesso!'
+                    'Configurações de notifica��ões salvas com sucesso!'
                 );
             }
 
@@ -3868,6 +3873,35 @@ function testarIntegracaoSLA() {
   <!-- Sistema de Timeout de Sessão -->
   <script src="{{ url_for('static', filename='ti/js/painel/session_timeout.js') }}"></script>
 <script>
+// Theme toggle functionality
+(function(){
+  var btn = document.getElementById('themeTogglePainel');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('theme', t);
+    updateThemeIcon(t);
+  }
+  function current() {
+    return document.documentElement.getAttribute('data-theme') || 'light';
+  }
+  function updateThemeIcon(theme) {
+    var icon = btn.querySelector('i');
+    if (theme === 'dark') {
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+    } else {
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+    }
+  }
+  if (btn) {
+    updateThemeIcon(current());
+    btn.addEventListener('click', function() {
+      setTheme(current() === 'dark' ? 'light' : 'dark');
+    });
+  }
+})();
+
 // Media panel scripts: carregar pré-visualização e enviar mídia
 async function loadMediaPreview() {
   try {
