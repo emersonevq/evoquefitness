@@ -109,6 +109,22 @@
       text-shadow: none;
       margin-bottom: 15px; /* Redução de 25% */
       letter-spacing: -0.375px; /* Redução de 25% */
+      position: relative;
+      display: inline-block;
+      padding: 0 14px;
+    }
+    .hero-section h1::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -6px;
+      width: 110%;
+      height: 14px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      border-radius: 999px;
+      z-index: -1;
+      opacity: 0.95;
     }
     
     .hero-section .lead {
