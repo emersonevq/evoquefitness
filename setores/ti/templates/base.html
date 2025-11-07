@@ -179,6 +179,11 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 {% if current_user.is_authenticated %}
                     <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <button id="themeToggle" class="nav-link btn btn-link p-0" type="button" title="Alternar tema">
+                                <i class="fas fa-moon me-1"></i>Tema
+                            </button>
+                        </li>
                         {% if current_user.tem_acesso_setor('ti') %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="tiDropdown" role="button" 
