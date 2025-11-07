@@ -3873,6 +3873,35 @@ function testarIntegracaoSLA() {
   <!-- Sistema de Timeout de Sessão -->
   <script src="{{ url_for('static', filename='ti/js/painel/session_timeout.js') }}"></script>
 <script>
+// Theme toggle functionality
+(function(){
+  var btn = document.getElementById('themeTogglePainel');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('theme', t);
+    updateThemeIcon(t);
+  }
+  function current() {
+    return document.documentElement.getAttribute('data-theme') || 'light';
+  }
+  function updateThemeIcon(theme) {
+    var icon = btn.querySelector('i');
+    if (theme === 'dark') {
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+    } else {
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+    }
+  }
+  if (btn) {
+    updateThemeIcon(current());
+    btn.addEventListener('click', function() {
+      setTheme(current() === 'dark' ? 'light' : 'dark');
+    });
+  }
+})();
+
 // Media panel scripts: carregar pré-visualização e enviar mídia
 async function loadMediaPreview() {
   try {
