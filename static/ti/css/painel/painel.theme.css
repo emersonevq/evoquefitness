@@ -331,4 +331,47 @@ a { color: inherit; text-decoration: none; transition: var(--transition); }
 
 /* End restore block */
 
+/* Subtle adaptive card border and layout fixes */
+:root {
+  --card-border: rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+  --card-border: rgba(255,255,255,0.06);
+}
+
+/* Force subtle border for all cards in light/dark to avoid borderless look */
+.card {
+  border: 1px solid var(--card-border) !important;
+}
+
+/* Uniform section container styling */
+.content-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* Ensure card footers align buttons horizontally across all sections */
+.card-footer {
+  display: flex !important;
+  gap: var(--space-2) !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  flex-wrap: wrap;
+}
+
+/* Avoid extremely saturated header blocks — keep color but reduce opacity for subtlety (light mode only) */
+:not([data-theme="dark"]) .cards-grid .card-header {
+  background: linear-gradient(135deg, rgba(255,98,0,0.12) 0%, rgba(255,145,77,0.08) 100%) !important;
+}
+
+/* Make sure grid cards have a reasonable min-height to avoid cropping */
+.cards-grid .card {
+  min-height: 220px;
+}
+
+/* Keep marker */
 /* End of user-provided theme */
