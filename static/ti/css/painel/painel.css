@@ -1383,6 +1383,105 @@ select[multiple] option:checked {
   color: white;
 }
 
+/* Utility Classes */
+.full-width {
+  width: 100%;
+}
+
+.d-none {
+  display: none;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+
+.px-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
+.py-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Notification container */
+.notification-container {
+  position: fixed;
+  top: var(--navbar-h);
+  right: 0;
+  z-index: 2999;
+  margin: var(--space-3);
+  max-width: 400px;
+}
+
+.notification {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  box-shadow: var(--shadow);
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  animation: slideInRight 0.3s ease;
+}
+
+.notification.success {
+  border-left: 4px solid #28a745;
+}
+
+.notification.error {
+  border-left: 4px solid #dc3545;
+}
+
+.notification.warning {
+  border-left: 4px solid #ffc107;
+}
+
+.notification.info {
+  border-left: 4px solid #0dcaf0;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .cards-grid {
@@ -1411,6 +1510,22 @@ select[multiple] option:checked {
 
   .pagination {
     flex-wrap: wrap;
+  }
+
+  .modal-content {
+    margin: var(--space-3);
+  }
+
+  .cards-grid {
+    gap: var(--space-3);
+  }
+
+  .navbar-panel {
+    left: 0;
+  }
+
+  .sidebar {
+    width: 100%;
   }
 }
 
