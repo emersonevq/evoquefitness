@@ -110,21 +110,21 @@
       margin-bottom: 15px; /* Redução de 25% */
       letter-spacing: -0.375px; /* Redução de 25% */
       position: relative;
-      display: inline-block;
-      padding: 0 14px;
+      z-index: 2;
     }
-    .hero-section h1::before {
+    /* Large orange band behind the title */
+    .hero-section::after {
       content: '';
       position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -6px;
-      width: 110%;
-      height: 14px;
+      left: -10vw;
+      right: -10vw;
+      top: 50%;
+      transform: translateY(-50%);
+      height: clamp(140px, 32vh, 280px);
       background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
       border-radius: 999px;
-      z-index: -1;
-      opacity: 0.95;
+      box-shadow: 0 20px 60px rgba(255, 98, 0, 0.35);
+      z-index: 1;
     }
     
     .hero-section .lead {
