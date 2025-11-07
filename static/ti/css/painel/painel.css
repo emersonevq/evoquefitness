@@ -1432,7 +1432,7 @@ textarea:focus {
   outline-offset: 2px;
 }
 
-/* Notification container */
+/* Notification container (Old - kept for compatibility) */
 .notification-container {
   position: fixed;
   top: var(--navbar-h);
@@ -1471,14 +1471,305 @@ textarea:focus {
   border-left: 4px solid #0dcaf0;
 }
 
+/* Advanced Notification Container (Toast Queue) */
+.advanced-notification-container {
+  position: fixed;
+  top: calc(var(--navbar-h) + var(--space-4));
+  right: var(--space-4);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 400px;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .advanced-notification-container {
+  color: var(--text-color);
+}
+
+/* Advanced Toast */
+.advanced-toast {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(400px);
+  animation: slideInRight 0.3s ease forwards;
+  pointer-events: auto;
+  max-height: 200px;
+}
+
+[data-theme="dark"] .advanced-toast {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.advanced-toast.hide {
+  animation: slideOutRight 0.3s ease forwards;
+}
+
+.toast-content {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  align-items: flex-start;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.toast-body {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  color: var(--text-color);
+}
+
+.toast-message {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.toast-close:hover {
+  color: var(--text-color);
+}
+
+.toast-progress {
+  height: 3px;
+  background: linear-gradient(90deg, rgba(255, 98, 0, 0.8) 0%, transparent 100%);
+  animation: progress linear forwards;
+}
+
+/* Toast Type Variants */
+.advanced-toast-success {
+  border-left: 4px solid #28a745;
+}
+
+.advanced-toast-success .toast-icon {
+  color: #28a745;
+}
+
+.advanced-toast-error {
+  border-left: 4px solid #dc3545;
+}
+
+.advanced-toast-error .toast-icon {
+  color: #dc3545;
+}
+
+.advanced-toast-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.advanced-toast-warning .toast-icon {
+  color: #ffc107;
+}
+
+.advanced-toast-info {
+  border-left: 4px solid #0dcaf0;
+}
+
+.advanced-toast-info .toast-icon {
+  color: #0dcaf0;
+}
+
+/* Advanced Notification Panel (Sidebar) */
+.advanced-notification-panel {
+  position: fixed;
+  top: var(--navbar-h);
+  right: -420px;
+  height: calc(100vh - var(--navbar-h));
+  width: 400px;
+  background: var(--card-bg);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+  z-index: 2998;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .advanced-notification-panel {
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
+}
+
+.advanced-notification-panel.open {
+  right: 0;
+}
+
+.notification-panel-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 98, 0, 0.05);
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .notification-panel-header {
+  background: rgba(255, 98, 0, 0.1);
+}
+
+.notification-panel-header h3 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.notification-panel-close {
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+
+.notification-panel-close:hover {
+  color: var(--text-color);
+}
+
+.notification-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+}
+
+.notification-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.notification-item {
+  padding: var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+[data-theme="dark"] .notification-item {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.notification-item:hover {
+  background: rgba(255, 98, 0, 0.05);
+  border-color: var(--primary-color);
+}
+
+.notification-item-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.notification-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-item-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.notification-item-message {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.notification-item-time {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.notification-panel-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.notification-panel-footer .btn {
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+}
+
+/* Animations */
 @keyframes slideInRight {
   from {
-    transform: translateX(100%);
+    transform: translateX(400px);
     opacity: 0;
   }
   to {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
   }
 }
 
