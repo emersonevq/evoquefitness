@@ -270,4 +270,61 @@ a { color: inherit; text-decoration: none; transition: var(--transition); }
 /* Keep original card color classes (do not override) */
 /* NOTE: existing .card.bg-* classes in painel.css are preserved; this file intentionally avoids redefining them to keep original color scheme. */
 
+/* ===== Restore card action buttons (high specificity to override conflicts) ===== */
+.cards-grid .card-footer button.btn-ticket,
+.cards-grid .card-footer .btn-ticket {
+  background: linear-gradient(135deg, #17a2b8, #17a2b8) !important;
+  color: #fff !important;
+  border: 0 !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 16px rgba(23,162,184,0.18) !important;
+}
+.cards-grid .card-footer button.btn-ticket:hover,
+.cards-grid .card-footer .btn-ticket:hover {
+  background: linear-gradient(135deg, #138496, #138496) !important;
+}
+
+.cards-grid .card-footer button.btn-update,
+.cards-grid .card-footer .btn-update {
+  background: linear-gradient(135deg, #28a745, #28a745) !important;
+  color: #fff !important;
+  border: 0 !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 16px rgba(40,167,69,0.18) !important;
+}
+.cards-grid .card-footer button.btn-update:hover,
+.cards-grid .card-footer .btn-update:hover {
+  background: linear-gradient(135deg, #218838, #218838) !important;
+}
+
+.cards-grid .card-footer button.btn-cancel,
+.cards-grid .card-footer .btn-cancel {
+  background: linear-gradient(135deg, #6c757d, #6c757d) !important;
+  color: #fff !important;
+  border: 0 !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 16px rgba(108,117,125,0.12) !important;
+}
+.cards-grid .card-footer button.btn-cancel:hover,
+.cards-grid .card-footer .btn-cancel:hover {
+  background: linear-gradient(135deg, #5a6268, #5a6268) !important;
+}
+
+/* Small variants */
+.cards-grid .card-footer .btn-ticket-sm { background: #17a2b8 !important; color: #fff !important; border-radius: 6px !important; padding: 6px 8px !important; }
+.cards-grid .card-footer .btn-update-sm { background: #28a745 !important; color: #fff !important; border-radius: 6px !important; padding: 6px 8px !important; }
+.cards-grid .card-footer .btn-danger-sm { background: #dc3545 !important; color: #fff !important; border-radius: 6px !important; padding: 6px 8px !important; }
+
+/* Ensure icons keep contrast */
+.cards-grid .card-footer .btn i { margin-right: 6px; color: #fff; }
+
+/* Ensure footer buttons don't stretch and maintain spacing */
+.cards-grid .card-footer { gap: 8px; align-items: center; }
+.cards-grid .card-footer .btn { flex: 0 0 auto; min-width: 90px; }
+
+/* End restore block */
+
 /* End of user-provided theme */
