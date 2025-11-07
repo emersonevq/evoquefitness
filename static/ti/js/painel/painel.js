@@ -385,7 +385,7 @@ async function loadChamados() {
     try {
         // Mostrar estado de carregamento
         if (chamadosGrid) {
-            chamadosGrid.innerHTML = '<div class="text-center py-4" style="grid-column: 1 / -1;"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">Carregando chamados...</div></div>';
+            chamadosGrid.innerHTML = '<div class="text-center py-4 grid-span-all"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">Carregando chamados...</div></div>';
         }
 
         // Montar URL com parâmetros de performance: light e limit
@@ -416,7 +416,7 @@ async function loadChamados() {
     } catch (error) {
         console.error('Erro ao carregar chamados:', error);
         if (chamadosGrid) {
-            chamadosGrid.innerHTML = '<p class="text-center py-4" style="grid-column: 1 / -1;">Erro ao carregar chamados. Tente novamente mais tarde.</p>';
+            chamadosGrid.innerHTML = '<p class="text-center py-4 grid-span-all">Erro ao carregar chamados. Tente novamente mais tarde.</p>';
         }
         if (window.advancedNotificationSystem) {
             window.advancedNotificationSystem.showError('Erro', 'Erro ao carregar chamados');
@@ -683,7 +683,7 @@ async function updateChamadoStatus(chamadoId, novoStatus) {
             });
 
             if (!notificacaoResponse.ok) {
-                console.error('Erro ao enviar notifica��ão:', await notificacaoResponse.text());
+                console.error('Erro ao enviar notifica���ão:', await notificacaoResponse.text());
                 throw new Error('Erro ao enviar notificação por e-mail');
             }
         }
@@ -711,7 +711,7 @@ function renderChamadosPage(page) {
 
     if (pageChamados.length === 0) {
         chamadosGrid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state grid-span-all">
                 <div class="empty-icon">
                     <i class="fas fa-inbox"></i>
                 </div>
@@ -3437,7 +3437,7 @@ async function excluirGrupo(grupoId) {
         }
 
         if (window.advancedNotificationSystem) {
-            window.advancedNotificationSystem.showSuccess('Grupo Excluído', 'Grupo excluído com sucesso!');
+            window.advancedNotificationSystem.showSuccess('Grupo Excluído', 'Grupo exclu��do com sucesso!');
         }
 
         await carregarGrupos();
@@ -5114,7 +5114,7 @@ function debounce(func, wait) {
     };
 }
 
-// Função para limpar todos os filtros
+// Funç��o para limpar todos os filtros
 function limparTodosFiltros() {
     // Filtros de chamados
     const filtroSolicitante = document.getElementById('filtroSolicitante');

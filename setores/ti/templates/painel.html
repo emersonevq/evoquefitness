@@ -16,6 +16,7 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/painel.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/painel.theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/enviar_ticket.css') }}">
   <script>
     (function(){
@@ -188,7 +189,7 @@
 
   <main class="main-content" id="mainContent" tabindex="0">
     <!-- Visão Geral -->
-    <section id="visao-geral" class="content-section active" tabindex="0" aria-label="Visão Geral">
+    <section id="visao-geral" class="content-section active" data-style="login-like" tabindex="0" aria-label="Visão Geral">
       <h2>Visão geral</h2>
       <div class="row">
         <div class="col-md-3">
@@ -238,7 +239,7 @@
     </section>
 
     <!-- Nova Seção SLA & Métricas -->
-    <section id="sla-dashboard" class="content-section" tabindex="0" aria-label="SLA & Métricas">
+    <section id="sla-dashboard" class="content-section" data-style="login-like" tabindex="0" aria-label="SLA & Métricas">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-chart-line me-2"></i>SLA & Métricas de Desempenho</h2>
         <button class="btn btn-primary" id="btnAtualizarSLA">
@@ -452,7 +453,7 @@
                 <i class="fas fa-list me-2"></i>Chamados Detalhados com SLA
               </h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-warning btn-sm" id="btnLimparHistoricoViolacao" title="Limpar histórico de violações">
+                <button class="btn btn-warning btn-sm" id="btnLimparHistoricoViolacao" title="Limpar histórico de viola��ões">
                   <i class="fas fa-broom me-1"></i>Limpar Histórico
                 </button>
                 <button class="btn btn-info btn-sm" onclick="debugSLAViolations()" title="Debug violações de SLA">
@@ -528,7 +529,7 @@
     </section>
 
     <!-- Gerenciar Chamados -->
-    <section id="gerenciar-chamados" class="content-section" tabindex="0" aria-label="Gerenciar Chamados">
+    <section id="gerenciar-chamados" class="content-section" data-style="login-like" tabindex="0" aria-label="Gerenciar Chamados">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gerenciar chamados</h2>
         <button class="btn btn-primary" id="btnAtualizarChamados">
@@ -607,7 +608,7 @@
     </section>
 
     <!-- Criar Usuário -->
-    <section id="criar-usuario" class="content-section" tabindex="0" aria-label="Criar Usuário">
+    <section id="criar-usuario" class="content-section" data-style="login-like" tabindex="0" aria-label="Criar Usuário">
       <h2>Criar novo usuário</h2>
       
       <div class="card">
@@ -720,7 +721,7 @@
     </section>
 
     <!-- Bloqueios -->
-    <section id="bloqueios" class="content-section" tabindex="0" aria-label="Usuários Bloqueados">
+    <section id="bloqueios" class="content-section" data-style="login-like" tabindex="0" aria-label="Usuários Bloqueados">
       <h2>Usuários Bloqueados</h2>
       <div class="cards-grid" id="usuariosBloqueadosGrid">
         <!-- Os usuários bloqueados serão carregados aqui dinamicamente -->
@@ -729,10 +730,10 @@
     </section>
 
     <!-- Permissões -->
-    <section id="permissoes" class="content-section" tabindex="0" aria-label="Gerenciar Permissões">
+    <section id="permissoes" class="content-section" data-style="login-like" tabindex="0" aria-label="Gerenciar Permissões">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gerenciar Permissões</h2>
-        <div class="input-group" style="max-width: 300px;">
+        <div class="input-group input-group-compact">
           <input type="text" class="form-control" id="filtroPermissoes" placeholder="Buscar usuário...">
           <button class="btn btn-outline-secondary" id="btnFiltrarPermissoes">
             <i class="fas fa-search"></i>
@@ -746,7 +747,7 @@
     </section>
 
     <!-- Agentes de Suporte -->
-    <section id="agentes-suporte" class="content-section" tabindex="0" aria-label="Agentes de Suporte">
+    <section id="agentes-suporte" class="content-section" data-style="login-like" tabindex="0" aria-label="Agentes de Suporte">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-headset me-2"></i>Agentes de Suporte</h2>
         <div class="d-flex gap-2">
@@ -802,14 +803,14 @@
     </section>
 
     <!-- Grupos de Usuários -->
-    <section id="grupos-usuarios" class="content-section" tabindex="0" aria-label="Grupos de Usuários">
+    <section id="grupos-usuarios" class="content-section" data-style="login-like" tabindex="0" aria-label="Grupos de Usuários">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-users me-2"></i>Grupos de Usuários</h2>
         <div class="d-flex gap-2">
           <button class="btn btn-outline-info btn-sm" onclick="window.carregarGrupos ? window.carregarGrupos() : console.error('Função não disponível')" title="Forçar atualização">
             <i class="fas fa-sync-alt"></i> Atualizar
           </button>
-          <div class="input-group" style="max-width: 300px;">
+          <div class="input-group input-group-compact">
             <input type="text" class="form-control" id="filtroGrupos" placeholder="Buscar grupo...">
             <button class="btn btn-outline-secondary" id="btnFiltrarGrupos">
               <i class="fas fa-search"></i>
@@ -844,7 +845,7 @@
     <!-- ==================== NOVAS SEÇ��ES ==================== -->
 
     <!-- Logs de Acesso -->
-    <section id="logs-acesso" class="content-section" tabindex="0" aria-label="Logs de Acesso">
+    <section id="logs-acesso" class="content-section" data-style="login-like" tabindex="0" aria-label="Logs de Acesso">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-sign-in-alt me-2"></i>Logs de Acesso dos Usuários</h2>
         <button class="btn btn-primary" id="btnAtualizarLogsAcesso">
@@ -947,7 +948,7 @@
     </section>
 
     <!-- Logs de Ações -->
-    <section id="logs-acoes" class="content-section" tabindex="0" aria-label="Logs de Ações">
+    <section id="logs-acoes" class="content-section" data-style="login-like" tabindex="0" aria-label="Logs de Ações">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-clipboard-list me-2"></i>Ações dos Usuários</h2>
         <button class="btn btn-primary" id="btnAtualizarLogsAcoes">
@@ -1022,7 +1023,7 @@
     </section>
 
     <!-- Análise de Problemas -->
-    <section id="analise-problemas" class="content-section" tabindex="0" aria-label="Análise de Problemas">
+    <section id="analise-problemas" class="content-section" data-style="login-like" tabindex="0" aria-label="Análise de Problemas">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-chart-bar me-2"></i>Análise de Problemas Futuros</h2>
         <button class="btn btn-primary" id="btnAtualizarAnalise">
@@ -1108,7 +1109,7 @@
     </section>
 
     <!-- Relatórios -->
-    <section id="relatorios" class="content-section" tabindex="0" aria-label="Relatórios">
+    <section id="relatorios" class="content-section" data-style="login-like" tabindex="0" aria-label="Relatórios">
       <h2><i class="fas fa-file-alt me-2"></i>Relatórios do Sistema</h2>
 
       <div class="row">
@@ -1173,7 +1174,7 @@
     </section>
 
     <!-- Alertas do Sistema -->
-    <section id="alertas-sistema" class="content-section" tabindex="0" aria-label="Alertas do Sistema">
+    <section id="alertas-sistema" class="content-section" data-style="login-like" tabindex="0" aria-label="Alertas do Sistema">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-exclamation-triangle me-2"></i>Alertas do Sistema</h2>
         <button class="btn btn-primary" id="btnCriarAlerta">
@@ -1233,7 +1234,7 @@
     </section>
 
     <!-- Backup & Manutenção -->
-    <section id="backup-manutencao" class="content-section" tabindex="0" aria-label="Backup & Manuten��ão">
+    <section id="backup-manutencao" class="content-section" data-style="login-like" tabindex="0" aria-label="Backup & Manuten��ão">
       <h2><i class="fas fa-database me-2"></i>Backup & Manutenção do Sistema</h2>
 
       <div class="row">
@@ -1319,7 +1320,7 @@
     </section>
 
     <!-- Configurações Avançadas -->
-    <section id="configuracoes-avancadas" class="content-section" tabindex="0" aria-label="Configurações Avançadas">
+    <section id="configuracoes-avancadas" class="content-section" data-style="login-like" tabindex="0" aria-label="Configurações Avançadas">
       <h2><i class="fas fa-cog me-2"></i>Configurações Avançadas do Sistema</h2>
 
       <div class="row">
@@ -1418,7 +1419,7 @@
     </section>
 
     <!-- Dashboard Avançado -->
-    <section id="dashboard-avancado" class="content-section" tabindex="0" aria-label="Dashboard Avançado">
+    <section id="dashboard-avancado" class="content-section" data-style="login-like" tabindex="0" aria-label="Dashboard Avançado">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-chart-pie me-2"></i>Dashboard Avançado</h2>
         <button class="btn btn-primary" id="btnAtualizarDashboard">
@@ -1522,7 +1523,7 @@
     <!-- ==================== SEÇÕES EXISTENTES ==================== -->
 
     <!-- Monitoramento de Catraca -->
-    <section id="monitoramento-catraca" class="content-section" tabindex="0" aria-label="Monitoramento de Catraca">
+    <section id="monitoramento-catraca" class="content-section" data-style="login-like" tabindex="0" aria-label="Monitoramento de Catraca">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-door-open me-2"></i>Monitoramento de Catraca</h2>
         <button class="btn btn-primary" id="btnAtualizarCatracas">
@@ -1588,13 +1589,13 @@
     </section>
 
     <!-- Adicionar Unidade -->
-    <section id="adicionar-unidade" class="content-section" tabindex="0" aria-label="Adicionar Unidade">
+    <section id="adicionar-unidade" class="content-section" data-style="login-like" tabindex="0" aria-label="Adicionar Unidade">
       <h2>Adicionar nova unidade</h2>
       <button class="btn btn-primary" id="btnOpenAddUnitModal">Adicionar nova unidade</button>
     </section>
 
     <!-- Listar Unidades -->
-    <section id="listar-unidades" class="content-section" tabindex="0" aria-label="Listar Unidades">
+    <section id="listar-unidades" class="content-section" data-style="login-like" tabindex="0" aria-label="Listar Unidades">
       <h2>Listar Unidades</h2>
       <div class="table-responsive">
         <table class="table table-dark table-striped">
@@ -1613,7 +1614,7 @@
     </section>
 
     <!-- Nova Seção: Adicionar ao Banco -->
-    <section id="adicionar-problema" class="content-section" tabindex="0" aria-label="Adicionar ao Banco">
+    <section id="adicionar-problema" class="content-section" data-style="login-like" tabindex="0" aria-label="Adicionar ao Banco">
       <h2>Adicionar ao Banco</h2>
       
       <div class="card">
@@ -1685,7 +1686,7 @@
     </section>
 
     <!-- Histórico -->
-    <section id="historico" class="content-section" tabindex="0" aria-label="Histórico">
+    <section id="historico" class="content-section" data-style="login-like" tabindex="0" aria-label="Histórico">
       <h2>Histórico</h2>
       <div class="table-responsive">
         <table class="table table-dark table-striped">
@@ -1705,7 +1706,7 @@
     </section>
 
     <!-- Configurações -->
-    <section id="configuracoes" class="content-section" tabindex="0" aria-label="Configurações do Sistema">
+    <section id="configuracoes" class="content-section" data-style="login-like" tabindex="0" aria-label="Configurações do Sistema">
       <h2>Configuraç��es do Sistema</h2>
       
       <div class="row">
@@ -1818,7 +1819,7 @@
           </div>
         </div>
 
-        <!-- Prioridades dos Problemas - Seção Separada -->
+        <!-- Prioridades dos Problemas - Seç��o Separada -->
         <div class="col-12 mb-4">
           <div class="collapsible-section">
             <div class="collapsible-header" data-bs-toggle="collapse" data-bs-target="#prioridadesCollapse" aria-expanded="false">
@@ -2051,7 +2052,7 @@
           </div>
         </div>
 
-        <!-- Integração -->
+        <!-- Integraç��o -->
         <div class="col-md-6 mb-4">
           <div class="collapsible-section">
             <div class="collapsible-header" data-bs-toggle="collapse" data-bs-target="#integracaoCollapse" aria-expanded="false">
