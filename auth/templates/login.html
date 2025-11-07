@@ -44,26 +44,34 @@
     .alert-danger{background-color:rgba(220,53,69,0.15);border:1px solid rgba(220,53,69,0.3);color:#ff6b6b}
     form .btn-primary{width:100%;padding:14px 28px;margin-top:10px}
     @media(max-width:991px){
-      body{background:transparent;padding:0}
-      .login-container{padding:0;background:transparent}
-      .media-panel{display:none;border-right:none}
-      .auth-card{flex-direction:column;height:auto;max-height:none;max-width:100%;width:100%;border-radius:0;box-shadow:none;background-color:transparent}
-      .login-panel{padding:30px 20px;background-color:transparent}
-      h3{font-size:1.5rem;margin-bottom:24px}
-      .form-actions{flex-direction:column;gap:12px}
-      .form-actions .btn-primary{width:100%}
-      .form-actions a{text-align:center}
-      .form-label,.form-control,.form-check-label,.btn-primary{color:#000}
-      .form-label{color:#333}
-      .form-control{background-color:#fff;border:2px solid #ddd;color:#000}
-      .form-control:focus{background-color:#f9f9f9;border-color:#FF6200;box-shadow:0 0 0 3px rgba(255,98,0,0.1)}
-      .btn-primary{background-color:#FF6200;color:#fff;box-shadow:0 4px 12px rgba(255,98,0,0.3)}
-      .btn-primary:hover{background-color:#E55700}
-      .form-check-input{background-color:#fff;border:2px solid #ddd}
+      body{background:linear-gradient(135deg,#f5f5f5 0%,#ffffff 100%);padding:0}
+      .login-container{padding:16px;background:transparent}
+      .auth-card{flex-direction:column;height:auto;max-height:none;max-width:100%;width:100%;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,0.08);background-color:#fff}
+      .media-panel{flex:none;background:linear-gradient(135deg,#FF6200 0%,#FF914D 100%);border-right:none;border-radius:20px 20px 0 0;padding:30px 20px;gap:16px}
+      .media-item{max-height:45vh;margin:10px 0}
+      .media-item img, .media-item video{border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.15)}
+      .media-title{font-size:1rem;font-weight:700;color:#fff}
+      .media-panel p{color:rgba(255,255,255,0.95);font-size:0.85rem}
+      .login-panel{padding:28px 20px;background-color:#fff;border-radius:0 0 20px 20px}
+      .logo-wrapper{margin-bottom:16px}
+      .logo-wrapper img{max-height:45px}
+      h3{font-size:1.5rem;margin:0 0 22px 0;color:#2A2F30;letter-spacing:-0.5px}
+      .form-label{color:#333;font-weight:600;font-size:0.9rem;margin-bottom:6px}
+      .form-control{background-color:#f8f8f8;border:2px solid #e0e0e0;color:#000;padding:11px 14px;font-size:0.9rem;border-radius:8px;margin-bottom:14px}
+      .form-control:focus{background-color:#fff;border-color:#FF6200;box-shadow:0 0 0 3px rgba(255,98,0,0.1);outline:none}
+      .form-control::placeholder{color:#999}
+      .form-check{margin-bottom:18px;gap:8px}
+      .form-check-input{background-color:#f8f8f8;border:2px solid #e0e0e0;width:16px;height:16px}
       .form-check-input:checked{background-color:#FF6200;border-color:#FF6200}
-      .form-check-label{color:#333}
-      .alert-danger{background-color:rgba(220,53,69,0.1);color:#dc3545}
-      .logo-wrapper img{max-height:50px}
+      .form-check-label{color:#333;font-weight:500;font-size:0.9rem;margin:0}
+      .btn-primary{background-color:#FF6200;color:#fff;padding:12px 28px;font-size:0.95rem;font-weight:600;border-radius:8px;width:100%;box-shadow:0 4px 12px rgba(255,98,0,0.3);margin-top:8px}
+      .btn-primary:hover{background-color:#E55700;transform:translateY(-1px);box-shadow:0 6px 16px rgba(255,98,0,0.4)}
+      .btn-primary:active{transform:translateY(0);box-shadow:0 2px 6px rgba(255,98,0,0.3)}
+      .form-actions{flex-direction:column;gap:12px;margin-top:6px}
+      .form-actions a{font-size:0.85rem;color:#FF6200;text-align:center}
+      .form-actions a:hover{color:#E55700;text-decoration:none}
+      .alert-danger{background-color:rgba(220,53,69,0.1);border:1px solid rgba(220,53,69,0.3);color:#dc3545;border-radius:8px}
+      .mb-3{margin-bottom:14px}
     }
   </style>
 </head>
