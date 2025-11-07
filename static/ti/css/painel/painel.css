@@ -1163,6 +1163,165 @@ small {
   border-color: var(--border-color);
 }
 
+/* Additional Utilities */
+.align-self-center {
+  align-items: center;
+  display: flex;
+}
+
+.ms-2 {
+  margin-left: var(--space-2);
+}
+
+.text-white {
+  color: white;
+}
+
+.text-muted {
+  color: var(--text-light);
+}
+
+.text-decoration-none {
+  text-decoration: none;
+}
+
+/* Table Enhanced */
+.table-responsive table {
+  color: var(--text-color);
+}
+
+.table thead th {
+  background: rgba(255, 98, 0, 0.08);
+  color: var(--primary-color);
+  border: 0;
+  font-weight: 600;
+  padding: var(--space-3) var(--space-4);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 98, 0, 0.05);
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+  background: rgba(255, 98, 0, 0.1);
+}
+
+.table tbody td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-color);
+  vertical-align: middle;
+}
+
+/* Icon spacing */
+.fa-2x {
+  font-size: 2em;
+}
+
+.me-1 {
+  margin-right: 0.25rem;
+}
+
+.me-2 {
+  margin-right: var(--space-2);
+}
+
+.ms-1 {
+  margin-left: 0.25rem;
+}
+
+.ms-2 {
+  margin-left: var(--space-2);
+}
+
+/* Bootstrap Grid adjustments */
+@media (min-width: 768px) {
+  .col-md-2 { flex: 0 0 16.66666667%; }
+  .col-md-3 { flex: 0 0 25%; }
+  .col-md-4 { flex: 0 0 33.33333333%; }
+  .col-md-6 { flex: 0 0 50%; }
+  .col-md-12 { flex: 0 0 100%; }
+}
+
+@media (min-width: 992px) {
+  .col-lg-3 { flex: 0 0 25%; }
+  .col-lg-4 { flex: 0 0 33.33333333%; }
+}
+
+.col-12 {
+  flex: 0 0 100%;
+}
+
+/* Text alignment */
+.text-center {
+  text-align: center;
+}
+
+.text-end {
+  text-align: right;
+}
+
+/* Select Multiple */
+select[multiple],
+select[size] {
+  min-height: 150px;
+}
+
+select[multiple] option {
+  padding: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+select[multiple] option:checked {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Modal */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-md-2,
+  .col-md-3,
+  .col-md-4,
+  .col-md-6,
+  .col-md-12 {
+    flex: 0 0 100%;
+  }
+
+  .display-6 {
+    font-size: 2.5rem;
+  }
+
+  .btn-actions {
+    flex-direction: column;
+  }
+
+  .btn-actions .btn {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+}
+
 /* Print styles */
 @media print {
   .sidebar,
