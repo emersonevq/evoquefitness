@@ -632,6 +632,294 @@
     </div>
   </div>
 
+  <!-- Modal: Solicitar Código de Recuperação -->
+  <div id="recoveryModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Recuperar Senha</h2>
+        <button class="modal-close" onclick="closeRecoveryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Digite seu usuário ou e-mail para receber um código de recuperação</p>
+        <input type="text" id="recoveryInput" class="form-input" placeholder="Usuário ou E-mail" autocomplete="off">
+        <div id="recoveryError" class="error-message" style="display: none;"></div>
+        <div id="recoverySuccess" class="success-message" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeRecoveryModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="requestRecoveryCode()" id="sendCodeBtn">Enviar Código</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Validar Código -->
+  <div id="codeModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Digite o Código</h2>
+        <button class="modal-close" onclick="closeCodeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Enviamos um código de 6 dígitos para seu e-mail. Digite o código abaixo:</p>
+        <input type="text" id="codeInput" class="form-input code-input" placeholder="000000" maxlength="6" autocomplete="off" inputmode="numeric">
+        <div id="codeError" class="error-message" style="display: none;"></div>
+        <div id="codeSuccess" class="success-message" style="display: none;"></div>
+        <p class="resend-info">
+          <span id="resendTimer" style="display: none;">Pode reenviar em <span id="timerSeconds">60</span>s</span>
+          <button id="resendBtn" class="resend-link" onclick="resendCode()" style="display: none;">Reenviar código</button>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeCodeModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="validateCode()" id="validateCodeBtn">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Redefinir Senha -->
+  <div id="resetPasswordModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Criar Nova Senha</h2>
+        <button class="modal-close" onclick="closeResetPasswordModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Crie uma nova senha para sua conta</p>
+        <div class="input-group">
+          <label class="form-label">Nova Senha</label>
+          <input type="password" id="newPassword" class="form-input" placeholder="Digite sua nova senha" autocomplete="off">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword')">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div class="input-group">
+          <label class="form-label">Confirmar Senha</label>
+          <input type="password" id="confirmPassword" class="form-input" placeholder="Confirme sua nova senha" autocomplete="off">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword')">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div id="passwordError" class="error-message" style="display: none;"></div>
+        <div id="passwordSuccess" class="success-message" style="display: none;"></div>
+        <p class="password-requirements">
+          <small>A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas e números</small>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeResetPasswordModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="resetPassword()" id="resetPasswordBtn">Redefinir Senha</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 450px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-description {
+      margin: 0 0 20px;
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid #e0e0e0;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .modal-btn-primary {
+      background-color: #FF6200;
+      color: white;
+    }
+
+    .modal-btn-primary:hover {
+      background-color: #E55700;
+      transform: translateY(-2px);
+    }
+
+    .modal-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .modal-btn-primary:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .modal-btn-secondary {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .modal-btn-secondary:hover {
+      background-color: #e0e0e0;
+    }
+
+    .code-input {
+      text-align: center;
+      letter-spacing: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .error-message {
+      background-color: rgba(220, 53, 69, 0.1);
+      border-left: 4px solid #dc3545;
+      color: #dc3545;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+
+    .success-message {
+      background-color: rgba(40, 167, 69, 0.1);
+      border-left: 4px solid #28a745;
+      color: #28a745;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+
+    .resend-info {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .resend-link {
+      background: none;
+      border: none;
+      color: #FF6200;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+
+    .resend-link:hover {
+      color: #E55700;
+    }
+
+    .password-requirements {
+      margin: 12px 0 0;
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 576px) {
+      .modal-content {
+        width: 95%;
+        border-radius: 12px;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .modal-header {
+        padding: 16px;
+      }
+
+      .modal-footer {
+        flex-direction: column;
+      }
+
+      .modal-btn {
+        width: 100%;
+      }
+    }
+  </style>
+
   <script>
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
