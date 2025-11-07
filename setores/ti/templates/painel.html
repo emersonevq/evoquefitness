@@ -16,6 +16,7 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/painel.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/painel.theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='ti/css/painel/enviar_ticket.css') }}">
   <script>
     (function(){
@@ -732,7 +733,7 @@
     <section id="permissoes" class="content-section" tabindex="0" aria-label="Gerenciar Permissões">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gerenciar Permissões</h2>
-        <div class="input-group" style="max-width: 300px;">
+        <div class="input-group input-group-compact">
           <input type="text" class="form-control" id="filtroPermissoes" placeholder="Buscar usuário...">
           <button class="btn btn-outline-secondary" id="btnFiltrarPermissoes">
             <i class="fas fa-search"></i>
@@ -809,7 +810,7 @@
           <button class="btn btn-outline-info btn-sm" onclick="window.carregarGrupos ? window.carregarGrupos() : console.error('Função não disponível')" title="Forçar atualização">
             <i class="fas fa-sync-alt"></i> Atualizar
           </button>
-          <div class="input-group" style="max-width: 300px;">
+          <div class="input-group input-group-compact">
             <input type="text" class="form-control" id="filtroGrupos" placeholder="Buscar grupo...">
             <button class="btn btn-outline-secondary" id="btnFiltrarGrupos">
               <i class="fas fa-search"></i>
@@ -1818,7 +1819,7 @@
           </div>
         </div>
 
-        <!-- Prioridades dos Problemas - Seção Separada -->
+        <!-- Prioridades dos Problemas - Seç��o Separada -->
         <div class="col-12 mb-4">
           <div class="collapsible-section">
             <div class="collapsible-header" data-bs-toggle="collapse" data-bs-target="#prioridadesCollapse" aria-expanded="false">
@@ -2051,7 +2052,7 @@
           </div>
         </div>
 
-        <!-- Integração -->
+        <!-- Integraç��o -->
         <div class="col-md-6 mb-4">
           <div class="collapsible-section">
             <div class="collapsible-header" data-bs-toggle="collapse" data-bs-target="#integracaoCollapse" aria-expanded="false">

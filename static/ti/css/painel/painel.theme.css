@@ -1,0 +1,78 @@
+/* Panel enhanced theme (additive). Keeps variables and original look. */
+
+/* Sidebar submenu caret animation */
+.sidebar nav ul li.has-submenu > a::after { transition: transform 0.2s ease; }
+.sidebar nav ul li.has-submenu.open > a::after { transform: rotate(180deg); }
+
+/* Global utility */
+.grid-span-all { grid-column: 1 / -1; }
+.input-group-compact { max-width: 300px; }
+
+/* Theme toggle button */
+.theme-toggle { position: fixed; right: 20px; bottom: 20px; z-index: 1050; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease, background 0.2s ease; }
+.theme-toggle:hover { transform: translateY(-2px); background: var(--primary-color); color: #fff; }
+
+/* Chamado card */
+.chamado-card { border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--card-bg); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.chamado-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.15); }
+
+.chamado-card .card-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); background: rgba(255, 98, 0, 0.06); border-bottom: 1px solid var(--border-color); }
+[data-theme="dark"] .chamado-card .card-header { background: rgba(255, 98, 0, 0.1); }
+.chamado-card .card-header h3 { margin: 0; font-size: 1rem; color: var(--primary-color); font-weight: 600; }
+
+/* Status badge */
+.status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-weight: 600; border: 1px solid currentColor; }
+.status-badge i { font-size: 0.9rem; }
+.status-badge.status-aberto { background: rgba(13,202,240,0.12); color: #0dcaf0; }
+.status-badge.status-aguardando { background: rgba(255,193,7,0.18); color: #ffc107; }
+.status-badge.status-concluido { background: rgba(25,135,84,0.18); color: #198754; }
+.status-badge.status-cancelado { background: rgba(220,53,69,0.18); color: #dc3545; }
+
+.chamado-card .card-body { padding: var(--space-4); display: grid; gap: 10px; }
+.chamado-card .info-row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: center; color: var(--text-color); }
+.chamado-card .info-row strong { color: var(--text-light); font-weight: 600; }
+
+.chamado-card .card-footer { display: flex; gap: var(--space-2); align-items: center; padding: var(--space-3) var(--space-4); border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.02); }
+[data-theme="dark"] .chamado-card .card-footer { background: rgba(255,255,255,0.03); }
+.chamado-card .card-footer select { min-width: 160px; border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 10px; color: var(--text-color); background: var(--secondary-color); }
+
+/* Small action buttons for cards */
+.btn-update-sm { background: #28a745; color: #fff; border: 0; padding: 6px 10px; border-radius: 8px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.btn-update-sm:hover { background: #218838; transform: translateY(-1px); box-shadow: 0 6px 14px rgba(40,167,69,0.25); }
+.btn-danger-sm { background: #dc3545; color: #fff; border: 0; padding: 6px 10px; border-radius: 8px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.btn-danger-sm:hover { background: #bb2d3b; transform: translateY(-1px); box-shadow: 0 6px 14px rgba(220,53,69,0.25); }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 40px 20px; border: 1px dashed var(--border-color); border-radius: var(--radius); background: var(--card-bg); color: var(--text-color); box-shadow: var(--shadow); }
+.empty-state h4 { margin: 10px 0 6px; font-weight: 600; }
+.empty-state p { margin: 0; color: var(--text-light); }
+.empty-state .empty-icon { width: 64px; height: 64px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.06); color: var(--primary-color); }
+[data-theme="dark"] .empty-state .empty-icon { background: rgba(255,255,255,0.08); }
+
+/* Pagination buttons created via JS */
+.pagination { gap: var(--space-2); }
+.pagination button { padding: 8px 12px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+.pagination button:hover:not(:disabled) { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+.pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+.pagination button.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+
+/* Modal timeline & attachments */
+.history-list .skeleton-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12), rgba(0,0,0,0.06)); margin: 8px 0; animation: shimmer 1.2s infinite; }
+@keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: calc(200px + 100%) 0; } }
+.timeline-attachment { margin-top: 6px; }
+.timeline-attachment-image { max-width: 120px; height: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+
+/* Users grid cards alignment */
+.usuario-card .card-header { background: rgba(255, 98, 0, 0.06); }
+[data-theme="dark"] .usuario-card .card-header { background: rgba(255, 98, 0, 0.1); }
+
+/* Navbar quick polish */
+.navbar-panel { backdrop-filter: saturate(180%) blur(4px); }
+.nav-link-panel { background: transparent; }
+
+/* Submenu visual spacing */
+.sidebar nav ul li ul.submenu a { position: relative; }
+.sidebar nav ul li ul.submenu a::before { content: ''; position: absolute; left: 8px; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--text-light); transform: translateY(-50%); opacity: 0.6; }
+
+/* Fine tune forms */
+.form-control-plaintext { color: var(--text-color); }
