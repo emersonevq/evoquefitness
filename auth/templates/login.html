@@ -44,13 +44,26 @@
     .alert-danger{background-color:rgba(220,53,69,0.15);border:1px solid rgba(220,53,69,0.3);color:#ff6b6b}
     form .btn-primary{width:100%;padding:14px 28px;margin-top:10px}
     @media(max-width:991px){
+      body{background:transparent;padding:0}
+      .login-container{padding:0;background:transparent}
       .media-panel{display:none;border-right:none}
-      .auth-card{flex-direction:column;height:auto;max-height:none}
-      .login-panel{padding:30px 24px}
+      .auth-card{flex-direction:column;height:auto;max-height:none;max-width:100%;width:100%;border-radius:0;box-shadow:none;background-color:transparent}
+      .login-panel{padding:30px 20px;background-color:transparent}
       h3{font-size:1.5rem;margin-bottom:24px}
       .form-actions{flex-direction:column;gap:12px}
       .form-actions .btn-primary{width:100%}
       .form-actions a{text-align:center}
+      .form-label,.form-control,.form-check-label,.btn-primary{color:#000}
+      .form-label{color:#333}
+      .form-control{background-color:#fff;border:2px solid #ddd;color:#000}
+      .form-control:focus{background-color:#f9f9f9;border-color:#FF6200;box-shadow:0 0 0 3px rgba(255,98,0,0.1)}
+      .btn-primary{background-color:#FF6200;color:#fff;box-shadow:0 4px 12px rgba(255,98,0,0.3)}
+      .btn-primary:hover{background-color:#E55700}
+      .form-check-input{background-color:#fff;border:2px solid #ddd}
+      .form-check-input:checked{background-color:#FF6200;border-color:#FF6200}
+      .form-check-label{color:#333}
+      .alert-danger{background-color:rgba(220,53,69,0.1);color:#dc3545}
+      .logo-wrapper img{max-height:50px}
     }
   </style>
 </head>
