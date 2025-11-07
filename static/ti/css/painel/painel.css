@@ -307,8 +307,8 @@ a {
 
 /* ============ SEÇÃO: NAVBAR SUPERIOR ============ */
 .navbar-panel {
-  background-color: var(--sidebar-bg) !important;
-  border-bottom: 1px solid var(--primary-color);
+  background-color: var(--bg-primary) !important;
+  border-bottom: 1px solid #e0e0e0;
   padding: var(--spacing-sm) 0;
   position: fixed;
   top: 0;
@@ -412,7 +412,7 @@ a {
   min-height: 100vh;
   transition: margin-left var(--transition-speed) ease;
   margin-top: var(--navbar-height);
-  background: linear-gradient(135deg, var(--dark-color) 0%, var(--secondary-color) 100%);
+  background: var(--bg-primary);
 }
 
 .sidebar.collapsed ~ .main-content {
